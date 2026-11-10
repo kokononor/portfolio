@@ -30,8 +30,22 @@ const withPhotos = (src: string) => Object.entries(PHOTOS).reduce((out, [name, [
   const close = out.indexOf('>', at);
   const start = out.lastIndexOf('<div', at);
   const open = out.slice(start, close + 1).replace(/; border: 1px dashed #0f0e0c/, '');
-  return out.slice(0, start) + open + `<img class="swad-photo" src="/work/swad/photos/${file}.webp" alt="${alt}" loading="lazy" />` + out.slice(close + 1);
+  // the slot's own end, so its placeholder labels ("IMAGE PLACEHOLDER", the shot description) can go: the photo
+  // covers them, but screen readers would still read them out
+  let depth = 0, end = start;
+  const tags = /<div[\s>]|<\/div>/g;
+  tags.lastIndex = start;
+  for (let m; (m = tags.exec(out)); ) { depth += m[0] === '</div>' ? -1 : 1; if (!depth) { end = tags.lastIndex; break; } }
+  const inside = out.slice(close + 1, end).replace(/<p [^>]*>.*?<\/p>/gs, '');
+  return out.slice(0, start) + open + `<img class="swad-photo" src="/work/swad/photos/${file}.webp" alt="${alt}" loading="lazy" />` + inside + out.slice(end);
 }, src);
+// real headings for the generated body: the title is the page's h1, the numbered section titles are h2s
+const withHeadings = (src: string) => src
+  .replace(/<p (style="[^"]*")>(<span[^>]*>Swad:<\/span>.*?)<\/p>/s, '<h1 $1>$2</h1>')
+  .replace(/<p (style="[^"]*font-size: calc\(49 \* var\(--u\)\); color: #681609[^"]*")>(.*?)<\/p>/g,
+    (_, style: string, text: string) => style.includes('white-space: nowrap')
+      ? `<h2 ${style}>${text}</h2>`         // the numbered section titles sit on one line
+      : `<h3 ${style}>${text}</h3>`);       // callouts and the closing lessons in the same face
 
 // The 12-column grid, on the 1728 design: margins 104, gutters 64, columns 68. The generated body sits on 24px gutters
 // (with section 02 off the margin), so its offsets and spans are mapped to the grid here, which also
@@ -53,13 +67,13 @@ const toGrid = (src: string) => src.replace(/<(?:div|p)\b[^>]*>/g, tag => tag
   .replace(/(^|[ ;"])width: calc\((\d+) \* var/, (m, pre, v) => GRID_WIDTH[v] ? `${pre}width: calc(${GRID_WIDTH[v]} * var` : m));
 
 // the nav: brand and resume become links
-const html = withPhotos(toGrid(body))
+const html = withHeadings(withPhotos(toGrid(body)))
   .replace(/<p [^>]*>Hero photo: Swad storefront<\/p>/, '')
   .replace(/<p [^>]*>SUYASH <\/p>/, '<a href="/" class="swad-link swad-brand">HOME</a>')
   .replace(/<p [^>]*>RESUME<\/p>\s*<div [^>]*data-name="Vector">.*?<\/div><\/div>/, '<a href="/resume.pdf" class="swad-resume">RESUME <img src="/work/swad/imgVector.svg" width="12" height="18" alt="" /></a>');
 ---
 <Base title="Swad: How a Momo Café That Couldn't Make Rent Found Its Regulars · Suyash" description="A quiet-lane café in Ranchi went from losing ₹10,000 a month to ₹20,000 in profit in six months.">
-  <div class="canvas swad-canvas" style="height: calc(27895 * var(--u));" set:html={html} />
+  <main class="canvas swad-canvas" style="height: calc(27895 * var(--u));" set:html={html}></main>
   <NextProject href="/work/diviniti" label="DIVINITI" title="Redefining Design" />
   <Footer />
 </Base>
