@@ -114,12 +114,15 @@ const half = '(max-width: 900px) 100vw, 852px';
       <span class="research__veil research__veil--2" data-frame></span>
       <span class="research__veil research__veil--3" data-frame></span>
     </div>
-    <h2 class="at c-h2" style="--x: 1005; --y: 4579; --w: 490;" data-slide="right">Understanding the System</h2>
-    <p class="at c-body" style="--x: 1005; --y: 4726; --w: 490;" data-slide="right">To understand why engineers had stopped trusting Falcon, I approached the problem from three angles: observing live incidents, interviewing users, and analyzing operational data. Each revealed a different part of the story.</p>
-    <div class="at methods" style="--x: 1005; --y: 4854; --w: 490;" data-slide="right">
+    <!-- one flowing column, so the intro can grow (its text keeps a readable minimum size) without running into the methods -->
+    <div class="at stack" style="--x: 1005; --y: 4579; --w: 490;" data-slide="right">
+    <h2 class="c-h2" style="margin-bottom: calc(88 * var(--u));">Understanding the System</h2>
+    <p class="c-body" style="margin-bottom: calc(32 * var(--u));">To understand why engineers had stopped trusting Falcon, I approached the problem from three angles: observing live incidents, interviewing users, and analyzing operational data. Each revealed a different part of the story.</p>
+    <div class="methods">
       <div style="--gap: 12;" data-step="research"><h3 class="c-h3">Contextual Shadowing</h3><p class="c-body">Live incidents revealed a gap between what engineers said and what they did. Engineers routinely waited for data, cross-checked results against raw logs, and relied on workarounds that had become part of their normal workflow.</p></div>
       <div style="--gap: 31;" data-step="research"><h3 class="c-h3">User Interviews</h3><p class="c-body">Interviews across roles showed that trust meant different things to different users, but everyone depended on the same underlying information to make decisions</p></div>
       <div style="--gap: 12;" data-step="research"><h3 class="c-h3">Operational Analysis</h3><p class="c-body">Usage data confirmed the pattern: engineers spent nearly ten minutes gathering context before diagnosis could begin, while critical information remained fragmented across multiple sources.</p></div>
+    </div>
     </div>
     <span class="at c-rule" style="--x: 1005; --y: 5466; --w: 488;"></span>
 
@@ -189,16 +192,18 @@ const half = '(max-width: 900px) 100vw, 852px';
     </div>
 
     <!-- ===== Design Decisions 01–03 share a layout: the image on the right stays and fades from one decision to the next while the text scrolls ===== -->
-    <h2 class="at c-h2" style="--x: 104; --y: 11110; --w: 362;" data-slide="left">Design Decision 01</h2>
-    <h3 class="at c-h3" style="--x: 104; --y: 11255; --w: 362;" data-slide="left">Making System State Visible</h3>
-    <div class="at c-body" style="--x: 104; --y: 11341; --w: 362;" data-slide="left">
+    <div class="at stack dd-col" style="--x: 104; --y: 11110; --w: 362;" data-slide="left">
+    <h2 class="c-h2" style="margin-bottom: calc(27 * var(--u));">Design Decision 01</h2>
+    <h3 class="c-h3" style="margin-bottom: calc(8 * var(--u));">Making System State Visible</h3>
+    <div class="c-body" style="margin-bottom: calc(32 * var(--u));">
       <p>One of the most expensive moments in an outage investigation wasn't diagnosis, it was uncertainty. Engineers often couldn't tell whether they were looking at complete information, partially loaded results, or outdated data. As a result, they routinely waited for all sources to load or manually verified information before acting.</p>
       <p>The underlying issue was that Falcon treated data as a finished object. In reality, information arrived from multiple systems at different speeds, but the interface gave little indication of that state.</p>
     </div>
-    <h3 class="at c-h3" style="--x: 104; --y: 11709;" data-slide="left">The Decision</h3>
-    <div class="at c-body" style="--x: 104; --y: 11754; --w: 358;" data-slide="left">
+    <h3 class="c-h3" style="margin-bottom: calc(6 * var(--u));">The Decision</h3>
+    <div class="c-body">
       <p>Instead of waiting for all sources to return before displaying results, Falcon now reveals information progressively as it becomes available. Every section clearly communicates whether its data is loading, loaded, or stale.</p>
       <p>This shifted the interface from hiding uncertainty to communicating it.</p>
+    </div>
     </div>
     <div class="at c-img" style="--x: 876; --y: 10934; --w: 852; --h: 1117;" data-sticky="dd"><Image src={decision1} alt="Falcon showing loading, loaded and stale states for each section" widths={[852, 1267]} sizes={half} /></div>
     <aside class="at c-why" style="--x: 1269; --y: 11721; --w: 459; --h: 282;" data-slide="right">
@@ -207,16 +212,18 @@ const half = '(max-width: 900px) 100vw, 852px';
     </aside>
 
     <!-- ===== Design Decision 02 ===== -->
-    <h2 class="at c-h2" style="--x: 104; --y: 12211; --w: 362;" data-slide="left" data-step="dd">Design Decision 02</h2>
-    <h3 class="at c-h3" style="--x: 104; --y: 12343; --w: 362;" data-slide="left">Reducing Correlation Cost</h3>
-    <div class="at c-body" style="--x: 104; --y: 12434; --w: 362;" data-slide="left">
+    <div class="at stack dd-col" style="--x: 104; --y: 12211; --w: 362;" data-slide="left" data-step="dd">
+    <h2 class="c-h2" style="margin-bottom: calc(14 * var(--u));">Design Decision 02</h2>
+    <h3 class="c-h3" style="margin-bottom: calc(13 * var(--u));">Reducing Correlation Cost</h3>
+    <div class="c-body" style="margin-bottom: calc(32 * var(--u));">
       <p>Even when Falcon contained the right information, engineers still had to assemble the story themselves. Investigating a single incident often meant moving between tickets, logs, topology maps, configuration changes, and AI outputs to understand how seemingly disconnected signals were related.</p>
       <p>The platform stored the evidence, but the burden of correlation remained with the user.</p>
     </div>
-    <h3 class="at c-h3" style="--x: 104; --y: 12706;" data-slide="left">The Decision</h3>
-    <div class="at c-body" style="--x: 104; --y: 12760; --w: 362;" data-slide="left">
+    <h3 class="c-h3" style="margin-bottom: calc(15 * var(--u));">The Decision</h3>
+    <div class="c-body">
       <p>Instead of organizing information by source, Falcon now organizes information around the investigation itself. A ticket, device, or IP address becomes the starting point, automatically pulling together relevant evidence from multiple systems into a single workspace.</p>
       <p>The responsibility for connecting information shifted from the engineer to the system.</p>
+    </div>
     </div>
     <div class="at c-img" style="--x: 876; --y: 12051; --w: 852; --h: 1117;" data-sticky-join="dd"><Image src={decision2} alt="An investigation workspace pulling evidence from several systems together" widths={[852, 1096]} sizes={half} /></div>
     <aside class="at c-why" style="--x: 1269; --y: 12838; --w: 459; --h: 282;" data-slide="right">
@@ -226,7 +233,7 @@ const half = '(max-width: 900px) 100vw, 852px';
 
     <!-- ===== Design Decision 03 (MacBook Pro 16' - 24) ===== -->
     <div class="at c-img" style="--x: 872; --y: 13168; --w: 856; --h: 1117;" data-sticky-join="dd"><Image src={decision3} alt="The Recommended Investigation card with the reasons behind it" widths={[856, 1096]} sizes={half} /></div>
-    <div class="at stack dd3" style="--x: 104; --y: 13168; --w: 362; --h: 1117; --gap: 38;" data-slide="left" data-step="dd">
+    <div class="at stack dd3 dd-col" style="--x: 104; --y: 13168; --w: 362; --h: 1117; --gap: 38;" data-slide="left" data-step="dd">
       <h2 class="c-h2">Design Decision 03</h2>
       <div class="stack" style="--gap: 10;">
         <h3 class="c-h3">Reducing Triage Effort</h3>
@@ -449,5 +456,13 @@ const half = '(max-width: 900px) 100vw, 852px';
     .red-block { display: none; }
     .dashboard { aspect-ratio: 16 / 9; }
     .dashboard__play { bottom: 16px; height: 42px; font-size: 14px; }
+  }
+
+  /* mid-size windows: the text keeps a readable minimum size, so the decision columns use the free space up to the
+     image (instead of growing taller than their slot and running into the next decision) */
+  @media (min-width: 901px) and (max-width: 1365px) {
+    .dd-col { width: calc(700 * var(--u)) !important; }
+    /* the "Why it matters?" cards grow with their text instead of spilling past their paper */
+    .c-why { height: auto !important; min-height: calc(282 * var(--u)); }
   }
 </style>
