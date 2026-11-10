@@ -5,6 +5,7 @@
 //   node tools/figma-jsx-to-astro.mjs design/swad-362-500.jsx design/swad-body.html --cut-from 27895 --asset-url /work/swad/
 import Base from '../../layouts/Base.astro';
 import Footer from '../../components/Footer.astro';
+import NextProject from '../../components/NextProject.astro';
 import body from '../../../design/swad-body.html?raw';
 
 // the photos from Figma, placed in their slots by layer name (the delivery-apps and regulars slots are still placeholders there)
@@ -60,6 +61,7 @@ const html = withPhotos(toGrid(body))
 ---
 <Base title="Swad: How a Momo Café That Couldn't Make Rent Found Its Regulars · Suyash" description="A quiet-lane café in Ranchi went from losing ₹10,000 a month to ₹20,000 in profit in six months.">
   <div class="canvas swad-canvas" style="height: calc(27895 * var(--u));" set:html={html} />
+  <NextProject href="/work/diviniti" label="DIVINITI" title="Redefining Design" />
   <Footer />
 </Base>
 

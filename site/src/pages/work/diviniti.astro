@@ -3,6 +3,7 @@
 // accent/diviniti #681609. Blocks sit at their design coordinates (styles/case.css); the order is reading order for phones.
 import Base from '../../layouts/Base.astro';
 import Footer from '../../components/Footer.astro';
+import NextProject from '../../components/NextProject.astro';
 import { Image } from 'astro:assets';
 import '../../styles/case.css';
 import arrowDown from '../../assets/home/arrow-down.svg?url';
@@ -194,6 +195,7 @@ const half = '(max-width: 900px) 100vw, 852px';
     </div>
     <p class="at closing t-serif" style="--x: 104; --y: 10812; --w: 1520;" data-slide="left">Design did not become bigger.<br />My definition of it did.</p>
   </div>
+  <NextProject href="/work/falcon" label="FALCON" title="Making millions of network events explain a single outage" />
   <Footer />
 </Base>
 

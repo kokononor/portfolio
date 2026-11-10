@@ -3,6 +3,7 @@
 // Blocks are placed at their design coordinates (see styles/case.css); the order below is reading order for phones.
 import Base from '../../layouts/Base.astro';
 import Footer from '../../components/Footer.astro';
+import NextProject from '../../components/NextProject.astro';
 import FalconScreen from '../../components/FalconScreen.astro';
 import { Image } from 'astro:assets';
 import '../../styles/case.css';
@@ -38,7 +39,7 @@ const half = '(max-width: 900px) 100vw, 852px';
         <Image class="art art--wall" src={studioWall} alt="" widths={[859, 1075, 1718]} sizes="(max-width: 900px) 1px, 100vw" loading="eager" />
         <span class="art art--shadow"></span>
         <Image class="art art--setup" src={monitorSetup} alt="" widths={[1023, 1448]} sizes="(max-width: 900px) 1px, 1023px" loading="eager" />
-        <div class="stage__screen fs-host"><FalconScreen id="falcon-live" /></div>
+        <div class="stage__screen fs-host" aria-hidden="true" inert><FalconScreen id="falcon-live" /></div>
         <Image class="art art--engineers" src={heroEngineers} alt="" widths={[1194, 1448]} sizes="(max-width: 900px) 1px, 1194px" loading="eager" data-stage-leave />
       </div>
       <button class="stage__play" type="button" data-falcon-play="falcon-live"><span></span>See in motion</button>
@@ -281,6 +282,7 @@ const half = '(max-width: 900px) 100vw, 852px';
     <p class="at c-body" style="--x: 880; --y: 14801; --w: 487;" data-reveal>This project reinforced an important lesson: in operational systems, speed alone doesn't create confidence. Trust emerges when systems clearly communicate what they know, what they don't know, and why a recommendation was made.</p>
     <p class="at c-body" style="--x: 880; --y: 14918; --w: 486;" data-reveal>By shifting Falcon from a collection of monitoring tools to a unified investigation platform, the redesign reduced friction in the workflow while keeping engineers in control of the decision-making process.</p>
   </div>
+  <NextProject href="/work/swad" label="SWAD" title="How a momo café that couldn’t make rent found its regulars" />
   <Footer />
 </Base>
 

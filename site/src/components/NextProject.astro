@@ -1,0 +1,22 @@
+---
+// The end of a case study: a link on to the next one, so a reader never hits a dead end.
+interface Props { href: string; label: string; title: string }
+const { href, label, title } = Astro.props;
+---
+<nav class="next" aria-label="Next case study">
+  <a class="next__link" href={href}>
+    <span class="next__label">NEXT CASE STUDY · {label}</span>
+    <span class="next__title t-serif">{title} <span class="next__arrow" aria-hidden="true">→</span></span>
+  </a>
+</nav>
+
+<style>
+  .next { position: relative; max-width: calc(1728 * var(--u)); margin: 0 auto; padding: calc(96 * var(--u)) calc(104 * var(--u)) calc(120 * var(--u)); }
+  .next__link { display: flex; flex-direction: column; gap: 12px; padding-top: calc(32 * var(--u)); border-top: 1px solid var(--ink); }
+  .next__label { font-size: max(12px, calc(16 * var(--u))); color: var(--muted); }
+  .next__title { font-size: max(32px, calc(61 * var(--u))); line-height: 1.15; transition: color .3s ease; }
+  .next__arrow { display: inline-block; transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
+  .next__link:hover .next__title { color: var(--accent); }
+  .next__link:hover .next__arrow { transform: translateX(8px); }
+  @media (max-width: 900px) { .next { padding: 56px 20px 24px; } }
+</style>

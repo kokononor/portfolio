@@ -211,4 +211,16 @@ const EMAIL = 'suyashshrivastavabed@gmail.com';
     .l-line { display: none; }
     .l-links { width: auto; margin-top: 16px; }
   }
+
+  /* the address stays on one line on desktop */
+  .l-email { white-space: nowrap; font-size: calc(25 * var(--u)); }
+  @media (max-width: 900px) {
+    /* phones: each blank gets its own line, with no stray commas or full stops between them */
+    .l-dot1, .l-dot2 { display: none; }
+    .field { flex: 1 1 100%; }
+    .l-from { font-size: 0 !important; }
+    .l-from::after { content: 'from'; font-size: 26px; }
+    .l-email { white-space: normal; overflow-wrap: anywhere; font-size: 22px; }
+    .l-links a { display: block; padding: 12px 0; }
+  }
 </style>
