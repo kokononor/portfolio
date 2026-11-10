@@ -1,0 +1,14 @@
+/* The home page's page-wide rules (pages/index.astro). */
+
+.page--home { --placeholder: #6f6a63; }
+
+/* one type scale for the whole page: every section that fits the screen (and the project cards) shares one design
+   pixel, --su, sized so the tallest of them (Contact, 1176 design px with its breathing room) fits below the nav.
+   The same style is the same size in every section; the layout still spans the full width (--ux, --dx). */
+@media (min-width: 901px) {
+  .page--home { --su: min(1px, calc(var(--vw, 100vw) / 1728), calc((100svh - var(--nav-h)) / 1176)); }
+  .page--home .fit { --u: var(--su); --ux: min(1px, calc(var(--vw, 100vw) / 1728)); --dx: calc(var(--ux) - var(--u)); }
+}
+
+/* the space between sections: the same 120 design px every time */
+.page--home { --section-gap: calc(120 * var(--su, var(--u))); }

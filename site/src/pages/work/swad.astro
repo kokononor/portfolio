@@ -1,0 +1,126 @@
+---
+// Swad case study. Figma: "Swad — Case Study" (362:500), 1728 × 28466, page fill #fcfbf8.
+// The body is generated from the frame's design context by tools/figma-jsx-to-astro.mjs (exact Figma values, scaled
+// by var(--u)); regenerate it after design changes with:
+//   node tools/figma-jsx-to-astro.mjs design/swad-362-500.jsx design/swad-body.html --cut-from 27895 --asset-url /work/swad/
+import Base from '../../layouts/Base.astro';
+import Footer from '../../components/Footer.astro';
+import body from '../../../design/swad-body.html?raw';
+
+// the photos from Figma, placed in their slots by layer name (the delivery-apps and regulars slots are still placeholders there)
+const PHOTOS: Record<string, [string, string]> = {
+  "Hero photo (placeholder)": ['hero', 'The Swad counter seen through its open shopfront'],
+  "Image: Swad's lane, Ranchi": ['lane', "Swad's quiet residential lane in Ranchi"],
+  'Image: Swad before the relaunch': ['before-relaunch', 'The Swad shopfront before the relaunch, with a Momos banner'],
+  'Image: Outside Swad, during an observation session': ['outside', 'The lane outside Swad during an observation session'],
+  'Image: Old menu against new menu': ['menus', 'The old and new Swad menu prices side by side'],
+  'Image: All five plates, mild to hot': ['plates', 'Five plates of momos, from mild to hot'],
+  'Image: The five blends': ['blends', 'Jars of the Delhi, Lucknow and Hyderabad momo masalas'],
+  'Image: The procedures binder': ['binder', 'A printed recipe sheet beside a mint mojito'],
+  'Image: Storefront, before': ['store-before', 'The storefront before the relaunch'],
+  'Image: Storefront, after': ['store-after', 'The storefront after the relaunch, with a dark Swad counter'],
+  'Image: The new interior': ['interior', 'Shelving being built for the new interior'],
+  'Image: The nine-item menu': ['menu', 'A corner of the kitchen during the rebuild'],
+};
+const withPhotos = (src: string) => Object.entries(PHOTOS).reduce((out, [name, [file, alt]]) => {
+  const attr = `data-name="${name}"`;
+  const at = out.indexOf(attr);
+  if (at < 0) return out;
+  const close = out.indexOf('>', at);
+  const start = out.lastIndexOf('<div', at);
+  const open = out.slice(start, close + 1).replace(/; border: 1px dashed #0f0e0c/, '');
+  return out.slice(0, start) + open + `<img class="swad-photo" src="/work/swad/photos/${file}.webp" alt="${alt}" loading="lazy" />` + out.slice(close + 1);
+}, src);
+
+// The 12-column grid, on the 1728 design: margins 104, gutters 64, columns 68. The generated body sits on 24px gutters
+// (with section 02 off the margin), so its offsets and spans are mapped to the grid here, which also
+// survives regenerating the body. Offsets are inside the 1520 content box; spans are 3, 6 and 9 columns.
+const GRID_LEFT: Record<string, string> = { '386': '396', '772': '792', '1158': '1188' };
+const GRID_WIDTH: Record<string, string> = {
+  '362': '332', '748': '728', '1134': '1124', // 3, 6 and 9 columns
+  '852': '832',                               // the hero photo: bleeds in from the left to the end of column 6
+  '722': '702', '650': '630', '652': '632', '620': '600', // text inset inside a span keeps its inset
+  '338': '310', '194': '178', '164': '150',   // comparison bars, in proportion to their 3-column track
+};
+const toGrid = (src: string) => src.replace(/<(?:div|p)\b[^>]*>/g, tag => tag
+  .replace(/left: calc\((116|49) \* var\(--u\)\)(?=[^>]*width: calc\(1520 \*)/, 'left: calc(104 * var(--u))')
+  .replace(/left: calc\((386|772|1158) \* var/, (_, v) => `left: calc(${GRID_LEFT[v]} * var`)
+  .replace(/left: calc\(50% \+ 12 \* var/, 'left: calc(50% + 32 * var')
+  .replace(/left: calc\(75% - 34 \* var/, 'left: calc(75% - 4 * var')
+  .replace(/left: calc\(91\.67% \+ 6\.5 \* var/, 'left: calc(91.67% + 27.5 * var')
+  .replace(/left: calc\(91\.67% - 5\.5 \* var/, 'left: calc(91.67% + 15.5 * var')
+  .replace(/(^|[ ;"])width: calc\((\d+) \* var/, (m, pre, v) => GRID_WIDTH[v] ? `${pre}width: calc(${GRID_WIDTH[v]} * var` : m));
+
+// the nav: brand and resume become links
+const html = withPhotos(toGrid(body))
+  .replace(/top: calc(208 * var(--u))([^>]*>Cost shaped)/, 'top: calc(236 * var(--u))$1') // the paragraph above wraps one line longer on the grid
+  .replace(/<p [^>]*>Hero photo: Swad storefront<\/p>/, '')
+  .replace(/<p [^>]*>SUYASH <\/p>/, '<a href="/" class="swad-link swad-brand">HOME</a>')
+  .replace(/<p [^>]*>RESUME<\/p>\s*<div [^>]*data-name="Vector">.*?<\/div><\/div>/, '<a href="/resume.pdf" class="swad-resume">RESUME <img src="/work/swad/imgVector.svg" width="12" height="18" alt="" /></a>');
+---
+<Base title="Swad: How a Momo Café That Couldn't Make Rent Found Its Regulars · Suyash" description="A quiet-lane café in Ranchi went from losing ₹10,000 a month to ₹20,000 in profit in six months.">
+  <div class="canvas swad-canvas" style="height: calc(27895 * var(--u));" set:html={html} />
+  <Footer />
+</Base>
+
+<script>
+  // Motion, in the same vocabulary as the other case studies (scripts/case-motion.ts). This body is generated from
+  // Figma, so the blocks are tagged here rather than in the markup: images wipe open from their
+  // side, and every block of text slides in from its side. Numbered sections are tagged block by block.
+  const canvas = document.querySelector<HTMLElement>('.swad-canvas');
+  if (canvas) {
+    const width = canvas.getBoundingClientRect().width;
+    const tag = (el: HTMLElement) => {
+      if (el.tagName === 'A' || el.dataset.name === 'Vector') return;
+      const side = el.getBoundingClientRect().left - canvas.getBoundingClientRect().left > width * 0.4 ? 'right' : 'left';
+      if (/^Image|placeholder/i.test(el.dataset.name || '')) el.dataset.wipe = side;
+      else el.dataset.slide = side;
+    };
+    for (const block of canvas.children as HTMLCollectionOf<HTMLElement>) {
+      if (/^\d\d /.test(block.dataset.name || '')) [...(block.children as HTMLCollectionOf<HTMLElement>)].forEach(tag);
+      else tag(block);
+    }
+  }
+  import('../../scripts/case-motion');
+</script>
+
+<style>
+  :global(body) { background: var(--paper); }
+  .swad-canvas :global(.swad-link:hover) { color: var(--accent) !important; }
+  /* tags and counts grow with their text, which has a minimum size on small windows */
+  .swad-canvas :global([data-name^="Tag"]) { width: max-content !important; height: auto !important; padding: calc(4 * var(--u)) calc(12 * var(--u)); }
+  .swad-canvas :global([data-name^="Tag"] p) { position: static !important; }
+  .swad-canvas :global([data-name="Count"]) { width: 100% !important; }
+  /* the same nav as the other case studies */
+  .swad-canvas :global(.swad-brand) { position: absolute; z-index: 2; left: calc(104 * var(--u)); top: calc(55.5 * var(--u)); font-size: max(16px, calc(25 * var(--nav-u))); font-weight: 500; color: var(--paper); }
+  .swad-canvas :global(.swad-resume) { position: absolute; z-index: 2; left: calc(1624 * var(--u) - max(104px, calc(144 * var(--nav-u)))); top: calc(45 * var(--u)); display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--nav-u));
+    width: max(104px, calc(144 * var(--nav-u))); height: max(36px, calc(50 * var(--nav-u))); background: var(--grad-resume); color: var(--paper); font-size: max(14px, calc(20 * var(--nav-u))); font-weight: 400; transition: transform .3s ease; }
+  .swad-canvas :global(.swad-resume img) { width: max(9px, calc(12 * var(--nav-u))); height: auto; }
+  .swad-canvas :global(.swad-resume:hover) { transform: translateY(-2px); }
+  /* "Met" sits on a black tag: Figma has it dark on dark */
+  .swad-canvas :global([data-name="Tag Met"] p) { color: #fcfbf8 !important; }
+  /* the grid narrows some text by a line: let it run rather than clip (images keep their crop) */
+  @media (min-width: 901px) { .swad-canvas :global([data-name]:not([data-name^="Image:"]):not([data-name^="Image band"]):not([data-name^="Hero"])) { overflow: visible !important; } }
+  .swad-canvas :global(.swad-photo) { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
+
+  /* phones: the absolute layout falls into reading order (the converter sorts layers top to bottom); type keeps a
+     readable scale by giving this page a larger design pixel */
+  @media (max-width: 900px) {
+    .swad-canvas { --u: 0.55px; height: auto !important; padding: 0 20px 48px; display: block; }
+    .swad-canvas :global(*) { position: static !important; left: auto !important; top: auto !important; transform: none !important;
+      width: auto !important; max-width: 100%; white-space: normal !important; }
+    .swad-canvas :global(div:not(:has(*))) { height: auto; min-height: 1px; }
+    .swad-canvas :global(p) { height: auto !important; margin-top: 12px; }
+    .swad-canvas :global([data-name^="Image"]), .swad-canvas :global([data-name*="placeholder"]) { height: 240px !important; margin: 24px -20px 0; }
+    .swad-canvas :global(img) { display: inline-block; width: auto !important; }
+    .swad-canvas :global([data-name^="Image"] p) { padding: 0 20px; }
+    /* photos run edge to edge; the hero starts at the top of the page */
+    .swad-canvas :global([data-name^="Image:"]), .swad-canvas :global([data-name*="placeholder"]) { max-width: none; }
+    .swad-canvas :global([data-name^="Hero"]) { margin-top: 0 !important; height: 300px !important; }
+    .swad-canvas :global(a.swad-brand) { position: absolute !important; left: 20px !important; top: 20px !important; z-index: 2; }
+    .swad-canvas :global(a.swad-resume) { position: absolute !important; left: auto !important; right: 20px; top: 14px !important; width: auto !important; height: 36px; padding: 0 12px; gap: 8px; }
+    .swad-canvas :global(.swad-photo) { display: block; width: 100% !important; height: 100%; object-fit: cover; }
+    .swad-canvas :global([data-name^="Image"]:has(> .swad-photo)), .swad-canvas :global([data-name*="placeholder"]) { overflow: hidden; }
+    .swad-canvas :global([data-name^="Image"]:has(> .swad-photo) > :not(.swad-photo)) { display: none; }
+  }
+</style>

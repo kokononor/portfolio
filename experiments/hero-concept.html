@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hero Concept — The Suyash Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:ital,opsz,wght@0,9..40,300..500;1,9..40,300..500&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..600,0..100,0..1;1,9..144,300..600,0..100,0..1&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+<style>
+  /* Concept: the hero as the cover of an issue. A masthead, the rule as the headline, asides as margin notes. */
+  :root {
+    --ink: #0f0e0c; --paper: #f8f7f0; --muted: #6b6760; --accent: #b51b03; --rule: #0f0e0c;
+    --gutter: clamp(20px, 6.02vw, 104px);
+    --serif: 'Fraunces', Georgia, serif; --sans: 'DM Sans', system-ui, sans-serif; --mono: 'DM Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  p, h1 { margin: 0; font-weight: 300; }
+  .wrap { width: 100%; max-width: calc(1520px + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+  .serif { font-family: var(--serif); font-variation-settings: "SOFT" 0, "WONK" 1; }
+  .mono { font-family: var(--mono); font-size: 11px; letter-spacing: .02em; }
+
+  .cover { min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 28px;
+    background: linear-gradient(236deg, #fff 1.5%, #f2eddf 101%); }
+
+  /* masthead: issue line, the title, a double rule */
+  .masthead { padding-top: 22px; }
+  .issue { display: flex; gap: 32px; justify-content: space-between; align-items: baseline; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+  .issue nav { display: flex; gap: clamp(16px, 2.2vw, 34px); }
+  .issue nav a:hover, .resume:hover { color: var(--accent); }
+  .resume { border-bottom: 1px solid currentColor; }
+  .title-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 18px; }
+  .title { font-family: var(--serif); font-variation-settings: "SOFT" 0, "WONK" 1; font-size: clamp(30px, 3.4vw, 58px); line-height: 1;
+    letter-spacing: -0.01em; }
+  .title em { font-style: italic; }
+  .title-row .mono { text-align: right; color: var(--muted); }
+  .double { margin-top: 14px; border-top: 2px solid var(--rule); border-bottom: 1px solid var(--rule); height: 5px; }
+
+  /* the page: a main column and a narrow margin for the notes */
+  .page { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 330px); gap: clamp(28px, 5vw, 90px);
+    margin-top: clamp(28px, 6vh, 72px); align-items: start; }
+
+  .salute { display: flex; align-items: baseline; gap: 18px; font-family: var(--serif); font-variation-settings: "SOFT" 0, "WONK" 1;
+    font-size: clamp(22px, 1.9vw, 32px); font-style: italic; }
+  .salute .deva { font-family: 'Tiro Devanagari Hindi', serif; font-style: normal; color: var(--accent); }
+  .salute .say { display: inline-block; min-width: 9ch; }
+  .say span { display: inline-block; transition: opacity .9s ease, transform .9s cubic-bezier(.7, 0, .15, 1); }
+  .say.swap span { opacity: 0; transform: translateY(-.35em); }
+
+  .headline { margin-top: clamp(14px, 2.4vh, 28px); font-family: var(--serif); font-variation-settings: "SOFT" 0, "WONK" 1;
+    font-size: clamp(52px, min(8.4vw, 14vh), 150px); line-height: .94; letter-spacing: -0.02em; }
+  .headline .l2 { display: block; padding-left: clamp(40px, 9vw, 170px); }
+  .headline em { font-style: italic; }
+  /* the second half of the rule, in the accent, with a hand-ruled underline drawn in once */
+  .headline .neg { position: relative; color: var(--accent); white-space: nowrap; }
+  .headline .neg::after { content: ''; position: absolute; left: 0; right: .2em; bottom: .02em; height: .03em; background: currentColor;
+    transform-origin: left; transform: scaleX(0); animation: rule 1.2s 1s cubic-bezier(.7, 0, .15, 1) forwards; }
+  @keyframes rule { to { transform: scaleX(1); } }
+  sup.ref { font-family: var(--mono); font-size: .14em; color: var(--accent); vertical-align: super; margin-left: .1em; letter-spacing: 0; }
+
+  .standfirst { margin-top: clamp(22px, 4vh, 44px); max-width: 640px; font-size: clamp(17px, 1.3vw, 22px); line-height: 1.45; }
+  .standfirst .drop { float: left; font-family: var(--serif); font-variation-settings: "SOFT" 0, "WONK" 1; font-size: 3.4em; line-height: .82;
+    margin: .06em .1em 0 0; color: var(--accent); }
+  .standfirst sup { font-family: var(--mono); font-size: 10px; color: var(--accent); }
+
+  /* the margin: a plate with a caption, then the footnotes */
+  .margin { border-left: 1px solid var(--rule); padding-left: 22px; }
+  .plate { margin: 0; }
+  .plate__frame { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: #e7e2d4; }
+  .plate__frame img, .plate__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .plate__frame img { object-fit: cover; object-position: 38% 50%; filter: grayscale(1) sepia(.25) contrast(1.05); }
+  .plate__frame iframe { opacity: 0; transition: opacity 1.6s ease; }
+  .plate.is-live iframe { opacity: 1; }
+  .plate figcaption { display: flex; justify-content: space-between; margin-top: 8px; color: var(--muted); }
+  .notes { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 14px; }
+  .notes li { font-size: 12px; line-height: 1.45; display: grid; grid-template-columns: 22px 1fr; }
+  .notes li b { font-family: var(--mono); font-weight: 400; color: var(--accent); }
+  .notes li:target, .notes li.is-lit { background: rgba(181, 27, 3, .06); }
+
+  /* colophon: the CV facts, set like the small print inside a cover */
+  .colophon { margin-top: clamp(28px, 5vh, 56px); border-top: 1px solid var(--rule); padding-top: 12px; display: flex; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap; font-size: 12px; }
+  .colophon p span { color: var(--muted); }
+  .colophon a:hover { color: var(--accent); }
+
+  @media (max-width: 860px) {
+    .issue nav { display: none; }
+    .page { grid-template-columns: 1fr; }
+    .margin { border-left: 0; border-top: 1px solid var(--rule); padding: 20px 0 0; }
+    .plate { max-width: 360px; }
+    .headline .l2 { padding-left: 0; }
+    .title-row .mono { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .headline .neg::after { animation: none; transform: scaleX(1); }
+    .say span { transition: opacity .9s ease; transform: none !important; }
+  }
+</style>
+</head>
+<body>
+<header class="cover">
+  <div class="masthead wrap">
+    <div class="issue">
+      <span>Vol. 01 &nbsp;·&nbsp; Edition 2026 &nbsp;·&nbsp; Delhi</span>
+      <nav aria-label="Contents">
+        <a href="#work">Kaam — Work</a>
+        <a href="#about">Parichay — About</a>
+        <a href="#contact">Sampark — Contact</a>
+        <a href="#archive">Archive</a>
+      </nav>
+      <a class="resume" href="#resume">Resume ↓</a>
+    </div>
+    <div class="title-row">
+      <p class="title">The <em>Suyash</em> Review</p>
+      <p class="mono">A journal of product design<br>& small businesses that work</p>
+    </div>
+    <div class="double"></div>
+  </div>
+
+  <div class="page wrap">
+    <main>
+      <p class="salute"><span class="deva">नमस्ते,</span> <span class="say" id="say" aria-live="off"><span>Namaste,</span></span></p>
+      <h1 class="headline">
+        The user wins.
+        <span class="l2">The business <em class="neg">doesn’t lose.</em><sup class="ref"><a href="#n1">1</a></sup></span>
+      </h1>
+      <p class="standfirst"><span class="drop">I</span>’m Suyash, a zero to one product designer. Raised in Ranchi by an editor father<sup><a href="#n2">2</a></sup>
+        and a business owner mother<sup><a href="#n3">3</a></sup>, I design products the way they taught me to read a page and run a shop:
+        clear enough for anyone, honest enough to keep the lights on.</p>
+    </main>
+
+    <aside class="margin" aria-label="Notes">
+      <figure class="plate" id="plate">
+        <div class="plate__frame">
+          <img src="assets/home/hero-fallback.png" alt="">
+          <iframe id="scene" src="scene.html?embed&amp;duotone" title="The valley, live; move the pointer over it to stir the wind" tabindex="-1"></iframe>
+        </div>
+        <figcaption class="mono"><span>Plate I — The valley, live</span><span>move to stir the wind</span></figcaption>
+      </figure>
+      <ol class="notes">
+        <li id="n1"><b>1</b><span>The only rule. Every project on these pages is measured on both sides of it.</span></li>
+        <li id="n2"><b>2</b><span>You can probably guess from the design style.</span></li>
+        <li id="n3"><b>3</b><span>Evident in my projects. Ask me about the momo café.</span></li>
+      </ol>
+    </aside>
+  </div>
+
+  <div class="wrap">
+    <div class="colophon">
+      <p><span>Currently</span> Diviniti Global, intern &nbsp;·&nbsp; <span>Previously</span> Vodafone Idea, intern &nbsp;·&nbsp; <span>Edited in</span> Delhi, India</p>
+      <p><span>Still curious. Still designing.</span> &nbsp; <a href="#work">Turn the page ↓</a></p>
+    </div>
+  </div>
+</header>
+
+<script>
+  // the salutation alternates between the registers I actually speak in, slowly
+  const say = document.getElementById('say');
+  const words = ['Namaste,', 'Hello,', 'Pranaam,'];
+  let i = 0;
+  setInterval(() => {
+    say.classList.add('swap');
+    setTimeout(() => { i = (i + 1) % words.length; say.firstElementChild.textContent = words[i]; say.classList.remove('swap'); }, 900);
+  }, 4200);
+
+  // hovering a footnote marker lights its note in the margin
+  document.querySelectorAll('sup a').forEach(a => {
+    const note = document.querySelector(a.getAttribute('href'));
+    a.addEventListener('mouseenter', () => note.classList.add('is-lit'));
+    a.addEventListener('mouseleave', () => note.classList.remove('is-lit'));
+  });
+
+  // the plate: fade the live valley in once it has rendered
+  const plate = document.getElementById('plate');
+  addEventListener('message', e => {
+    if (e.origin === location.origin && e.data && e.data.source === 'scene' && e.data.ready) plate.classList.add('is-live');
+  });
+</script>
+</body>
+</html>

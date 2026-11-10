@@ -1,0 +1,214 @@
+---
+// Section 4 — sampark (contact). Figma: "sampark" + "CONTACT" labels, Frame 77 (the letter card) and its texts,
+// lines 33–39 and 42, Frame 22 (send), Frame 89 (links). The section starts at design y 5567; the card at y 196 of it.
+const EMAIL = 'suyashshrivastavabed@gmail.com';
+---
+<section class="contact fit" id="contact" style="--fit-h: 1266" aria-labelledby="contact-title">
+  <h2 class="contact__word t-display" id="contact-title" data-drift="4">sampark</h2>
+  <p class="contact__label">CONTACT</p>
+
+  <div class="letter" data-reveal>
+    <form class="letter__form" id="letter" novalidate>
+      <p class="l-label">WRITE ME A LETTER</p>
+      <p class="l-hello t-serif">Dear Suyash,</p>
+
+      <p class="l-text l-im t-serif">I’m</p>
+      <label class="sr-only" for="f-name">Your name</label>
+      <input class="field field--name t-serif" id="f-name" name="name" placeholder="your name" autocomplete="name" required aria-describedby="letter-shy" />
+      <p class="l-text l-from t-serif">, from</p>
+      <label class="sr-only" for="f-org">Company or team</label>
+      <input class="field field--org t-serif" id="f-org" name="org" placeholder="company or team" autocomplete="organization" />
+      <p class="l-text l-dot1 t-serif">.</p>
+
+      <p class="l-text l-about t-serif">Writing about</p>
+      <label class="sr-only" for="f-about">Topic</label>
+      <input class="field field--about t-serif" id="f-about" name="about" placeholder="a role, a project, a collaboration." />
+
+      <label class="sr-only" for="f-else">Something else</label>
+      <input class="field field--else t-serif" id="f-else" name="else" placeholder="something else" />
+      <p class="l-text l-dot2 t-serif">.</p>
+
+      <p class="l-text l-more t-serif">Here’s a little more:</p>
+      <label class="sr-only" for="f-more">Your message</label>
+      <textarea class="field field--more t-serif" id="f-more" name="more" rows="1" placeholder="Say it in your own words"></textarea>
+
+      <button class="l-send" type="submit" aria-describedby="letter-shy">SEND</button>
+      <p class="l-shy" id="letter-shy" role="status" aria-live="polite" hidden></p>
+    </form>
+
+    <span class="l-divider" aria-hidden="true"></span>
+
+    <aside class="letter__aside">
+      <p class="l-label l-label--aside">PREFER EMAIL?</p>
+      <a class="l-email t-serif" href={`https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}`} target="_blank" rel="noopener">{EMAIL}</a>
+      <span class="l-line" aria-hidden="true"></span>
+      <nav class="l-links" aria-label="Elsewhere">
+        <a href="/resume.pdf" download="Suyash-Resume.pdf">Download Resume</a>
+      </nav>
+    </aside>
+  </div>
+</section>
+
+<script define:vars={{ EMAIL }}>
+  // the letter: composes an email to Suyash in Gmail, in the visitor's browser
+  const form = document.getElementById('letter');
+  const send = form.querySelector('.l-send');
+  const shy = document.getElementById('letter-shy');
+  const nameField = form.elements.namedItem('name');
+  let brave = false;                                   // the button is shy only the first time
+  // every message the form has (the shy note, errors, sending) appears in the same paper slip beside the button
+  const say = (text, kind = '') => {
+    if (!text) { form.classList.remove('is-pop'); return; }
+    shy.textContent = text;
+    shy.classList.toggle('is-error', kind === 'error');
+    shy.hidden = false;
+    requestAnimationFrame(() => form.classList.add('is-pop'));
+  };
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    // first click: the button flinches aside and asks to be clicked again
+    if (!brave) {
+      brave = true;
+      form.classList.add('is-shy');
+      say('Sorry I am shy, please click again to submit');
+      return;
+    }
+    form.classList.add('is-sure');
+    const f = form.elements;
+    const name = nameField.value.trim();
+    if (!name) {
+      nameField.setAttribute('aria-invalid', 'true');
+      say('Please tell me your name first.', 'error');
+      nameField.focus();
+      return;
+    }
+    const org = f.namedItem('org').value.trim();
+    const about = f.namedItem('about').value.trim() || f.namedItem('else').value.trim() || 'hello';
+    const body = `Dear Suyash,\n\nI'm ${name}${org ? ', from ' + org : ''}.\nWriting about ${about}.\n\n${f.namedItem('more').value.trim()}`;
+    // the letter opens as a new email in Gmail, in a new browser tab, addressed and filled in
+    const gmail = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(EMAIL)}&su=${encodeURIComponent('A letter from ' + name)}&body=${encodeURIComponent(body)}`;
+    window.open(gmail, '_blank', 'noopener');
+    say('Your letter is open in Gmail, in a new tab', 'done');
+  });
+  // fixing the name clears its error
+  nameField.addEventListener('input', () => {
+    if (nameField.value.trim() && nameField.getAttribute('aria-invalid')) { nameField.removeAttribute('aria-invalid'); say(''); }
+  });
+  // the message grows with the words
+  const more = document.getElementById('f-more');
+  more.addEventListener('input', () => { more.style.height = 'auto'; more.style.height = more.scrollHeight + 'px'; });
+</script>
+
+<style>
+  .contact { position: relative; height: calc(1266 * var(--u)); }
+  /* 120 design px after the About controls, like every section gap; and a jump here stops 40 above "sampark" so
+     it never touches the nav */
+  .contact { margin-top: calc(56 * var(--u)); scroll-margin-top: calc(40 * var(--u)); }
+  .contact > * { position: absolute; }
+  .contact__word { left: calc(985 * var(--u)); top: 0; font-size: calc(200 * var(--u)); color: var(--accent); white-space: nowrap; z-index: 2; text-shadow: none; }
+  /* "sampark" sits in front of the card: its baseline rests on the card edge and the p's descenders hang over it, as in Figma */
+  .contact .letter { z-index: 1; }
+  .contact__label { left: calc(104 * var(--u)); top: calc(150 * var(--u)); font-size: max(12px, calc(16 * var(--u))); }
+
+  /* Frame 77: the letter card; everything inside sits at the design's coordinates */
+  .letter { left: calc(104 * var(--u)); top: calc(196 * var(--u)); width: calc(1520 * var(--u)); height: calc(940 * var(--u));
+    border-radius: var(--radius); box-shadow: var(--shadow-big); background: var(--grad-letter); }
+  .letter__form, .letter__aside { position: absolute; inset: 0; pointer-events: none; }
+  .letter__form > *, .letter__aside > * { position: absolute; pointer-events: auto; }
+
+  .l-label { left: calc(74 * var(--u)); top: calc(156 * var(--u)); width: calc(215 * var(--u)); font-size: max(12px, calc(16 * var(--u))); color: var(--muted); }
+  .l-hello, .l-text, .field { font-size: calc(39 * var(--u)); line-height: 1.25; }
+  .l-hello { left: calc(74 * var(--u)); top: calc(229 * var(--u)); font-style: italic; }
+  .l-im { left: calc(74 * var(--u)); top: calc(304 * var(--u)); }
+  .l-from { left: calc(463 * var(--u)); top: calc(303 * var(--u)); }
+  .l-dot1 { left: calc(917 * var(--u)); top: calc(311 * var(--u)); }
+  .l-about { left: calc(74 * var(--u)); top: calc(379 * var(--u)); }
+  .l-dot2 { left: calc(524 * var(--u)); top: calc(461 * var(--u)); }
+  .l-more { left: calc(74 * var(--u)); top: calc(577 * var(--u)); }
+
+  /* the fields: italic placeholders on a hairline (Lines 33–37) */
+  .field { font-style: italic; color: var(--ink); background: none; border: 0; border-bottom: 0.5px solid var(--ink); border-radius: 0;
+    padding: 0; height: calc(45 * var(--u)); outline: none; transition: border-color .3s ease; }
+  .field::placeholder { color: var(--placeholder); opacity: 1; }
+  .field:focus { border-bottom-color: var(--accent); }
+  .field--name { left: calc(146 * var(--u)); top: calc(304 * var(--u)); width: calc(300 * var(--u)); padding-left: calc(43 * var(--u)); }
+  .field--org { left: calc(583 * var(--u)); top: calc(304 * var(--u)); width: calc(317 * var(--u)); padding-left: calc(1 * var(--u)); }
+  .field--about { left: calc(332 * var(--u)); top: calc(383 * var(--u)); width: calc(580 * var(--u)); padding-left: calc(11 * var(--u)); }
+  .field--else { left: calc(74 * var(--u)); top: calc(458 * var(--u)); width: calc(436 * var(--u)); }
+  .field--more { left: calc(74 * var(--u)); top: calc(652 * var(--u)); width: calc(838 * var(--u)); height: auto; min-height: calc(49 * var(--u));
+    resize: none; overflow: hidden; }
+
+  /* Frame 22: send */
+  .l-send { left: calc(74 * var(--u)); top: calc(777 * var(--u)); width: max(104px, calc(144 * var(--u))); height: max(36px, calc(50 * var(--u)));
+    background: var(--ink); color: var(--paper); border: 0; cursor: pointer; font-size: max(14px, calc(20 * var(--u))); font-weight: 400;
+    transition: transform .3s ease, box-shadow .3s ease; }
+  .l-send:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(15, 14, 12, .2); }
+  /* shy: on the first click the button hops a little aside (springy ease) and stays there */
+  .l-send { translate: 0 0; rotate: 0deg; transition: transform .3s ease, box-shadow .3s ease, translate .55s cubic-bezier(.34, 1.56, .64, 1), rotate .55s cubic-bezier(.34, 1.56, .64, 1); }
+  .is-shy .l-send { translate: calc(26 * var(--u)) calc(-6 * var(--u)); rotate: -2deg; }
+  .is-shy.is-sure .l-send { rotate: 0deg; }
+
+  /* the shy note: a small paper slip beside the button, in the site's serif italic, with the site's soft shadow */
+  .l-shy { left: calc(270 * var(--u)); top: calc(777 * var(--u)); white-space: nowrap; margin: 0;
+    padding: calc(12 * var(--u)) calc(18 * var(--u)); background: var(--paper); border-radius: 4px;
+    font-family: var(--serif); font-variation-settings: 'SOFT' 0, 'WONK' 1; font-style: italic; font-weight: 300;
+    font-size: max(15px, calc(22 * var(--u))); line-height: 1.3; color: var(--ink);
+    filter: drop-shadow(-12px 12px 10px rgba(30, 12, 6, 0.1)) drop-shadow(0 0 0.5px rgba(15, 14, 12, 0.25));
+    opacity: 0; translate: calc(-8 * var(--u)) 0; transition: opacity .4s ease .1s, translate .55s cubic-bezier(.2, .7, .2, 1) .1s; }
+  /* its little tail, pointing back at the button */
+  .l-shy::before { content: ''; position: absolute; left: calc(-6 * var(--u)); top: 50%; width: calc(12 * var(--u)); height: calc(12 * var(--u));
+    background: var(--paper); transform: translateY(-50%) rotate(45deg); }
+  .is-pop .l-shy { opacity: 1; translate: 0 0; }
+  .l-shy.is-error { color: var(--accent); }
+
+  /* errors: the field underline and placeholder turn red, the message shows in the slip */
+  .field[aria-invalid='true'] { border-bottom: 1px solid var(--accent); }
+  .field[aria-invalid='true']::placeholder { color: color-mix(in oklab, var(--accent) 70%, var(--placeholder)); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .l-send, .l-shy { transition: opacity .2s ease; }
+    .is-shy .l-send { rotate: 0deg; }
+  }
+
+  /* Line 39, the aside, Line 42, Frame 89 */
+  .l-divider { position: absolute; left: calc(997 * var(--u)); top: calc(141 * var(--u)); height: calc(701 * var(--u)); border-left: 0.5px solid var(--ink); }
+  .l-label--aside { left: calc(1068 * var(--u)); top: calc(166.5 * var(--u)); width: calc(379 * var(--u)); }
+  .l-email { left: calc(1068 * var(--u)); top: calc(233.5 * var(--u)); width: calc(379 * var(--u)); font-size: calc(39 * var(--u)); line-height: 1.25;
+    overflow-wrap: anywhere; transition: color .3s ease; }
+  .l-email:hover { color: var(--accent); }
+  /* a light rule, so it reads as a divider, not an input line */
+  .l-line { left: calc(1069 * var(--u)); top: calc(451 * var(--u)); width: calc(362 * var(--u)); border-top: 0.5px solid rgba(15, 14, 12, 0.18); }
+  .l-links { left: calc(1068 * var(--u)); top: calc(582 * var(--u)); width: calc(363 * var(--u)); display: flex; flex-direction: column; }
+  .l-links a { font-size: max(14px, calc(20 * var(--u))); line-height: 1.5; transition: color .3s ease; }
+  .l-links a + a { margin-top: calc(26 * var(--u)); padding-top: calc(26 * var(--u)); border-top: 0.5px solid var(--ink); }
+  .l-links a:hover { color: var(--accent); }
+
+  /* full width on short, wide screens (see .fit): the card stretches; the letter keeps to its left edge, the aside
+     and "sampark" to the right */
+  .contact__label, .letter { margin-left: calc(104 * var(--dx)); }
+  .letter { width: calc(1520 * var(--u) + 1520 * var(--dx)); }
+  .contact__word { margin-left: calc(1624 * var(--dx)); }
+  .l-divider, .letter__aside { margin-left: calc(1520 * var(--dx)); }
+
+  @media (max-width: 900px) {
+    .contact { margin-top: 0; height: auto; padding: 72px 20px 0; display: flex; flex-direction: column; gap: 16px; }
+    .contact > * { position: static; }
+    .contact__word { align-self: flex-end; font-size: 96px; line-height: .9; }
+    .contact__label { order: -1; margin-bottom: -48px; }
+    .letter { width: auto; height: auto; padding: 32px 20px; }
+    .letter__form, .letter__aside { position: static; pointer-events: auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px 10px; }
+    .letter__form > *, .letter__aside > * { position: static; }
+    .l-label, .l-hello, .l-more, .field--more, .l-send, .l-shy { flex-basis: 100%; }
+    .l-shy { white-space: normal; font-size: 17px; margin-top: 12px; }
+    .l-shy::before { left: 24px; top: -6px; transform: rotate(45deg); }
+    .l-hello, .l-text, .field { font-size: 26px; }
+    .field { height: auto; width: auto !important; flex: 1 1 160px; padding-left: 4px !important; }
+    .l-send { flex-basis: auto; width: 144px; height: 50px; margin-top: 16px; }
+    .l-divider { display: none; }
+    .letter__aside { margin-top: 40px; padding-top: 32px; border-top: 0.5px solid var(--ink); flex-direction: column; align-items: stretch; }
+    .l-email { width: auto; font-size: 26px; }
+    .l-line { display: none; }
+    .l-links { width: auto; margin-top: 16px; }
+  }
+</style>

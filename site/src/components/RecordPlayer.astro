@@ -1,0 +1,94 @@
+---
+// The record player from the Figma hero (Hero New 362:1382): a cream deck with a black record, a tone arm and three
+// knobs. Drawn as one SVG on the frame's own 204 × 162 grid, so it scales with the page and the arm and record can
+// rotate around their real pivots. Clicking it plays or stops the music (see scripts/record-player.ts).
+---
+<button class="player" type="button" aria-pressed="false" aria-label="Play music: a lo-fi loop, made in the browser">
+  <svg viewBox="0 0 204 162" aria-hidden="true" overflow="visible">
+    <defs>
+      <filter id="rp-disc-shadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="-9" dy="11" stdDeviation="7.5" flood-color="#000" flood-opacity="0.2" />
+      </filter>
+      <filter id="rp-arm-shadow" x="-60%" y="-60%" width="220%" height="220%">
+        <feDropShadow dx="-4" dy="3" stdDeviation="2" flood-color="#000" flood-opacity="0.25" />
+      </filter>
+      <!-- light on the record: a fixed sheen, so the grooves seem to turn beneath it -->
+      <linearGradient id="rp-sheen" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0.25" stop-color="#fff" stop-opacity="0" />
+        <stop offset="0.48" stop-color="#fff" stop-opacity="0.09" />
+        <stop offset="0.56" stop-color="#fff" stop-opacity="0" />
+      </linearGradient>
+      <radialGradient id="rp-key" cx="0.35" cy="0.3" r="0.8">
+        <stop offset="0" stop-color="#ffffff" />
+        <stop offset="1" stop-color="#e9e7e3" />
+      </radialGradient>
+    </defs>
+
+
+    <!-- knobs and their indicator ticks -->
+    <g fill="none" stroke="#A8A49F" stroke-width="0.5">
+      <circle cx="157" cy="51" r="28.75" />
+      <circle cx="182.5" cy="85.5" r="7.25" />
+      <circle cx="182.5" cy="113.5" r="7.25" />
+    </g>
+    <g stroke="#A8A49F" stroke-width="1"><line x1="182" y1="86" x2="190" y2="86" /><line x1="182" y1="114" x2="190" y2="114" /></g>
+
+    <!-- the deck's play/pause key (bottom left, where the third knob sat): a raised round key showing what a press
+         will do — pause bars while playing, a play arrow while stopped — and a pilot light that glows red while playing -->
+    <g class="player__key">
+      <circle cx="18" cy="141" r="9.5" fill="#E4E2DE" />
+      <circle cx="17.4" cy="140.3" r="8.6" fill="url(#rp-key)" stroke="#A8A49F" stroke-width="0.5" />
+      <g class="player__key-pause" fill="#0F0E0C"><rect x="14.6" y="137" width="2" height="6.6" rx="0.6" /><rect x="18.4" y="137" width="2" height="6.6" rx="0.6" /></g>
+      <path class="player__key-play" d="M15.6 136.8 L21.4 140.3 L15.6 143.8 Z" fill="#0F0E0C" stroke="#0F0E0C" stroke-width="0.6" stroke-linejoin="round" />
+      <circle class="player__led" cx="33" cy="141" r="1.7" />
+    </g>
+
+    <!-- the record: it spins around its centre (84.5, 80.5) -->
+    <g class="player__disc">
+      <circle cx="84.5" cy="80.5" r="62.5" fill="#0F0E0C" filter="url(#rp-disc-shadow)" />
+      <g fill="none" stroke="#fff" stroke-opacity="0.045" stroke-width="0.6">
+        <circle cx="84.5" cy="80.5" r="56" /><circle cx="84.5" cy="80.5" r="49" /><circle cx="84.5" cy="80.5" r="42" />
+        <circle cx="84.5" cy="80.5" r="35" /><circle cx="84.5" cy="80.5" r="27" />
+      </g>
+      <circle cx="84.5" cy="80.5" r="13" fill="#F1F0EE" />
+      <!-- a small mark printed on the label, so the turning reads -->
+      <path d="M 84.5 70.5 a 10 10 0 0 1 8.7 5" fill="none" stroke="#B51B03" stroke-width="1.2" stroke-linecap="round" />
+      <circle cx="84.5" cy="80.5" r="1" fill="#0F0E0C" />
+    </g>
+    <circle cx="84.5" cy="80.5" r="62.5" fill="url(#rp-sheen)" pointer-events="none" />
+
+    <!-- the tone arm: it pivots on its base (158, 51) -->
+    <g class="player__arm" filter="url(#rp-arm-shadow)">
+      <line x1="157" y1="32" x2="157" y2="121" stroke="#0F0E0C" stroke-width="3" stroke-linecap="round" />
+      <line x1="155" y1="93" x2="162" y2="93" stroke="#0F0E0C" stroke-width="3" stroke-linecap="round" />
+      <rect x="153.5" y="117" width="7" height="9" rx="1.5" fill="#0F0E0C" />
+      <circle cx="158" cy="51" r="11" fill="#0F0E0C" />
+    </g>
+  </svg>
+</button>
+
+<script>
+  import '../scripts/record-player';
+</script>
+
+<style>
+  .player {
+    position: relative; display: block; padding: 0; border: 0; cursor: pointer;
+    width: 100%; aspect-ratio: 204 / 162;
+    background: linear-gradient(231.55deg, #efeeec 0%, #fcfbf8 53.846%, #dedede 100%);
+    box-shadow: -12px 11px 16.1px rgba(0, 0, 0, 0.19);
+    transition: transform .4s cubic-bezier(.2, .7, .2, 1), box-shadow .4s ease;
+  }
+  .player:hover { transform: translateY(-2px); box-shadow: -14px 14px 20px rgba(0, 0, 0, 0.2); }
+  .player svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .player__disc { transform-box: view-box; transform-origin: 84.5px 80.5px; }
+  .player__arm { transform-box: view-box; transform-origin: 158px 51px; }
+  /* the key: pause bars while playing, play arrow while stopped; it presses in on click */
+  .player__key { transform-box: view-box; transform-origin: 18px 141px; transition: transform .15s ease; }
+  .player:active .player__key { transform: scale(.92); }
+  .player__key-play { display: none; }
+  .player[aria-pressed='false'] .player__key-pause { display: none; }
+  .player[aria-pressed='false'] .player__key-play { display: inline; }
+  .player__led { fill: #c9c6c1; transition: fill .4s ease, filter .4s ease; }
+  .player[aria-pressed='true'] .player__led { fill: #B51B03; filter: drop-shadow(0 0 1.6px rgba(181, 27, 3, .9)); }
+</style>

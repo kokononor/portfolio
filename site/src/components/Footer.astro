@@ -1,0 +1,58 @@
+---
+// Footer. Figma: Group 16 (362:x) — the dark band, "Thanks for Reading", the white link panel and the colour dots.
+// It starts at design y 6833; the frame ends 571px later.
+import footerDots from '../assets/home/footer-dots.svg?url';
+---
+<footer class="footer" id="archive">
+  <div class="footer__band">
+    <div class="footer__end">
+      <p class="footer__label">END OF EDITION - 2026</p>
+      <p class="footer__thanks t-display">Thanks for <em>Reading</em></p>
+    </div>
+  </div>
+  <div class="footer__panel">
+    <div class="footer__cols">
+      <ul>
+        <li><a href="/resume.pdf" download="Suyash-Resume.pdf">Download Resume</a></li>
+      </ul>
+      <ul class="footer__site">
+        <li><a href="/">HOME</a></li>
+        <li><a href="/#work">WORK</a></li>
+        <li><a href="/#about">ABOUT</a></li>
+        <li><a href="/#contact">CONNECT</a></li>
+      </ul>
+    </div>
+    <img class="footer__dots" src={footerDots} width="96" height="24" alt="" />
+  </div>
+</footer>
+
+<style>
+  .footer { position: relative; height: calc(571 * var(--u)); }
+  /* the band runs the full window width, under the 1728 canvas */
+  .footer__band { position: absolute; top: 0; bottom: 0; left: calc(50% - var(--vw, 100vw) / 2); width: var(--vw, 100vw); background: var(--grad-footer); }
+  /* the text sits in the band, which starts at the window edge: offset it back onto the canvas grid */
+  .footer__end { position: absolute; left: calc((var(--vw, 100vw) - 1728 * var(--u)) / 2 + 104 * var(--u)); top: calc(257 * var(--u)); width: calc(597 * var(--u)); color: var(--paper); }
+  .footer__label { font-size: max(12px, calc(16 * var(--u))); }
+  .footer__thanks { margin-top: calc(13 * var(--u)); font-size: calc(100 * var(--u)); line-height: 0.98; }
+  .footer__thanks em { display: block; font-style: italic; }
+
+  .footer__panel { position: absolute; left: calc(1225 * var(--u)); top: 0; width: calc(503 * var(--u)); height: 100%; background: var(--grad-footer-panel); }
+  .footer__cols { position: absolute; left: calc(59 * var(--u)); top: calc(61 * var(--u)); display: flex; gap: calc(74 * var(--u));
+    font-size: max(14px, calc(20 * var(--u))); line-height: 1.5; }
+  .footer__cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: calc(26 * var(--u)); text-transform: uppercase; }
+  .footer__site { flex: none; }
+  .footer__cols a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .4s ease; }
+  .footer__cols a:hover { background-size: 100% 1px; }
+  .footer__dots { position: absolute; left: calc(324 * var(--u)); top: calc(509 * var(--u)); width: calc(96 * var(--u)); height: auto; }
+
+  @media (max-width: 900px) {
+    .footer { height: auto; margin-top: 72px; display: flex; flex-direction: column-reverse; }
+    .footer__band { position: relative; left: auto; width: 100%; padding: 64px 20px; }
+    .footer__end { position: static; width: auto; }
+    .footer__thanks { font-size: 56px; }
+    .footer__panel { position: relative; left: auto; width: 100%; height: auto; padding: 40px 20px 32px; }
+    .footer__cols { position: static; gap: 48px; }
+    .footer__site { width: auto; }
+    .footer__dots { position: static; margin: 40px 0 0 auto; width: 96px; }
+  }
+</style>

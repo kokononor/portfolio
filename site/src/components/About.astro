@@ -1,0 +1,221 @@
+---
+// Section 3 — about. Figma: Line 32 (divider), Frame 78 (heading + tabs), Rectangle 42 (image box),
+// Lines 24/26/27/28/29/30 and the education texts. The section starts at design y 4423.
+//
+// The timeline plays itself when the section is on screen (scripts/about-timeline.ts):
+//  - the red rule along the top grows left → right in three stops: Education, Experience, Hobbies
+//  - within each, the red rule down the right side grows top → bottom; as it reaches an entry, the image box shows it
+import { Image } from 'astro:assets';
+import nsut from '../assets/about/nsut-design.jpeg';
+import dps from '../assets/about/dps.jpg';
+import diviniti from '../assets/about/diviniti-desk.jpg';
+import vodafone from '../assets/about/vodafone-office.jpg';
+import travel from '../assets/about/hobby-travel.jpg';
+import cooking from '../assets/about/hobby-cooking.png';
+
+// photos for each entry; credits are required by the CC BY-SA licences of the two Wikimedia photos
+const IMAGES = [
+  { id: 'nsut', src: nsut, pos: '50% 60%', alt: 'Classmates in festive Indian dress outside the Department of Design building at NSUT, New Delhi' },
+  { id: 'dps', src: dps, alt: 'The senior wing building of Delhi Public School, Ranchi',
+    credit: 'Photo: FaizanAhmad21, CC BY-SA 3.0, via Wikimedia Commons', href: 'https://commons.wikimedia.org/wiki/File:Delhi_Public_School,_Ranchi.JPG' },
+  { id: 'diviniti', src: diviniti, pos: '0% 50%', alt: 'A laptop open in Photoshop on a desk at Diviniti India, with a branded paper bag beside it' },
+  { id: 'swad', url: '/work/swad/photos/hero.webp', alt: 'The Swad counter seen through its open shopfront' },
+  { id: 'vodafone', src: vodafone, pos: '65% 50%', alt: 'A presenter at the screen in a meeting room at Vodafone Idea, with laptops open on the table' },
+  { id: 'travel', src: travel, pos: '50% 30%', alt: 'Friends in life jackets and helmets floating in a river beside an orange raft, laughing and flashing a peace sign' },
+  { id: 'cooking', src: cooking, alt: 'A green apple mojito in a tall glass with mint and lime, on a white plate' },
+];
+---
+<section class="about fit" id="about" style="--fit-h: 1144" aria-labelledby="about-title">
+  <hr class="about__divider" />
+
+  <div class="about__head">
+    <h2 class="about__label" id="about-title">ABOUT ME</h2>
+    <div class="tabs" role="tablist" aria-label="About me">
+      <button role="tab" id="tab-edu" aria-controls="panel-edu" aria-selected="true">EDUCATION</button>
+      <button role="tab" id="tab-exp" aria-controls="panel-exp" aria-selected="false" tabindex="-1">EXPERIENCE</button>
+      <button role="tab" id="tab-hob" aria-controls="panel-hob" aria-selected="false" tabindex="-1">HOBBIES</button>
+    </div>
+  </div>
+
+  <!-- Rectangle 42: the image box; one picture per entry, crossfading -->
+  <figure class="about__media" data-reveal>
+    {IMAGES.map((img, i) => (
+      <div class={`media__item${i === 0 ? ' is-on' : ''}`} data-img={img.id}>
+        {img.src
+          ? <Image src={img.src} alt={img.alt} widths={[729, 1200]} sizes="(max-width: 900px) 100vw, 729px" style={img.pos ? `object-position: ${img.pos}` : undefined} />
+          : <img src={img.url} alt={img.alt} loading="lazy" />}
+      </div>
+    ))}
+    <figcaption class="media__credits">
+      {IMAGES.map((img, i) => img.credit && (
+        <a class={`media__credit${i === 0 ? ' is-on' : ''}`} data-credit={img.id} href={img.href} target="_blank" rel="noopener">{img.credit}</a>
+      ))}
+    </figcaption>
+  </figure>
+
+  <!-- the frame of rules: ink tracks with red fills that the timeline grows -->
+  <span class="rule rule--top" aria-hidden="true"></span>
+  <span class="rule rule--top-accent" aria-hidden="true"></span>
+  <span class="rule rule--side" aria-hidden="true"></span>
+  <span class="rule rule--side-accent" aria-hidden="true"></span>
+
+  <div class="about__panels">
+    <div class="panel" role="tabpanel" id="panel-edu" aria-labelledby="tab-edu">
+      <div class="entry entry--1" data-img="nsut"><h3 class="t-serif">Bachelor’s in Design</h3><p>Netaji Subhas University of Technology, New Delhi, India</p><small>Expected April 2027</small></div>
+      <span class="tick tick--1" aria-hidden="true"></span>
+      <div class="entry entry--2" data-img="dps"><h3 class="t-serif">Senior Secondary</h3><p>Delhi Public School, Ranchi, Jharkhand</p><small>2011-2023</small></div>
+      <span class="tick tick--2" aria-hidden="true"></span>
+      <div class="entry entry--note"><small>CERTIFICATIONS</small><p>Can’t remember any good ones, I prefer field learning</p></div>
+    </div>
+    <!-- from LinkedIn, newest first; four entries, so this panel packs them closer -->
+    <div class="panel panel--dense" role="tabpanel" id="panel-exp" aria-labelledby="tab-exp" hidden>
+      <div class="entry entry--1" data-img="diviniti"><h3 class="t-serif">Diviniti India</h3><p>Founder’s Office, Delhi</p><small>Aug 2026 – Present</small></div>
+      <span class="tick tick--1" aria-hidden="true"></span>
+      <div class="entry entry--2" data-img="swad"><h3 class="t-serif">Swad Café</h3><p>Product Owner</p><small>May 2026 – Present</small></div>
+      <span class="tick tick--2" aria-hidden="true"></span>
+      <div class="entry entry--3" data-img="vodafone"><h3 class="t-serif">Vodafone Idea</h3><p>Product Design Intern, Hyderabad</p><small>Jun – Jul 2026</small></div>
+      <span class="tick tick--3" aria-hidden="true"></span>
+      <div class="entry entry--4" data-img="diviniti"><h3 class="t-serif">Diviniti India</h3><p>Product Design Intern</p><small>May 2025 – Jul 2026</small></div>
+    </div>
+    <div class="panel" role="tabpanel" id="panel-hob" aria-labelledby="tab-hob" hidden>
+      <div class="entry entry--1" data-img="travel"><h3 class="t-serif">Travelling</h3></div>
+      <span class="tick tick--1" aria-hidden="true"></span>
+      <div class="entry entry--2" data-img="cooking"><h3 class="t-serif">Cooking</h3></div>
+    </div>
+  </div>
+
+  <!-- controls for the timeline: back a chapter, pause / play, forward a chapter -->
+  <div class="about__controls" role="group" aria-label="Timeline controls">
+    <button class="ctl" type="button" data-ctl="prev" aria-label="Previous chapter">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+    </button>
+    <button class="ctl ctl--play" type="button" data-ctl="toggle" aria-label="Pause timeline" aria-pressed="false">
+      <svg class="ctl__pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" /></svg>
+      <svg class="ctl__play" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l9 6-9 6z" /></svg>
+    </button>
+    <button class="ctl" type="button" data-ctl="next" aria-label="Next chapter">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+    </button>
+  </div>
+</section>
+
+<script>
+  import '../scripts/about-timeline';
+</script>
+
+<style>
+  .about { position: relative; height: calc(1144 * var(--u)); }
+  .about > *, .panel > * { position: absolute; }
+
+  /* Line 32: the divider across the page */
+  /* the divider sits 48 above the head row (it was 130, with nothing in between), the space above it is the gap after the last project */
+  .about__divider { left: calc(104 * var(--u)); top: calc(82 * var(--u)); width: calc(1520 * var(--u)); margin: 0; height: 0; border: 0; border-top: 1px solid var(--ink); }
+
+  /* Frame 78: label on the left, tabs on the right, aligned on their bottoms */
+  .about__head { left: calc(104 * var(--u)); top: calc(130 * var(--u)); width: calc(1520 * var(--u)); height: calc(101 * var(--u));
+    display: flex; align-items: flex-end; justify-content: space-between; }
+  .about__label { font-size: max(12px, calc(16 * var(--u))); font-weight: 300; }
+  .tabs { display: flex; flex-direction: column; align-items: flex-end; gap: calc(13 * var(--u)); width: calc(139 * var(--u)); }
+  .tabs button { background: none; border: 0; padding: 0; cursor: pointer; text-align: right;
+    font-size: max(12px, calc(16 * var(--u))); font-weight: 300; transition: color .3s ease, font-size .4s ease; }
+  .tabs button[aria-selected="true"] { font-size: max(16px, calc(25 * var(--u))); font-weight: 500; }
+  .tabs button:hover { color: var(--accent); }
+
+  /* Rectangle 42: the image box */
+  .about__media { left: calc(104 * var(--u)); top: calc(270 * var(--u)); width: calc(729 * var(--u)); height: calc(744 * var(--u)); margin: 0;
+    background: var(--ink); border-radius: var(--radius); box-shadow: var(--shadow-soft); }
+  .media__item { position: absolute; inset: 0; border-radius: var(--radius); overflow: hidden; opacity: 0;
+    transition: opacity 1.1s ease; }
+  .media__item :global(img) { width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); transition: transform 6s ease-out; }
+  .media__item.is-on { opacity: 1; }
+  .media__item.is-on :global(img) { transform: scale(1); }   /* a slow settle as each picture arrives */
+  .media__credits { position: absolute; left: 0; top: calc(100% + 8px); }
+  .media__credit { display: none; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .media__credit.is-on { display: inline; }
+  .media__credit:hover { color: var(--accent); }
+
+  /* the rules: Line 24 (top, ink), Line 29 (top, red), Line 26 (right, ink), Line 27 (right, red).
+     The red fills are clipped to the span --a … --b (0–1) that the timeline sets, so a fill can grow from its start
+     and later run out at its end — one unbroken flow. Without the script they rest at the design's lengths. */
+  .rule { display: block; }
+  .rule--top { left: calc(952 * var(--u)); top: calc(275 * var(--u)); width: calc(672 * var(--u)); border-top: 1px solid var(--ink); }
+  .rule--top-accent { --a: 0; --b: 0.187; left: calc(934 * var(--u)); top: calc(273.5 * var(--u)); width: calc(690 * var(--u)); height: 3px; background: var(--accent);
+    clip-path: inset(0 calc((1 - var(--b)) * 100%) 0 calc(var(--a) * 100%)); }
+  .rule--side { left: calc(1623 * var(--u)); top: calc(275 * var(--u)); height: calc(739 * var(--u)); border-left: 1px solid var(--ink); }
+  .rule--side-accent { --a: 0; --b: 0.501; left: calc(1621.5 * var(--u)); top: calc(274 * var(--u)); width: 3px; height: calc(740 * var(--u)); background: var(--accent);
+    clip-path: inset(calc(var(--a) * 100%) 0 calc((1 - var(--b)) * 100%) 0); }
+
+  /* the controls: thin ink rings under the right rule, ending on its edge */
+  .about__controls { right: calc(104 * var(--u)); top: calc(1044 * var(--u)); display: flex; gap: 10px; }
+  .ctl { width: 36px; height: 36px; display: grid; place-items: center; padding: 0; border-radius: 50%; cursor: pointer;
+    background: transparent; border: 0.5px solid var(--ink); color: var(--ink); transition: color .3s ease, border-color .3s ease, background-color .3s ease; }
+  .ctl svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .ctl:hover { color: var(--accent); border-color: var(--accent); }
+  .ctl:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+  .ctl--play { background: var(--ink); color: var(--paper); }
+  .ctl--play:hover { background: var(--accent); color: var(--paper); }
+  .ctl__play { display: none; }
+  .ctl--play[aria-pressed="true"] .ctl__pause { display: none; }
+  .ctl--play[aria-pressed="true"] .ctl__play { display: block; margin-left: 2px; }
+  .about.is-static .ctl--play { display: none; }
+
+  /* the timeline: right-aligned on x 1546, ticks (Lines 28, 30) between the entries */
+  .about__panels { inset: 0; }
+  .panel { position: absolute; inset: 0; }
+  .entry { right: calc(182 * var(--u)); width: calc(472 * var(--u)); text-align: right; transition: opacity .6s ease; }
+  .entry h3 { font-size: max(22px, calc(39 * var(--u))); line-height: 1.25; }
+  .entry p { margin-top: calc(6.75 * var(--u)); font-size: max(14px, calc(20 * var(--u))); line-height: 1.5; }
+  .entry small { display: block; margin-top: calc(6.5 * var(--u)); font-size: max(12px, calc(16 * var(--u))); color: var(--muted); }
+  .entry--1 { top: calc(323.5 * var(--u)); }
+  .entry--2 { top: calc(635.5 * var(--u)); }
+  .entry--note { top: calc(921.5 * var(--u)); width: calc(389 * var(--u)); }
+  .entry--note small { margin: 0 0 calc(6.5 * var(--u)); font-style: italic; }
+  .entry--note p { margin-top: 0; }
+  /* with the timeline running, entries not yet reached wait in a lighter ink */
+  .about.is-playing .entry:not(.is-reached) { opacity: 0.6; }   /* still readable (about 5:1), just quieter */
+  .tick { right: calc(182 * var(--u)); width: 0; height: calc(126 * var(--u)); border-left: 0.5px solid var(--ink); }
+  .tick--1 { top: calc(483.5 * var(--u)); }
+  .tick--2 { top: calc(769.5 * var(--u)); }
+  /* Experience: four entries a step of 172 apart, with short ticks between */
+  .panel--dense .entry--1 { top: calc(315 * var(--u)); }
+  .panel--dense .entry--2 { top: calc(487 * var(--u)); }
+  .panel--dense .entry--3 { top: calc(659 * var(--u)); }
+  .panel--dense .entry--4 { top: calc(831 * var(--u)); }
+  .panel--dense .tick { height: calc(32 * var(--u)); }
+  .panel--dense .tick--1 { top: calc(443 * var(--u)); }
+  .panel--dense .tick--2 { top: calc(615 * var(--u)); }
+  .panel--dense .tick--3 { top: calc(787 * var(--u)); }
+  .panel[hidden] { display: none; }
+  .panel:not([hidden]) { animation: panel-in .8s ease both; }
+  @keyframes panel-in { from { opacity: 0; } }
+
+  /* full width on short, wide screens (see .fit): the image keeps to the left margin, the timeline to the right one,
+     and the divider, head and top rules stretch between */
+  .about__divider, .about__head { width: calc(1520 * var(--u) + 1520 * var(--dx)); }
+  .about__divider, .about__head, .about__media, .rule--top, .rule--top-accent { margin-left: calc(104 * var(--dx)); }
+  .rule--top { width: calc(672 * var(--u) + 1520 * var(--dx)); }
+  .rule--top-accent { width: calc(690 * var(--u) + 1520 * var(--dx)); }
+  .rule--side, .rule--side-accent { margin-left: calc(1624 * var(--dx)); }
+  .about__panels, .about__controls { margin-right: calc(104 * var(--dx)); }
+
+  @media (max-width: 900px) {
+    .about { height: auto; padding: 72px 20px 0; display: flex; flex-direction: column; gap: 32px; }
+    .about > *, .panel > * { position: static; width: auto !important; }
+    .panel { position: static; }   /* the entries flow inside the section instead of spilling into Contact */
+    /* the photo credit sits inside the image, on a soft shade, so it can't run into the timeline below */
+    .media__credits { top: auto; bottom: 0; left: 0; right: 0; z-index: 1; padding: 28px 12px 10px; border-radius: 0 0 var(--radius) var(--radius);
+      background: linear-gradient(to bottom, transparent, rgba(15, 14, 12, 0.6)); pointer-events: none; }
+    .media__credits:not(:has(.is-on)) { display: none; }
+    .media__credit { color: var(--paper); pointer-events: auto; }
+    .about__media { margin-bottom: 24px; }
+    .about__divider { width: 100%; }
+    .about__head { height: auto; }
+    .about__media { position: relative !important; left: auto; aspect-ratio: 729 / 744; height: auto; margin-bottom: 28px; }   /* no desktop offset; room for the credit */
+    .rule { display: none; }
+    .about__panels { position: relative !important; border-top: 1px solid var(--ink); border-right: 1px solid var(--ink); padding: 32px 24px 0 0; }
+    .entry h3 { font-size: 28px; }
+    .tick { display: block; height: 72px; margin: 16px 0 16px auto; }
+    .entry--note { margin-top: 24px; }
+    .about__controls { justify-content: flex-end; margin-bottom: 8px; }
+  }
+</style>

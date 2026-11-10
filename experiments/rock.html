@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Procedural Rock</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; font-family: system-ui, sans-serif;
+    background: radial-gradient(ellipse at 60% 30%, #6b5232 0%, #2a1f16 55%, #120d09 100%); }
+  canvas { display: block; }
+  .ui { position: fixed; left: 16px; bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+  button { background: rgba(255,240,215,.08); color: #f3e6cf; border: 1px solid rgba(255,240,215,.25);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer; font-size: 13px; }
+  button:hover { background: rgba(255,240,215,.18); }
+  .info { position: fixed; left: 16px; top: 16px; color: #cdb998; font-size: 12px; opacity: .75; line-height: 1.5; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="info">Procedural rock: 100% code, no model files<br>Drag to orbit · scroll to zoom<br><span id="seed"></span></div>
+<div class="ui">
+  <button id="new">New rock</button>
+  <button id="style">Style: high-poly</button>
+  <button id="moss">Moss: on</button>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+
+// ---------- Seeded random + 3D Perlin noise ----------
+function mulberry32(a) {
+  return () => {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function makeNoise(rand) {
+  const perm = [...Array(256).keys()];
+  for (let i = 255; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [perm[i], perm[j]] = [perm[j], perm[i]]; }
+  const p = new Uint8Array(512);
+  for (let i = 0; i < 512; i++) p[i] = perm[i & 255];
+  const fade = t => t * t * t * (t * (t * 6 - 15) + 10);
+  const lerp = (a, b, t) => a + t * (b - a);
+  const grad = (h, x, y, z) => {
+    h &= 15;
+    const u = h < 8 ? x : y, v = h < 4 ? y : (h === 12 || h === 14 ? x : z);
+    return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
+  };
+  return (x, y, z) => {
+    const X = Math.floor(x) & 255, Y = Math.floor(y) & 255, Z = Math.floor(z) & 255;
+    x -= Math.floor(x); y -= Math.floor(y); z -= Math.floor(z);
+    const u = fade(x), v = fade(y), w = fade(z);
+    const A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z, B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
+    return lerp(
+      lerp(lerp(grad(p[AA], x, y, z), grad(p[BA], x - 1, y, z), u),
+           lerp(grad(p[AB], x, y - 1, z), grad(p[BB], x - 1, y - 1, z), u), v),
+      lerp(lerp(grad(p[AA + 1], x, y, z - 1), grad(p[BA + 1], x - 1, y, z - 1), u),
+           lerp(grad(p[AB + 1], x, y - 1, z - 1), grad(p[BB + 1], x - 1, y - 1, z - 1), u), v), w);
+  };
+}
+
+function fbm(noise, x, y, z, octaves) {
+  let sum = 0, amp = 0.5, f = 1;
+  for (let i = 0; i < octaves; i++) { sum += amp * noise(x * f, y * f, z * f); amp *= 0.5; f *= 2; }
+  return sum;
+}
+
+const smoothstep = (a, b, x) => { const t = Math.min(Math.max((x - a) / (b - a), 0), 1); return t * t * (3 - 2 * t); };
+
+// ---------- Rock generator ----------
+function buildRock(seed, faceted, mossOn) {
+  const rand = mulberry32(seed);
+  const noise = makeNoise(rand);
+
+  let geo = new THREE.IcosahedronGeometry(1, faceted ? 4 : 110);
+  geo.deleteAttribute('uv');
+  geo.deleteAttribute('normal');
+  if (!faceted) geo = mergeVertices(geo); // shared vertices -> smooth normals
+
+  // Random "chisel" planes slice off chunks, giving flat fractured faces
+  const planes = [];
+  const count = 6 + Math.floor(rand() * 5);
+  for (let i = 0; i < count; i++) {
+    const n = new THREE.Vector3(rand() * 2 - 1, rand() * 1.6 - 0.4, rand() * 2 - 1).normalize();
+    planes.push({ n, d: 0.6 + rand() * 0.3 });
+  }
+  const stretch = new THREE.Vector3(1.1 + rand() * 0.4, 0.65 + rand() * 0.25, 0.85 + rand() * 0.3);
+  const off = rand() * 100;
+  const base = -stretch.y * 0.55;
+  const strataAxis = new THREE.Vector3(rand() * 0.6 - 0.3, 1, rand() * 0.6 - 0.3).normalize();
+
+  const pos = geo.attributes.position;
+  const cracks = new Float32Array(pos.count);
+  const v = new THREE.Vector3(), dir = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    dir.fromBufferAttribute(pos, i).normalize();
+    // 1. lumpy overall form
+    v.copy(dir).multiplyScalar(1 + 0.3 * fbm(noise, dir.x * 1.2 + off, dir.y * 1.2, dir.z * 1.2, 3)).multiply(stretch);
+    // 2. chisel cuts
+    for (const { n, d } of planes) {
+      const k = v.dot(n) - d;
+      if (k > 0) v.addScaledVector(n, -k * 0.93);
+    }
+    // 3. sedimentary layers: thin ledges along a tilted axis
+    const layer = v.dot(strataAxis) * 7 + 4 * fbm(noise, v.x * 1.5 + off, v.y * 1.5, v.z * 1.5, 3);
+    const layerStrength = smoothstep(-0.1, 0.25, noise(v.x * 1.3, v.y * 1.3 + off, v.z * 1.3)); // only in patches
+    v.addScaledVector(dir, 0.012 * layerStrength * smoothstep(0.75, 1, layer - Math.floor(layer)));
+    // 4. cracks: thin ridged-noise grooves, broken up so they don't form loops
+    const ridge = 1 - Math.abs(fbm(noise, v.x * 1.8 + off, v.y * 1.8 + 11, v.z * 1.8, 3) * 1.6);
+    const crack = smoothstep(0.94, 1, ridge) * smoothstep(-0.05, 0.2, noise(v.x * 2 + 5, v.y * 2, v.z * 2 + off));
+    cracks[i] = crack;
+    v.addScaledVector(dir, -0.03 * crack);
+    // 5. surface detail: medium bumps + fine grit
+    v.addScaledVector(dir, 0.045 * fbm(noise, v.x * 5 + off, v.y * 5, v.z * 5, 4));
+    if (!faceted) v.addScaledVector(dir, 0.01 * fbm(noise, v.x * 24, v.y * 24 + off, v.z * 24, 3));
+    // 6. flatten the base so it sits on the ground
+    if (v.y < base) v.y = base + (v.y - base) * 0.12;
+    pos.setXYZ(i, v.x, v.y, v.z);
+  }
+  geo.computeVertexNormals();
+
+  // Vertex colours: stone tones, streaks, moss on upward faces, darker near the ground
+  const nrm = geo.attributes.normal;
+  const colors = new Float32Array(pos.count * 3);
+  const dark = new THREE.Color('#4a3f36'), light = new THREE.Color('#a8957c');
+  const moss = new THREE.Color('#6f7d33'), mossDeep = new THREE.Color('#3d4a1f');
+  const c = new THREE.Color(), m = new THREE.Color();
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i), ny = nrm.getY(i);
+    const tone = 0.5 + 0.9 * fbm(noise, x * 2.2 + 40, y * 2.2, z * 2.2, 4);
+    const streak = 0.5 + 0.5 * noise(x * 7 + 9, y * 1.2, z * 7);
+    c.copy(dark).lerp(light, THREE.MathUtils.clamp(tone * 0.8 + streak * 0.25, 0, 1));
+    if (mossOn) {
+      const mossMask = smoothstep(0.35, 0.75, ny + 0.45 * noise(x * 3 + 70, y * 3, z * 3));
+      m.copy(mossDeep).lerp(moss, 0.5 + 0.5 * noise(x * 9, y * 9 + 20, z * 9));
+      c.lerp(m, mossMask * 0.9);
+    }
+    const ao = smoothstep(base, base + 0.45, y) * (1 - 0.65 * cracks[i]);
+    c.multiplyScalar(0.45 + 0.55 * ao);
+    colors.set([c.r, c.g, c.b], i * 3);
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.93, metalness: 0, flatShading: faceted });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = mesh.receiveShadow = true;
+  mesh.position.y = -base; // base sits on y = 0
+  return mesh;
+}
+
+// ---------- Scene ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(3.4, 2.0, 4.2);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0.5, 0);
+controls.enableDamping = true;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.6;
+controls.minDistance = 2.5;
+controls.maxDistance = 10;
+
+// Warm low sun, like the reference painting
+const sun = new THREE.DirectionalLight('#ffd49a', 3.2);
+sun.position.set(-4, 3.5, 2);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.bias = -0.0004;
+sun.shadow.normalBias = 0.02;
+Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3 });
+scene.add(sun);
+scene.add(new THREE.HemisphereLight('#ffe2b8', '#2b2117', 0.9));
+const rim = new THREE.DirectionalLight('#9fb4d9', 0.8);
+rim.position.set(3, 2, -4);
+scene.add(rim);
+
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.4 }));
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// ---------- UI ----------
+let seed = 1337, faceted = false, mossOn = true, rock;
+function rebuild() {
+  if (rock) { scene.remove(rock); rock.geometry.dispose(); rock.material.dispose(); }
+  rock = buildRock(seed, faceted, mossOn);
+  scene.add(rock);
+  const tris = rock.geometry.index ? rock.geometry.index.count / 3 : rock.geometry.attributes.position.count / 3;
+  document.getElementById('seed').textContent = `seed ${seed} · ${tris.toLocaleString()} triangles`;
+}
+document.getElementById('new').onclick = () => { seed = Math.floor(Math.random() * 1e6); rebuild(); };
+document.getElementById('style').onclick = e => { faceted = !faceted; e.target.textContent = `Style: ${faceted ? 'low-poly' : 'high-poly'}`; rebuild(); };
+document.getElementById('moss').onclick = e => { mossOn = !mossOn; e.target.textContent = `Moss: ${mossOn ? 'on' : 'off'}`; rebuild(); };
+rebuild();
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+</script>
+</body>
+</html>

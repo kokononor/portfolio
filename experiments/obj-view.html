@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OBJ Viewer</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #2b2f2e; font-family: system-ui, sans-serif; }
+  .info { position: fixed; left: 12px; top: 12px; color: #dfe3df; font-size: 12px; white-space: pre; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="info" id="info">Loading…</div>
+<script type="module">
+// Quick look at an OBJ: each group in its own colour, from a chosen side (?view=front|side|back|top), optional ?hide=Name,Name
+import * as THREE from 'three';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+
+const params = new URLSearchParams(location.search);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.add(new THREE.HemisphereLight('#ffffff', '#555555', 2.0));
+const key = new THREE.DirectionalLight('#ffffff', 1.6);
+key.position.set(2, 3, 4);
+scene.add(key);
+const camera = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.1, 5000);
+const colors = ['#e8b48a', '#7fb069', '#c0c0d0', '#b07a4a', '#6fa8dc', '#d98fbf'];
+const hide = (params.get('hide') || '').split(',').filter(Boolean);
+
+new OBJLoader().load(params.get('file') || 'models/chibi.obj', obj => {
+  const lines = [];
+  obj.traverse(o => {
+    if (!o.isMesh) return;
+    const i = lines.length;
+    o.material = new THREE.MeshStandardMaterial({ color: colors[i % colors.length], roughness: 0.7, side: THREE.DoubleSide });
+    o.visible = !hide.includes(o.name);
+    o.geometry.computeBoundingBox();
+    const s = o.geometry.boundingBox.getSize(new THREE.Vector3());
+    lines.push(`${o.name}  ${colors[i % colors.length]}  ${o.geometry.attributes.position.count} verts  ${s.toArray().map(v => v.toFixed(1)).join(' x ')}${o.visible ? '' : '  (hidden)'}`);
+  });
+  scene.add(obj);
+  const box = new THREE.Box3().setFromObject(obj), size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3());
+  const view = params.get('view') || 'front';
+  const dir = { front: [0, 0, 1], back: [0, 0, -1], side: [1, 0, 0], top: [0, 1, 0.001], three: [0.7, 0.3, 0.7] }[view];
+  camera.position.copy(center).add(new THREE.Vector3(...dir).normalize().multiplyScalar(Math.max(size.x, size.y, size.z) * 2.2));
+  camera.lookAt(center);
+  document.getElementById('info').textContent = `view: ${view}\nsize: ${size.toArray().map(v => v.toFixed(1)).join(' x ')}\n` + lines.join('\n');
+});
+renderer.setAnimationLoop(() => renderer.render(scene, camera));
+</script>
+</body>
+</html>

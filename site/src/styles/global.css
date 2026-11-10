@@ -1,0 +1,128 @@
+/* Design tokens: values from the Figma file (Suyash, page "Phase 4", frame "home-1 — Fixed" 362:3, 1728px wide). */
+@import '@fontsource-variable/fraunces/full.css';
+@import '@fontsource-variable/fraunces/full-italic.css';
+@import '@fontsource-variable/dm-sans/opsz.css';
+@import '@fontsource-variable/dm-sans/opsz-italic.css';
+@import '@fontsource/dm-mono/400.css';
+
+:root {
+  /* colour variables */
+  --ink: #0f0e0c;              /* text/ink */
+  --paper: #fcfbf8;            /* text/paper */
+  --muted: #626262;            /* text/muted */
+  --placeholder: #7d7871;      /* text/placeholder */
+  --accent: #b51b03;           /* accent/falcon */
+  --page: #f8f7f0;             /* frame fill */
+  --white: #ffffff;
+
+  /* effects */
+  --shadow-big: -20px 20px 26px rgba(0, 0, 0, 0.08);   /* "big box blur" */
+  --shadow-soft: 0 4px 25px rgba(0, 0, 0, 0.05);
+  --radius: 8px;
+
+  /* gradients */
+  --grad-resume: linear-gradient(252.9deg, #2d0a05 11.607%, #0f0e0c 100%);
+  --grad-letter: linear-gradient(59.26deg, #f8f7f0 0.329%, #ffffff 99.299%);
+  --grad-footer: linear-gradient(64.39deg, #0f0e0c 16.082%, #0f0e0c 47.994%, #2d0a05 79.906%);
+  --grad-footer-panel: linear-gradient(44.08deg, #fcfbf8 0%, #ffffff 95.132%);
+  --grad-swad: linear-gradient(to bottom, #353535, #1a1a1a);
+  --grad-story: linear-gradient(to right, rgba(15, 13, 10, 0.75), rgba(15, 13, 10, 0) 55%);
+
+  /* type families */
+  --serif: 'Fraunces Variable', Georgia, serif;
+  --sans: 'DM Sans Variable', system-ui, sans-serif;
+  --mono: 'DM Mono', ui-monospace, monospace;
+
+  /* one design pixel: the layout is drawn at 1728px and scales down with the window on desktops */
+  --nav-u: min(1px, calc(var(--vw, 100vw) / 1728), calc((100svh - var(--nav-h, 0px)) / 1176));   /* the nav's brand and Resume: one size on every page */
+  --u: min(1px, calc(var(--vw, 100vw) / 1728));   /* --vw: the width without the scrollbar (layouts/Base.astro) */
+  --ux: var(--u);    /* the design pixel across: the page's width */
+  --dx: 0px;         /* how much wider one design pixel is across than down (see .fit) */
+  --nav-h: 56px;     /* height of the sticky nav; scripts/nav.ts measures the real value */
+}
+
+/* moving between pages turns the page: the old one eases away to the left and dims, the new one slides in from the
+   right (cross-document view transitions; browsers without them simply load the page) */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: page-out .45s cubic-bezier(.4, 0, .2, 1) both; }
+::view-transition-new(root) { animation: page-in .65s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes page-out { to { opacity: 0; transform: translateX(-4%) scale(.985); } }
+@keyframes page-in { from { opacity: 0; transform: translateX(6%); } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+
+/* nothing may push the page sideways */
+html { overflow-x: clip; }
+
+/* jumps to #sections (native, or with reduced motion) stop below the sticky nav */
+html { scroll-padding-top: var(--nav-h); }
+
+/* a section that must fit one screen: its design pixel (--u: type, sizes, heights) also shrinks with the window's
+   height, so the whole section (--fit-h design pixels tall) stays within the screen below the sticky nav
+   (--fit-room; the hero, which the nav sits on by design, uses the full screen), while the layout still spans
+   the full width. Blocks keep their size but slide apart: one at design x gets margin-left: calc(x * var(--dx)),
+   and a rule or card w wide that should stretch gets w * u + w * dx. */
+@media (min-width: 901px) {
+  .fit { --fit-room: calc(100svh - var(--nav-h)); --u: min(1px, calc(var(--vw, 100vw) / 1728), calc(var(--fit-room) / var(--fit-h)));
+    --ux: min(1px, calc(var(--vw, 100vw) / 1728)); --dx: calc(var(--ux) - var(--u)); }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 300;
+  font-variation-settings: "opsz" 14;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+p, h1, h2, h3, dl, dd, figure { margin: 0; }
+h1, h2, h3 { font-weight: inherit; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; height: auto; }
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* the type styles defined in Figma */
+.t-display { font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; line-height: normal; }
+.t-serif   { font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; }
+.t-mono    { font-family: var(--mono); font-weight: 400; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* content waiting for its reveal (only when scripts run and motion is allowed) */
+.js-motion [data-reveal] { opacity: 0; }
+
+/* ---------- the living light (scripts/lighting.ts) ----------
+   One light, top-right. The WebGL layer lights the paper; every lit element gets its own shadow direction
+   (--sx, --sy: away from the light), proximity (--p: 1 at the light) and the light's position in its own box
+   (--llx, --lly). Defaults reproduce the static design, so nothing breaks without scripts. */
+.light-layer { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+
+.lit {
+  /* ink warms towards a deep red near the light */
+  --ink: color-mix(in oklab, #0f0e0c, #6a1a0b calc(var(--p, 0) * 55%));
+  /* shadows fall away from the light (the design's -20/20 when the light is exactly up-right) */
+  --shadow-big: calc(var(--sx, -1) * 20px) calc(var(--sy, 1) * 20px) 26px rgba(30, 12, 6, calc(0.08 + var(--p, 0) * 0.1));
+  --shadow-soft: calc(var(--sx, -1) * 3px) calc(var(--sy, 1) * 3px + 2px) 25px rgba(0, 0, 0, 0.05);
+  --drop-big: drop-shadow(calc(var(--sx, -1) * 20px) calc(var(--sy, 1) * 20px) 13px rgba(30, 12, 6, calc(0.08 + var(--p, 0) * 0.1)));
+  color: var(--ink);
+}
+
+/* surfaces: where the light falls, white paper brightens and black takes a faint dark-red glow */
+.lit-surface, .lit-dark { position: relative; isolation: isolate; }
+.lit-surface::after, .lit-dark::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; z-index: -1; pointer-events: none;
+}
+.lit-surface::after { background: radial-gradient(circle at var(--llx, 100%) var(--lly, 0%), rgba(255, 255, 255, var(--p, 0)), rgba(255, 255, 255, 0) 85%); }
+.lit-dark::after { background: radial-gradient(circle at var(--llx, 100%) var(--lly, 0%), rgba(170, 36, 14, calc(var(--p, 0) * 0.95)), rgba(170, 36, 14, 0) 80%); }

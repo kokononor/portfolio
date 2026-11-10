@@ -1,0 +1,51 @@
+---
+// Back to top: a small square in the Resume button's style (the same dark gradient and arrow, pointing up).
+// It appears once 70% of the page has been scrolled, and glides back up with the site's smooth scroll.
+import arrowDown from '../assets/home/arrow-down.svg?url';
+---
+<button class="to-top" type="button" aria-label="Back to top" hidden>
+  <img src={arrowDown} width="12" height="18" alt="" />
+</button>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.to-top')!;
+  btn.hidden = false;
+  const THRESHOLD = 0.7;
+  let shown = false;
+  const update = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const show = max > 0 && scrollY / max >= THRESHOLD;
+    if (show !== shown) { shown = show; btn.classList.toggle('is-shown', show); btn.tabIndex = show ? 0 : -1; }
+    // when the footer scrolls into view, rest just above it instead of covering its links
+    const footer = document.querySelector('footer');
+    const gap = footer ? innerHeight - footer.getBoundingClientRect().top : 0;
+    btn.style.setProperty('--lift', gap > 0 ? `${gap}px` : '0px');
+  };
+  addEventListener('scroll', update, { passive: true });
+  addEventListener('resize', update);
+  update();
+  btn.addEventListener('click', () => {
+    const lenis = (window as any).__lenis;
+    if (lenis) lenis.scrollTo(0, { duration: 1.6, easing: (t: number) => 1 - Math.pow(1 - t, 4) });
+    else window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    document.querySelector<HTMLElement>('a[href="#top"], a[href="/"]')?.focus({ preventScroll: true });
+  });
+</script>
+
+<style>
+  .to-top {
+    position: fixed; z-index: 50;
+    right: max(20px, calc(105 * var(--u))); bottom: calc(max(20px, calc(48 * var(--u))) + var(--lift, 0px));
+    width: max(44px, calc(50 * var(--u))); height: max(44px, calc(50 * var(--u)));
+    display: grid; place-items: center; border: 0; padding: 0; cursor: pointer;
+    background: var(--grad-resume); color: var(--paper);
+    box-shadow: -8px 8px 18px rgba(30, 12, 6, 0.18);
+    opacity: 0; transform: translateY(14px); pointer-events: none;
+    transition: opacity .5s ease, transform .6s cubic-bezier(.2, .7, .2, 1), box-shadow .3s ease;
+  }
+  .to-top.is-shown { opacity: 1; transform: none; pointer-events: auto; }
+  .to-top img { width: max(10px, calc(12 * var(--u))); height: auto; transform: rotate(180deg); transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
+  .to-top:hover { box-shadow: -10px 12px 22px rgba(45, 10, 5, 0.3); }
+  .to-top:hover img { transform: rotate(180deg) translateY(3px); }
+  @media (prefers-reduced-motion: reduce) { .to-top, .to-top img { transition: opacity .2s ease; transform: none; } .to-top img { transform: rotate(180deg); } }
+</style>

@@ -1,0 +1,252 @@
+---
+// Diviniti case study — "Redefining Design". Figma: "Diviniti — Fixed" (362:391), 1728 × 11621, page fill #fcfbf8,
+// accent/diviniti #681609. Blocks sit at their design coordinates (styles/case.css); the order is reading order for phones.
+import Base from '../../layouts/Base.astro';
+import Footer from '../../components/Footer.astro';
+import { Image } from 'astro:assets';
+import '../../styles/case.css';
+import arrowDown from '../../assets/home/arrow-down.svg?url';
+
+import hero from '../../assets/diviniti/hero.png';
+import logoMask from '../../assets/diviniti/logo-mask.png';
+import definition from '../../assets/diviniti/definition.png';
+import pixels from '../../assets/diviniti/pixels.png';
+import earlyWide from '../../assets/diviniti/early-wide.jpg';
+import early1 from '../../assets/diviniti/early-1.jpg';
+import early2 from '../../assets/diviniti/early-2.jpg';
+import screens from '../../assets/diviniti/screens.png';
+import portraitOnGold from '../../assets/diviniti/portrait-on-gold.png';
+import productCard from '../../assets/diviniti/product-card.png';
+import ar from '../../assets/diviniti/ar.png';
+import intelligence from '../../assets/diviniti/intelligence.png';
+
+const half = '(max-width: 900px) 100vw, 852px';
+---
+<Base title="Redefining Design — Diviniti · Suyash" description="A design journey at Diviniti: how my understanding of design evolved from creating visuals to designing systems.">
+  <div class="canvas diviniti-page" style="height: calc(11050 * var(--u));">
+
+    <!-- ===== Hero (Diviniti Global 362:392) ===== -->
+    <header class="bleed hero" style="--y: 0; --h: 1117;">
+      <Image class="hero__img" src={hero} alt="An incense stick smoking on a dark stone tray in warm light" widths={[1440, 1728]} sizes="100vw" loading="eager" />
+      <span class="hero__shade" aria-hidden="true"></span>
+    </header>
+    <a class="at hero__brand" href="/" style="--x: 104; --y: 55.5;">HOME</a>
+    <a class="at hero__resume" href="/resume.pdf" style="--x: 1480; --y: 47;">RESUME <img src={arrowDown} width="12" height="18" alt="" /></a>
+    <span class="at hero__logo" style={`--x: 104; --y: 145; --w: 131.664; --h: 130.263; --mask: url('${logoMask.src}');`} aria-label="Diviniti" role="img"></span>
+    <p class="at c-label hero__text" style="--x: 104; --y: 684;" data-hero-in>Diviniti India - Product Design Intern</p>
+    <h1 class="at hero__title hero__text" style="--x: 104; --y: 718;" data-hero-in>Redefining Design</h1>
+    <p class="at c-lead hero__text" style="--x: 104; --y: 816; --w: 498;" data-hero-in>A design journey about how my understanding of design evolved from creating visuals to designing systems.</p>
+    <p class="at c-body hero__text" style="--x: 104; --y: 947; --w: 174;" data-hero-in>June 2025 — Present (3 months break for Vodafone Idea)</p>
+    <p class="at c-body hero__text" style="--x: 311; --y: 947; --w: 174;" data-hero-in>Product Design • Visual Design • Ecommerce • AI • Information Architecture</p>
+
+    <!-- ===== A Different Definition (362:408, y 1117) ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 1277; --w: 491;" data-slide="left">A Different Definition</h2>
+    <div class="at c-body tight" style="--x: 104; --y: 1368; --w: 491;" data-slide="left">
+      <p>When I joined Diviniti, I thought I understood what design was.</p>
+      <p>To me, good design meant creating beautiful visuals. The kind that captured attention, looked polished, and felt premium.</p>
+      <p>That belief wasn't unusual. Most of my experience until then had been shaped by screens, layouts, typography, and imagery. Design was something you could see.</p>
+      <p>Diviniti challenged that assumption almost immediately.</p>
+    </div>
+    <div class="at c-body tight" style="--x: 876; --y: 1368; --w: 491;" data-slide="right" data-delay="0.12">
+      <p>The further I went, the less design seemed to be about creating artifacts.</p>
+      <p>It became a way of understanding how information moves, how decisions are made, how systems connect, and how people experience a business as a whole.</p>
+      <p>This journey is not about a website launch, a brand redesign, or a single product. It is about how my definition of design evolved. Over the following year, I worked across websites, luxury brands, AI systems, ecommerce operations, product data, and internal business processes. With every project, the problems became less visual and more structural.</p>
+    </div>
+    <div class="bleed c-img" style="--y: 1792; --h: 558;" data-zoom="pass">
+      <Image src={definition} alt="A desk with notebooks and objects in warm, low light" widths={[1024]} sizes="100vw" data-parallax="6" />
+    </div>
+
+    <!-- ===== 01 Pixels (362:413, y 2350) ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 2696; --w: 491;" data-slide="left">01 Pixels</h2>
+    <h3 class="at c-h3" style="--x: 104; --y: 2771; --w: 491;" data-slide="left">Design influences perception.</h3>
+    <div class="at c-body tight" style="--x: 104; --y: 2834; --w: 491;" data-slide="left">
+      <p>My first months at Diviniti were spent creating visuals. Not websites. Not products. Just images. I became obsessed with details that most people never consciously notice. Light. Materials. Texture. Composition.</p>
+      <p>This was before Ai became main stream, so every element, every light source had to be put in by hand. The surprising part was how dramatically those details changed the way a product was perceived.</p>
+      <p>The product remained the same.</p>
+      <p>Only the presentation changed.</p>
+      <p>That was my first lesson.</p>
+      <p>Perception is designed.</p>
+    </div>
+    <div class="at c-img img-bottom" style="--x: 876; --y: 2350; --w: 852; --h: 1117;" data-wipe="right">
+      <Image src={pixels} alt="Golden idols rendered on a dark, lit set" widths={[852, 901]} sizes={half} />
+    </div>
+
+    <!-- ===== Early Works (362:418, y 3467, h 1296, dark gradient) ===== -->
+    <section class="bleed early" style="--y: 3467; --h: 1296;" aria-label="Early works"></section>
+    <div class="at c-img" style="--x: 104; --y: 3627; --w: 1520; --h: 608;" data-wipe="left"><Image src={earlyWide} alt="999 Silver — crafted for legacy: a gold idol on a cream backdrop" widths={[1280]} sizes="(max-width: 900px) 100vw, 1520px" /></div>
+    <h3 class="at early__title" style="--x: 104; --y: 4283; --w: 491;" data-slide="left">Early Works</h3>
+    <div class="at c-body early__copy" style="--x: 104; --y: 4319; --w: 491;" data-slide="left">
+      <p>Gen AI wasn’t very accurate in product depiction in mid 2025. So I had to create each and every element of the image by hand.</p>
+      <p><em>The walls, lights, effects, shadows, reflections you see in the images on the left, all were done through hand.</em></p>
+    </div>
+    <div class="at c-img" style="--x: 960; --y: 4283; --w: 320; --h: 320;" data-wipe="right"><Image src={early1} alt="Silver figurines on a dark table" widths={[320, 640]} sizes="320px" /></div>
+    <div class="at c-img" style="--x: 1304; --y: 4283; --w: 320; --h: 320;" data-wipe="right"><Image src={early2} alt="A silver idol under a spotlight" widths={[320, 640]} sizes="320px" /></div>
+
+    <!-- ===== 02 Screens (362:424, y 4763) ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 5101; --w: 491;" data-slide="left">02 Screens</h2>
+    <h3 class="at c-h3" style="--x: 104; --y: 5176; --w: 491;" data-slide="left">Design influences decisions.</h3>
+    <div class="at c-body tight" style="--x: 104; --y: 5239; --w: 491;" data-slide="left">
+      <p>As my work expanded from visuals to ecommerce, I began seeing a different side of design. A beautiful interface could attract attention.</p>
+      <p>It couldn't create trust.</p>
+      <p>Customers needed context. They needed reassurance. They needed enough information to feel confident in a decision.</p>
+    </div>
+    <div class="at c-body tight" style="--x: 104; --y: 5399; --w: 491;" data-slide="left">
+      <p>The more I worked on websites and customer journeys, the more obvious this became. People weren't evaluating pixels. They were evaluating risk.</p>
+      <p>That changed the way I thought about design. Design wasn't just shaping perception anymore.</p>
+      <p>It was helping people make decisions</p>
+    </div>
+    <div class="at c-img" style="--x: 876; --y: 4763; --w: 852; --h: 1117;" data-wipe="right"><Image src={screens} alt="The Portrait on Gold website open on a laptop in a warm room" widths={[852]} sizes={half} /></div>
+
+    <!-- ===== Portrait on Gold ===== -->
+    <h3 class="at c-h3" style="--x: 104; --y: 6040; --w: 491;" data-slide="left">Portrait on Gold</h3>
+    <div class="at c-body" style="--x: 104; --y: 6103; --w: 491;" data-slide="left">
+      <p>This is where my first real project comes in. Diviniti had over 5000+ SKU’s with several categories spread across spiritual and corporate gifting.</p>
+      <p>Portrait on Gold was a completely different product, serving a completely different audience. The average price of a piece comes at Rs. 1 Lakh (Diviniti Averages at Rs. 2000).<br />So to give it a home, Portrait on Gold™ was launched. And I was given the task to make it live, from its visual direction to its Ui/Ux for website.</p>
+    </div>
+    <h4 class="at c-h5" style="--x: 104; --y: 6383; --w: 491;" data-slide="left">Visuals</h4>
+    <p class="at c-body" style="--x: 104; --y: 6419; --w: 491;" data-slide="left">The visuals had to be clean, show the product in settings that brings out emotions, to make you trust a 1 Lakh Rs. product.</p>
+    <p class="at c-body" style="--x: 104; --y: 6483; --w: 491;" data-slide="left">The biggest thing I got to know was aspiration. How people aspire to be something better than they are today. And to design around that, gave the highest return.</p>
+    <h4 class="at c-h5" style="--x: 104; --y: 6595; --w: 491;" data-slide="left">Learnings and Outcomes</h4>
+    <p class="at c-body" style="--x: 104; --y: 6631; --w: 491;" data-slide="left">Earlier I believed that websites revolved around visuals. But by this time, I started to understand the real use of UX in design.</p>
+    <div class="at c-body tight" style="--x: 104; --y: 6695; --w: 491;" data-slide="left">
+      <p>To sell luxury, you can’t follow the guidelines you have seen till now. Luxury doesn’t shout, it is subtle, it is informative and it is authoritative.</p>
+      <p>The visuals, the Ui and the Ux should be worth the price the customer pays.</p>
+      <p>It doesn’t optimize for speed as in a SAAS, it doesn’t fill you with discounts as in Amazon or Flipkart.</p>
+      <p>It brings you in slowly, guides you, builds your trust, and helps you make the right decision.</p>
+    </div>
+    <div class="at c-img img-bottom" style="--x: 876; --y: 5880; --w: 852; --h: 1252;" data-wipe="right"><Image src={portraitOnGold} alt="The Portrait on Gold site on a phone: Life, framed in Gold" widths={[746]} sizes={half} /></div>
+
+    <!-- ===== Product Design ===== -->
+    <h3 class="at c-h3" style="--x: 104; --y: 7231; --w: 491;" data-slide="left">Product Design</h3>
+    <p class="at c-body" style="--x: 104; --y: 7294; --w: 491;" data-slide="left">This marked my first interaction with product design in a large organization. I learnt e-commerce design wasn’t just about pretty visuals on the landing page. It meant every page, every feature revolved around the product.</p>
+    <div class="at product-card" style="--x: 104; --y: 7454; --w: 1044; --h: 589;" data-wipe="left">
+      <Image src={productCard} alt="The Classic Grace framed portrait product page, with a portrait preview and price" widths={[1102, 1716]} sizes="(max-width: 900px) 100vw, 1102px" />
+    </div>
+    <div class="at c-img ar" style="--x: 1196; --y: 7454; --w: 428; --h: 589;" data-wipe="right"><Image src={ar} alt="Previewing a framed portrait on a wall in augmented reality" widths={[428, 856]} sizes="(max-width: 900px) 100vw, 428px" /></div>
+    <ol class="at c-body" style="--x: 104; --y: 8067; --w: 491;" start="1" data-slide="left"><li>Checkout Flow - A custom checkout flow was designed, that enabled the user to upload their portraits, and preview the final product before paying a single rupee.</li></ol>
+    <ol class="at c-body" style="--x: 1196; --y: 8067; --w: 428;" start="2" data-slide="right" data-delay="0.24"><li>Augmented Reality - AR features were enabled in all products so that the users can view their product live in their homes.</li></ol>
+
+    <!-- ===== 03 Intelligence (362:485, y 8299) ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 8637; --w: 491;" data-slide="left">03 Intelligence</h2>
+    <h3 class="at c-h3" style="--x: 104; --y: 8712; --w: 491;" data-slide="left">Design influences interactions.</h3>
+    <div class="at c-body tight" style="--x: 104; --y: 8775; --w: 491;" data-slide="left">
+      <p>My introduction to AI began with a simple question.</p>
+      <p>What happens when software can participate in the customer experience?</p>
+      <p>I started experimenting with chatbots, automation, and AI-assisted workflows. Some worked. Some didn't.</p>
+    </div>
+    <p class="at c-body" style="--x: 104; --y: 8911; --w: 491;" data-slide="left">What interested me wasn't the technology itself. It was the role it played. The goal wasn't to replace people. The goal was to remove friction. The more I worked with AI, the more I realized that technology is most valuable when it handles routine interactions and leaves meaningful moments to humans. A good experience wasn't created by AI or people alone. It emerged from the way both worked together.</p>
+    <div class="at c-img" style="--x: 876; --y: 8299; --w: 852; --h: 1117;" data-wipe="right"><Image src={intelligence} alt="Chatbot Amy answering a customer on a phone" widths={[852, 1065]} sizes={half} /></div>
+    <p class="at note c-body" style="--x: 1305; --y: 9252; --w: 393; --h: 116;" data-slide="right" data-delay="0.24">Chatbot Amy, built using python and OpenAI API that handles customer enquiries, shipment, product recommendation and a lot more.</p>
+
+    <!-- ===== 04 Systems · 05 Data · 06 Platforms (362:431, y 9416) ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 9576; --w: 491;" data-slide="left">04 Systems</h2>
+    <h3 class="at c-h3" style="--x: 104; --y: 9651; --w: 491;" data-slide="left">Design influences organizations.</h3>
+    <div class="at c-body tight" style="--x: 104; --y: 9714; --w: 491;" data-slide="left">
+      <p>As I spent more time inside the business, I found myself looking beyond products and screens.</p>
+      <p>I began understanding how orders were fulfilled, how products were manufactured, how customer support operated, and how decisions moved through the company. What surprised me was how connected everything was.</p>
+    </div>
+    <div class="at c-body tight" style="--x: 104; --y: 9874; --w: 491;" data-slide="left">
+      <p>A customer never experiences marketing, sales, operations, and support as separate functions.</p>
+      <p>They experience one company.</p>
+      <p>Every interaction is shaped by systems most customers never see. The further I looked, the harder it became to separate design from the organization itself.</p>
+    </div>
+    <h2 class="at c-h2" style="--x: 619; --y: 9576; --w: 491;" data-slide="right" data-delay="0.12">05 Data</h2>
+    <h3 class="at c-h3" style="--x: 619; --y: 9651; --w: 491;" data-slide="right" data-delay="0.12">Design influences information.</h3>
+    <div class="at c-body tight" style="--x: 619; --y: 9714; --w: 491;" data-slide="right" data-delay="0.12">
+      <p>The biggest shift in my thinking didn't come from a website, a brand, or an AI tool. It came from product data.</p>
+      <p>As Diviniti began preparing for AI-powered commerce, the conversation moved away from interfaces and towards information. Product structures, databases, taxonomy, SKU architecture, and a single source of truth became the focus.</p>
+    </div>
+    <div class="at c-body tight" style="--x: 619; --y: 9874; --w: 491;" data-slide="right" data-delay="0.12">
+      <p>At first, none of it felt like design. There were no screens to improve and no visuals to refine. Yet many of the problems we were trying to solve originated here.</p>
+      <p>Products that were difficult to find. Information that was inconsistent. Systems that couldn't scale. I realized that some of the most important design decisions never appear on a screen. They exist in the way information is organized.</p>
+    </div>
+    <h2 class="at c-h2" style="--x: 1133; --y: 9576; --w: 491;" data-slide="right" data-delay="0.24">06 Platforms</h2>
+    <h3 class="at c-h3" style="--x: 1133; --y: 9651; --w: 491;" data-slide="right" data-delay="0.24">Design influences systems.</h3>
+    <div class="at c-body tight" style="--x: 1133; --y: 9714; --w: 491;" data-slide="right" data-delay="0.24">
+      <p>By this point, the boundaries between design, technology, operations, and information had started to blur. The challenge was no longer creating a better page or a better flow. It was creating systems that could support many experiences at once. A product database could power a website.</p>
+      <p>The same information could feed marketplaces, internal tools, customer support, and increasingly, AI systems.</p>
+    </div>
+    <div class="at c-body tight" style="--x: 1133; --y: 9898; --w: 491;" data-slide="right" data-delay="0.24">
+      <p>The more connected these systems became, the less important individual interfaces felt. What mattered was the structure beneath them.</p>
+      <p>The interface was only one expression of a much larger system.</p>
+      <p>That was the final shift.</p>
+      <p>Design was no longer about creating artifacts.</p>
+      <p>It was about creating foundations that could scale.</p>
+    </div>
+
+    <!-- ===== Epilogue (362:493, y 10226) ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 10386; --w: 491;" data-slide="left">Epilogue</h2>
+    <h3 class="at c-h3" style="--x: 104; --y: 10461; --w: 491;" data-slide="left">Redefining Design</h3>
+    <div class="at c-body tight" style="--x: 104; --y: 10524; --w: 491;" data-slide="left">
+      <p>When I joined Diviniti, I saw design as the act of creating.</p>
+      <p>Creating visuals.</p>
+      <p>Creating interfaces.</p>
+      <p>Creating experiences.</p>
+      <p>Over time, that definition became difficult to sustain.</p>
+      <p>The problems that shaped my thinking were rarely visual.</p>
+    </div>
+    <div class="at c-body tight" style="--x: 876; --y: 10524; --w: 491;" data-slide="right" data-delay="0.12">
+      <p>They lived inside customer journeys, business operations, product structures, and information systems.</p>
+      <p>The further I moved from the surface, the more I realized that design was never limited to what people see.</p>
+      <p>It exists in the decisions that shape how people, products, information, and technology work together.</p>
+      <p>This journey began with pixels.</p>
+      <p>It ended with systems.</p>
+    </div>
+    <p class="at closing t-serif" style="--x: 104; --y: 10812; --w: 1520;" data-slide="left">Design did not become bigger.<br />My definition of it did.</p>
+  </div>
+  <Footer />
+</Base>
+
+<script>
+  import '../../scripts/case-motion';
+</script>
+
+<style>
+  :global(body) { background: var(--paper); }
+  .diviniti-page { --accent: #681609; }          /* accent/diviniti */
+  .tight p + p { margin-top: 0; }                /* these paragraphs run on without a gap, as in Figma */
+  .c-h5 { font-size: max(15px, calc(20 * var(--u))); font-weight: 500; line-height: 1.4; margin: 0; }   /* Heading/H5 20 */
+  ol.c-body { margin: 0; padding-left: calc(24 * var(--u)); }
+
+  /* ---- hero ---- */
+  .hero { overflow: hidden; background: #17120e; }
+  .hero :global(.hero__img) { width: 100%; height: 100%; object-fit: cover; }
+  .hero__shade { position: absolute; left: calc((var(--vw, 100vw) - 1728 * var(--u)) / 2); top: calc(19 * var(--u)); width: calc(985 * var(--u)); height: calc(1098 * var(--u));
+    background: linear-gradient(to left, rgba(12, 11, 9, 0), rgba(14, 13, 10, 0) 31.25%, #17120e); }
+  .hero__text, .hero__brand { color: var(--paper); }
+  .hero__brand { font-size: max(16px, calc(25 * var(--nav-u))); font-weight: 500; z-index: 1; }
+  .hero__resume { z-index: 1; display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--nav-u));
+    width: max(104px, calc(144 * var(--nav-u))); height: max(36px, calc(50 * var(--nav-u))); background: var(--grad-resume); color: var(--paper);
+    font-size: max(14px, calc(20 * var(--nav-u))); font-weight: 400; transition: transform .3s ease; }
+  .hero__resume img { width: max(9px, calc(12 * var(--nav-u))); }
+  .hero__resume:hover { transform: translateY(-2px); }
+  .hero__logo { background: #d9d9d9; -webkit-mask: var(--mask) center / 100% 100% no-repeat; mask: var(--mask) center / 100% 100% no-repeat; }
+  .hero__title { font-family: var(--serif); font-weight: 300; font-style: italic; font-variation-settings: "SOFT" 0, "WONK" 1;
+    font-size: calc(61 * var(--u)); line-height: 1.15; white-space: nowrap; }
+
+  /* ---- sections ---- */
+  .img-bottom :global(img) { object-position: bottom; }
+  .early { background: linear-gradient(61.59deg, #1d0d03 3.764%, #26130a 67.816%, #3b1f12 103.19%); }
+  .early__title { font-size: max(15px, calc(20 * var(--u))); font-weight: 500; line-height: 1.4; color: var(--paper); }
+  .early__copy { color: var(--paper); }
+  .product-card { overflow: hidden; box-shadow: var(--shadow-big); }
+  .product-card :global(img) { position: absolute; left: 2.84%; top: 7.37%; width: 105.58%; height: 100%; max-width: none; }
+  .ar { border-radius: var(--radius); box-shadow: var(--shadow-big); }
+  .note { background: var(--paper); padding: calc(30 * var(--u)); filter: var(--drop-big, drop-shadow(-20px 20px 13px rgba(0, 0, 0, 0.08))); display: flex; align-items: center; }
+  .closing { font-size: calc(31 * var(--u)); line-height: 1.25; font-style: italic; }
+
+  @media (max-width: 900px) {
+    .hero { position: relative; aspect-ratio: 4 / 5; margin: 0 -20px; width: calc(100% + 40px); }
+    .hero__shade { left: 0; top: 0; width: 100%; height: 100%; background: linear-gradient(to top, #17120e 10%, rgba(23, 18, 14, 0) 70%); }
+    .hero__brand, .hero__resume { position: absolute !important; top: 20px !important; margin: 0 !important; }
+    .hero__brand { left: 20px !important; }
+    .hero__resume { left: auto !important; right: 20px; width: auto !important; height: 36px !important; padding: 0 12px; gap: 8px; }
+    .hero__logo { position: absolute !important; top: 80px !important; left: 20px !important; width: 72px !important; height: 72px !important; margin: 0 !important; }
+    .hero__text { color: var(--ink); }
+    .hero__title { font-size: 40px; white-space: normal; }
+    .early { display: none; }
+    .early__title, .early__copy { color: var(--ink); }
+    .product-card { aspect-ratio: 1044 / 589; }
+    .closing { font-size: 26px; }
+  }
+</style>

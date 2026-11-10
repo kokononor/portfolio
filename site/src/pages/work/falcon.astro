@@ -1,0 +1,451 @@
+---
+// Falcon case study. Figma: "Vodafone Idea — Fixed" (362:219), 1728 × 15973, page fill #fcfbf8.
+// Blocks are placed at their design coordinates (see styles/case.css); the order below is reading order for phones.
+import Base from '../../layouts/Base.astro';
+import Footer from '../../components/Footer.astro';
+import FalconScreen from '../../components/FalconScreen.astro';
+import { Image } from 'astro:assets';
+import '../../styles/case.css';
+import arrowDown from '../../assets/home/arrow-down.svg?url';
+
+import studioWall from '../../assets/falcon/studio-wall.png';
+import monitorSetup from '../../assets/falcon/monitor-setup.png';
+import heroEngineers from '../../assets/falcon/hero-engineers.png';
+import viLogo from '../../assets/falcon/vi-logo.png';
+import context from '../../assets/falcon/context.png';
+import dashboard from '../../assets/falcon/dashboard.png';
+import research from '../../assets/falcon/research.png';
+import ia1 from '../../assets/falcon/ia-1.png';
+import ia2 from '../../assets/falcon/ia-2.png';
+import ia3 from '../../assets/falcon/ia-3.png';
+import decision1 from '../../assets/falcon/decision-1.png';
+import decision2 from '../../assets/falcon/decision-2.png';
+import decision3 from '../../assets/falcon/decision-3.png';
+
+const half = '(max-width: 900px) 100vw, 852px';
+---
+<Base title="Falcon — Making millions of network events explain a single outage · Suyash" description="Redesigning Falcon, Vodafone Idea's network operations intelligence platform, so engineers can trust, connect and act on information during live outages.">
+  <div class="canvas falcon-page" style="height: calc(15402 * var(--u));">
+
+    <!-- ===== Hero (MacBook Pro 16' - 11): red band, cream title card, the engineers at their monitor ===== -->
+    <span class="bleed hero-band" style="--y: 0; --h: 1115;" aria-hidden="true"></span>
+    <!-- ===== The stage: the hero's picture, built from its Figma layers (wall, desk shadow, monitor on its desk, the two
+         engineers) with the live Falcon screen on the monitor. While you scroll it holds: the engineers leave as the hero
+         gives way to Context, then the view pushes into the monitor until the screen fills the window, and "See in
+         motion" starts it (scripts/case-motion.ts, data-stage). Without motion it is simply the hero's picture. ===== -->
+    <div class="at stage" style="--x: 0; --y: 0; --w: 1728; --h: 1115;" data-stage data-stage-hold="700">
+      <div class="stage__art">
+        <Image class="art art--wall" src={studioWall} alt="" widths={[859, 1075, 1718]} sizes="(max-width: 900px) 1px, 100vw" loading="eager" />
+        <span class="art art--shadow"></span>
+        <Image class="art art--setup" src={monitorSetup} alt="" widths={[1023, 1448]} sizes="(max-width: 900px) 1px, 1023px" loading="eager" />
+        <div class="stage__screen fs-host"><FalconScreen id="falcon-live" /></div>
+        <Image class="art art--engineers" src={heroEngineers} alt="" widths={[1194, 1448]} sizes="(max-width: 900px) 1px, 1194px" loading="eager" data-stage-leave />
+      </div>
+      <button class="stage__play" type="button" data-falcon-play="falcon-live"><span></span>See in motion</button>
+    </div>
+
+    <header class="at hero" style="--x: 0; --y: 0; --w: 1728; --h: 1115;">
+      <a class="hero__brand" href="/">HOME</a>
+      <a class="hero__resume" href="/resume.pdf">RESUME <img src={arrowDown} width="12" height="18" alt="" /></a>
+
+      <div class="hero__card" data-reveal>
+        <Image class="hero__logo" src={viLogo} alt="Vodafone Idea" widths={[104]} sizes="52px" />
+        <h1 class="hero__title t-serif">Making millions of network events explain a <em>single outage.</em></h1>
+        <div class="hero__foot">
+        <p class="hero__meta c-label"><span>Product - Falcon</span><span>Vodafone Idea&nbsp; - Product Design Intern</span></p>
+        <p class="hero__summary c-lead">Engineers investigating live outages couldn't tell what data was loaded, what was missing, or how evidence across five systems connected together.</p>
+        </div>
+      </div>
+
+      <div class="hero__facts" data-stage-leave>
+        <span class="hero__line"></span>
+        <dl>
+          <div><dt>Outcome</dt><dd>Outage to correlation time reduced from 1 min to under 10 seconds</dd></div>
+          <div><dt>Users</dt><dd>NOC engineers, network engineers, incident managers, IP leadership</dd></div>
+        </dl>
+        <span class="hero__line"></span>
+      </div>
+    </header>
+
+    <!-- Motion (scripts/case-motion.ts, Figma "phase 2" notes): data-wipe / data-slide = "image wipes and slides",
+         data-stage = "zoom in parallax", data-sticky = "sticky image", data-morph = "re-type text", done as a morph. -->
+
+    <!-- ===== Context: the image wipes in, the text slides in ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 1400; --w: 492;" data-slide="left">Context</h2>
+    <div class="at c-body" style="--x: 104; --y: 1484; --w: 492;" data-slide="left">
+      <p>When a telecom outage occurs, engineers need to understand what's happening before the impact spreads further. Falcon is the platform they use to investigate incidents, trace affected infrastructure, and determine the fastest path to resolution. It brings together signals from multiple network systems, devices, and monitoring tools into a single workspace.</p>
+    </div>
+    <p class="at c-body" style="--x: 104; --y: 1652; --w: 492;" data-slide="left">The challenge wasn't collecting information. Falcon already had access to vast amounts of operational data. The challenge was helping engineers trust what they were seeing, connect evidence across multiple sources, and make decisions confidently while an incident was still unfolding.</p>
+    <p class="at c-quote" style="--x: 104; --y: 1796; --w: 492;" data-slide="left">This project focused on reducing the gap between information being available and information being understandable.</p>
+    <span class="at c-rule" style="--x: 104; --y: 1918; --w: 488;"></span>
+    <div class="at c-img" style="--x: 876; --y: 1115; --w: 852; --h: 1117;" data-wipe="right" data-stage-hide>
+      <Image src={context} alt="An engineer at a desk reviewing incident data on a monitor" widths={[852, 1075]} sizes={half} data-parallax="4" />
+    </div>
+
+    <!-- ===== The dashboard (MacBook Pro 16' - 27). With motion the stage fills this screen with the live Falcon; without
+         it (phones, reduced motion) the picture stays, and "See in motion" opens the live screen in a dialog. ===== -->
+    <div class="bleed c-img dashboard" style="--y: 2232; --h: 1117;" data-stage-hide>
+      <Image class="dashboard__screen" src={dashboard} alt="The redesigned Falcon dashboard: Root Cause Table, active tickets and a recommended investigation" widths={[1440, 1672]} sizes="100vw" />
+      <button class="stage__play dashboard__play" type="button" data-falcon-open><span></span>See in motion</button>
+    </div>
+    <dialog class="falcon-dialog" data-falcon-dialog aria-label="Falcon, live">
+      <button class="falcon-dialog__close" type="button" data-falcon-close>Close ✕</button>
+      <div class="falcon-dialog__screen fs-host"><FalconScreen id="falcon-dialog" /></div>
+      <p class="falcon-dialog__hint">Turn your phone sideways for a bigger screen.</p>
+    </dialog>
+
+    <!-- ===== The Problem: the red block wipes across, the text slides in ===== -->
+    <span class="at red-block" style="--x: 0; --y: 3349; --w: 876; --h: 1129;" aria-hidden="true" data-wipe="left"></span>
+    <div class="at stack" style="--x: 1005; --y: 3634; --w: 491; --gap: 30;" data-slide="right">
+      <h2 class="c-h2">The Problem</h2>
+      <div class="c-body stack" style="--gap: 21;">
+        <p>Falcon processed vast amounts of operational data, but engineers still spent the first minutes of every incident determining whether they could trust what they were seeing. Information arrived from multiple systems at different speeds, relationships between sources were hidden behind separate views, and AI-generated answers required independent verification. The cost wasn't just slower investigations—it was a gradual loss of trust in the tool itself.</p>
+        <p>Over time, engineers adapted by building workarounds. They kept raw logs open in separate tabs, manually stitched evidence together, and treated Falcon as a starting point rather than a source of truth.</p>
+        <p class="c-quote" style="color: var(--ink);">The product had become an unreliable source of truth, so users created their own.</p>
+      </div>
+    </div>
+    <span class="at c-rule" style="--x: 1005; --y: 4240; --w: 488;"></span>
+
+    <!-- ===== Understanding the System: the image stays while the three methods scroll past; it turns to each one's panel ===== -->
+    <div class="at c-img research" style="--x: 0; --y: 4447; --w: 876; --h: 1136;" data-sticky="research" data-room="950">
+      <Image src={research} alt="Research: contextual shadowing, user interviews and operational analysis" widths={[876, 1075]} sizes={half} />
+      <span class="research__veil research__veil--1" data-frame></span>
+      <span class="research__veil research__veil--2" data-frame></span>
+      <span class="research__veil research__veil--3" data-frame></span>
+    </div>
+    <h2 class="at c-h2" style="--x: 1005; --y: 4579; --w: 490;" data-slide="right">Understanding the System</h2>
+    <p class="at c-body" style="--x: 1005; --y: 4726; --w: 490;" data-slide="right">To understand why engineers had stopped trusting Falcon, I approached the problem from three angles: observing live incidents, interviewing users, and analyzing operational data. Each revealed a different part of the story.</p>
+    <div class="at methods" style="--x: 1005; --y: 4854; --w: 490;" data-slide="right">
+      <div style="--gap: 12;" data-step="research"><h3 class="c-h3">Contextual Shadowing</h3><p class="c-body">Live incidents revealed a gap between what engineers said and what they did. Engineers routinely waited for data, cross-checked results against raw logs, and relied on workarounds that had become part of their normal workflow.</p></div>
+      <div style="--gap: 31;" data-step="research"><h3 class="c-h3">User Interviews</h3><p class="c-body">Interviews across roles showed that trust meant different things to different users, but everyone depended on the same underlying information to make decisions</p></div>
+      <div style="--gap: 12;" data-step="research"><h3 class="c-h3">Operational Analysis</h3><p class="c-body">Usage data confirmed the pattern: engineers spent nearly ten minutes gathering context before diagnosis could begin, while critical information remained fragmented across multiple sources.</p></div>
+    </div>
+    <span class="at c-rule" style="--x: 1005; --y: 5466; --w: 488;"></span>
+
+    <!-- ===== Key Findings → Design Principles: one scene with the same layout. It holds while you scroll; the right side
+         morphs from the findings into the principles (headings blur into each other, body lines hand over) and the left side slides across. (Without motion, and on
+         phones, the two simply follow each other: the principles sit a screen below, at 1117.) ===== -->
+    <div class="at morph" style="--x: 0; --y: 5773; --w: 1728; --h: 2234;" data-morph>
+      <div class="at stack" style="--x: 104; --y: 265; --w: 346; --gap: 42;" data-slide="left" data-morph-left="a">
+        <h2 class="c-h2">Key Findings</h2>
+        <p class="c-body">Research surfaced 18 issues, but most were symptoms of a smaller set of underlying problems. Three root causes consistently appeared across observations, interviews, and operational data.</p>
+      </div>
+      <span class="at c-vrule" style="--x: 852; --y: 0; --h: 737;"></span>
+      <h3 class="at c-h3" style="--x: 1005; --y: 48; --w: 290;" data-slide="right" data-morph-item="a">Trust in System State</h3>
+      <p class="at c-body" style="--x: 1005; --y: 138; --w: 290;" data-slide="right" data-morph-item="a">Engineers couldn't reliably tell whether data was complete, still loading, or outdated. As a result, they spent time verifying information before acting on it.</p>
+      <h3 class="at c-h3" style="--x: 1334; --y: 48; --w: 290;" data-slide="right" data-morph-item="a">Cost of Correlation</h3>
+      <p class="at c-body" style="--x: 1334; --y: 99; --w: 290;" data-slide="right" data-morph-item="a">Critical evidence was distributed across tickets, logs, topology, and configuration data. Falcon stored the information, but engineers were responsible for connecting it into a coherent explanation.</p>
+      <h3 class="at c-h3" style="--x: 1005; --y: 322; --w: 290;" data-slide="right" data-morph-item="a">Lack of Explainable Evidence</h3>
+      <p class="at c-body" style="--x: 1005; --y: 412; --w: 290;" data-slide="right" data-morph-item="a">The AI assistant operated separately from the evidence engineers were already reviewing. Answers required additional verification, creating friction and reducing trust.</p>
+      <p class="at c-quote" style="--x: 1334; --y: 322; --w: 290;" data-slide="right" data-morph-item="a">Together, these findings revealed that Falcon's challenge wasn't intelligence. It was helping engineers trust, connect, and act on information during live incidents.</p>
+
+      <div class="at stack" style="--x: 104; --y: 1362.5; --w: 346; --gap: 42;" data-reveal data-morph-left="b">
+        <h2 class="c-h2">Design Principles</h2>
+        <p class="c-body">The research surfaced 18 issues, but the solutions were guided by four principles. Every design decision was evaluated against these rules.</p>
+      </div>
+      <span class="at c-vrule" style="--x: 852; --y: 1117; --h: 737;" data-morph-hide></span>
+      <h3 class="at c-h3" style="--x: 1005; --y: 1129.5; --w: 290;" data-reveal data-morph-item="b">Show Information As Soon As It Exists</h3>
+      <p class="at c-body" style="--x: 1005; --y: 1219.5; --w: 290;" data-reveal data-morph-item="b">Engineers should never wait for data the system has already retrieved. Information should appear progressively as it becomes available.</p>
+      <h3 class="at c-h3" style="--x: 1334; --y: 1129.5; --w: 290;" data-reveal data-morph-item="b">Never Let Incomplete Look Complete</h3>
+      <p class="at c-body" style="--x: 1334; --y: 1258.5; --w: 290;" data-reveal data-morph-item="b">Loading, loaded, and stale states must be visually distinct so engineers can immediately understand the reliability of what they're seeing.</p>
+      <h3 class="at c-h3" style="--x: 1005; --y: 1418.5; --w: 290;" data-reveal data-morph-item="b">Organize Around Investigations, Not Data Sources</h3>
+      <p class="at c-body" style="--x: 1005; --y: 1547.5; --w: 290;" data-reveal data-morph-item="b">Engineers think in terms of tickets, devices, and incidents—not logs, topology, or monitoring systems. The interface should reflect that mental model.</p>
+      <h3 class="at c-h3" style="--x: 1334; --y: 1418.5; --w: 290;" data-reveal data-morph-item="b">Trust Requires Evidence</h3>
+      <p class="at c-body" style="--x: 1334; --y: 1508.5; --w: 290;" data-reveal data-morph-item="b">AI-generated answers should always provide a clear path back to the underlying evidence. Confidence alone is not enough.</p>
+    </div>
+
+    <!-- ===== Reframing the Information Architecture: the image stays and fades into the next as each part of the text arrives ===== -->
+    <div class="at stack" style="--x: 104; --y: 8054; --w: 497; --gap: 38;" data-slide="left">
+      <h2 class="c-h2">Reframing the Information Architecture</h2>
+      <div>
+        <h3 class="c-h3" style="width: calc(386 * var(--u));">From Source Based Navigation to Investigation Based Navigation</h3>
+        <div class="c-body ia-copy">
+          <p>Falcon was originally organized around where data came from: tickets, logs, topology, and configuration changes. While this mirrored the underlying systems, it didn't reflect how engineers actually investigated incidents. Engineers don't start with a source they start with a question.</p>
+          <p>A typical investigation required moving across multiple tabs and manually stitching information together. The platform stored the evidence, but the burden of correlation remained with the engineer.</p>
+        </div>
+      </div>
+    </div>
+    <div class="at c-img" style="--x: 1005; --y: 8054; --w: 520; --h: 680;" data-sticky="ia" data-sticky-start="center center"><Image src={ia1} alt="An engineer surrounded by separate monitors, one per data source" widths={[520, 1040]} sizes="(max-width: 900px) 100vw, 520px" /></div>
+    <div class="at stack" style="--x: 104; --y: 9128; --w: 491; --gap: 28;" data-slide="left" data-step="ia">
+      <h3 class="c-h3">The Shift</h3>
+      <div class="c-body">
+        <p>Instead of organizing Falcon around data sources, I reorganized it around the unit of investigation: a ticket, device, or IP address. Searching a single identifier now pulls together all related evidence across systems into one continuous workflow.</p>
+        <p>This reduced the need to navigate between sources and moved the responsibility for correlation from the engineer to the system.</p>
+      </div>
+    </div>
+    <div class="at c-img" style="--x: 1005; --y: 8894; --w: 520; --h: 680;" data-sticky-join="ia"><Image src={ia2} alt="Engineers working through a single investigation on one screen" widths={[520, 1040]} sizes="(max-width: 900px) 100vw, 520px" /></div>
+    <div class="at stack" style="--x: 104; --y: 9961; --w: 491; --gap: 20;" data-slide="left" data-step="ia">
+      <h3 class="c-h3">A Key Decision</h3>
+      <div class="c-body">
+        <p>An early concept explored separate experiences for different user roles. However, incidents frequently move across analysts, engineers, and managers. Role-based views fragmented the investigation and removed critical context during escalations.</p>
+        <p>Instead, I designed a single shared surface with layered information density—allowing different roles to access the same incident while engaging at different levels of depth.</p>
+      </div>
+    </div>
+    <div class="at c-img" style="--x: 1005; --y: 9734; --w: 520; --h: 680;" data-sticky-join="ia"><Image src={ia3} alt="Analysts, engineers and a manager sharing one incident view" widths={[520, 1040]} sizes="(max-width: 900px) 100vw, 520px" /></div>
+    <div class="at stack" style="--x: 104; --y: 10574; --w: 470; --gap: 19;" data-slide="left">
+      <h3 class="c-h3">Outcome</h3>
+      <p class="c-body">The redesign transformed Falcon from a collection of disconnected sources into a unified investigation workflow, creating the foundation for every subsequent design decision.</p>
+    </div>
+
+    <!-- ===== Design Decisions 01–03 share a layout: the image on the right stays and fades from one decision to the next while the text scrolls ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 11110; --w: 362;" data-slide="left">Design Decision 01</h2>
+    <h3 class="at c-h3" style="--x: 104; --y: 11255; --w: 362;" data-slide="left">Making System State Visible</h3>
+    <div class="at c-body" style="--x: 104; --y: 11341; --w: 362;" data-slide="left">
+      <p>One of the most expensive moments in an outage investigation wasn't diagnosis, it was uncertainty. Engineers often couldn't tell whether they were looking at complete information, partially loaded results, or outdated data. As a result, they routinely waited for all sources to load or manually verified information before acting.</p>
+      <p>The underlying issue was that Falcon treated data as a finished object. In reality, information arrived from multiple systems at different speeds, but the interface gave little indication of that state.</p>
+    </div>
+    <h3 class="at c-h3" style="--x: 104; --y: 11709;" data-slide="left">The Decision</h3>
+    <div class="at c-body" style="--x: 104; --y: 11754; --w: 358;" data-slide="left">
+      <p>Instead of waiting for all sources to return before displaying results, Falcon now reveals information progressively as it becomes available. Every section clearly communicates whether its data is loading, loaded, or stale.</p>
+      <p>This shifted the interface from hiding uncertainty to communicating it.</p>
+    </div>
+    <div class="at c-img" style="--x: 876; --y: 10934; --w: 852; --h: 1117;" data-sticky="dd"><Image src={decision1} alt="Falcon showing loading, loaded and stale states for each section" widths={[852, 1267]} sizes={half} /></div>
+    <aside class="at c-why" style="--x: 1269; --y: 11721; --w: 459; --h: 282;" data-slide="right">
+      <h3 class="c-h3">Why it matters?</h3>
+      <p class="c-body">Trust isn't created when a system has all the answers. It's created when a system is honest about what it knows and what it doesn't. By making system state visible, engineers could begin investigating immediately instead of waiting for certainty before taking action.</p>
+    </aside>
+
+    <!-- ===== Design Decision 02 ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 12211; --w: 362;" data-slide="left" data-step="dd">Design Decision 02</h2>
+    <h3 class="at c-h3" style="--x: 104; --y: 12343; --w: 362;" data-slide="left">Reducing Correlation Cost</h3>
+    <div class="at c-body" style="--x: 104; --y: 12434; --w: 362;" data-slide="left">
+      <p>Even when Falcon contained the right information, engineers still had to assemble the story themselves. Investigating a single incident often meant moving between tickets, logs, topology maps, configuration changes, and AI outputs to understand how seemingly disconnected signals were related.</p>
+      <p>The platform stored the evidence, but the burden of correlation remained with the user.</p>
+    </div>
+    <h3 class="at c-h3" style="--x: 104; --y: 12706;" data-slide="left">The Decision</h3>
+    <div class="at c-body" style="--x: 104; --y: 12760; --w: 362;" data-slide="left">
+      <p>Instead of organizing information by source, Falcon now organizes information around the investigation itself. A ticket, device, or IP address becomes the starting point, automatically pulling together relevant evidence from multiple systems into a single workspace.</p>
+      <p>The responsibility for connecting information shifted from the engineer to the system.</p>
+    </div>
+    <div class="at c-img" style="--x: 876; --y: 12051; --w: 852; --h: 1117;" data-sticky-join="dd"><Image src={decision2} alt="An investigation workspace pulling evidence from several systems together" widths={[852, 1096]} sizes={half} /></div>
+    <aside class="at c-why" style="--x: 1269; --y: 12838; --w: 459; --h: 282;" data-slide="right">
+      <h3 class="c-h3">Why it matters?</h3>
+      <p class="c-body">During outages, engineers aren't trying to navigate tools—they're trying to answer questions. By surfacing related evidence in one place, Falcon reduced context switching and allowed engineers to focus on understanding the incident rather than gathering information about it.</p>
+    </aside>
+
+    <!-- ===== Design Decision 03 (MacBook Pro 16' - 24) ===== -->
+    <div class="at c-img" style="--x: 872; --y: 13168; --w: 856; --h: 1117;" data-sticky-join="dd"><Image src={decision3} alt="The Recommended Investigation card with the reasons behind it" widths={[856, 1096]} sizes={half} /></div>
+    <div class="at stack dd3" style="--x: 104; --y: 13168; --w: 362; --h: 1117; --gap: 38;" data-slide="left" data-step="dd">
+      <h2 class="c-h2">Design Decision 03</h2>
+      <div class="stack" style="--gap: 10;">
+        <h3 class="c-h3">Reducing Triage Effort</h3>
+        <div class="c-body">
+          <p>As Falcon became faster and easier to navigate, a new problem emerged.</p>
+          <p>On high-volume days, engineers weren't struggling to find information, they were struggling to decide where to start. Hundreds of open tickets could appear simultaneously, each competing for attention with little indication of which incident mattered most.</p>
+          <p>A faster dashboard still presented a wall of equally urgent problems.</p>
+        </div>
+      </div>
+      <div class="stack" style="--gap: 17;">
+        <h3 class="c-h3">The Decision</h3>
+        <div class="c-body">
+          <p>Instead of asking engineers to manually triage every ticket, Falcon now performs an initial prioritization pass and surfaces a single Recommended Investigation.</p>
+          <p>Every open ticket is scored against a transparent set of operational signals:</p>
+          <ul>
+            <li>Priority level</li>
+            <li>SLA proximity</li>
+            <li>Shared upstream infrastructure</li>
+            <li>Multi-circle impact</li>
+            <li>Configuration changes</li>
+            <li>Customer impact</li>
+          </ul>
+          <p>The highest-scoring incident is surfaced alongside the specific reasons it earned that recommendation.</p>
+        </div>
+      </div>
+    </div>
+    <aside class="at c-why" style="--x: 1269; --y: 14144; --w: 459; --h: 282;" data-slide="right">
+      <h3 class="c-h3">Why it matters?</h3>
+      <p class="c-body">The recommendation system transformed Falcon from a passive monitoring tool into an active investigation partner. Instead of scanning hundreds of tickets, engineers could immediately focus on the incident most likely to require attention</p>
+    </aside>
+
+    <!-- ===== Measuring Success ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 14424;" data-reveal>Measuring Success</h2>
+    <p class="at c-body" style="--x: 104; --y: 14521; --w: 491;" data-reveal>The redesign was ultimately evaluated on a simple question:</p>
+    <p class="at c-lead" style="--x: 104; --y: 14551; --w: 643; font-style: italic;" data-reveal>Could engineers reach confident decisions faster during live incidents?</p>
+    <p class="at c-body" style="--x: 104; --y: 14636; --w: 491;" data-reveal>Following deployment, incident resolution time decreased by 25%, reducing the time required to move from investigation to action. Engineers spent less time gathering context, manually correlating information, and determining where to focus their attention.</p>
+    <p class="at c-body" style="--x: 104; --y: 14735; --w: 491;" data-reveal>The impact extended beyond speed. By making system state visible, consolidating evidence into a single workflow, and surfacing explainable recommendations, Falcon became a more trusted source of operational truth during outages.</p>
+    <div class="at c-body" style="--x: 104; --y: 14853; --w: 515;" data-reveal>
+      <p>Outcomes</p>
+      <ul>
+        <li>25% reduction in incident resolution time</li>
+        <li>Faster context gathering during investigations</li>
+        <li>Reduced manual correlation across systems</li>
+        <li>Clearer prioritization of active incidents</li>
+        <li>Increased confidence in recommendations through visible reasoning</li>
+      </ul>
+    </div>
+
+    <!-- ===== Reflection ===== -->
+    <h2 class="at c-h3" style="--x: 880; --y: 14573;" data-reveal>Reflection</h2>
+    <p class="at c-body" style="--x: 880; --y: 14636;" data-reveal>Designing Falcon changed how I think about enterprise products.</p>
+    <p class="at c-body" style="--x: 880; --y: 14672; --w: 486;" data-reveal>The biggest challenges weren't visual or technical. They were about trust. Engineers already had access to the information they needed; the real challenge was helping them understand whether that information was complete, connected, and reliable enough to act on.</p>
+    <p class="at c-body" style="--x: 880; --y: 14801; --w: 487;" data-reveal>This project reinforced an important lesson: in operational systems, speed alone doesn't create confidence. Trust emerges when systems clearly communicate what they know, what they don't know, and why a recommendation was made.</p>
+    <p class="at c-body" style="--x: 880; --y: 14918; --w: 486;" data-reveal>By shifting Falcon from a collection of monitoring tools to a unified investigation platform, the redesign reduced friction in the workflow while keeping engineers in control of the decision-making process.</p>
+  </div>
+  <Footer />
+</Base>
+
+<script>
+  import '../../scripts/case-motion';
+  import { playFalcon } from '../../scripts/falcon-screen';
+
+  // every Falcon screen is drawn at 1600 × 875 and scaled to the box it sits in
+  document.querySelectorAll<HTMLElement>('.fs-host').forEach(host => {
+    const screen = host.querySelector<HTMLElement>('.fs')!;
+    new ResizeObserver(() => { screen.style.transform = `scale(${host.clientWidth / 1600})`; }).observe(host);
+  });
+  // "See in motion" on the stage: the screen comes alive
+  document.querySelectorAll<HTMLElement>('[data-falcon-play]').forEach(b => b.addEventListener('click', () => {
+    b.closest('.stage')?.classList.add('is-playing');
+    playFalcon(document.getElementById(b.dataset.falconPlay!)!);
+  }));
+  // without the stage (phones, reduced motion), the live screen opens in a dialog
+  const dialog = document.querySelector<HTMLDialogElement>('[data-falcon-dialog]');
+  document.querySelector('[data-falcon-open]')?.addEventListener('click', () => {
+    if (!dialog) return;
+    dialog.showModal();
+    (window as any).__lenis?.stop();
+    playFalcon(document.getElementById('falcon-dialog')!);
+  });
+  dialog?.querySelector('[data-falcon-close]')?.addEventListener('click', () => dialog.close());
+  dialog?.addEventListener('close', () => (window as any).__lenis?.start());
+</script>
+
+<style>
+  :global(body) { background: var(--paper); }   /* this page's fill is #fcfbf8 */
+
+  /* vertical stacks with a design gap */
+  .stack { display: flex; flex-direction: column; gap: calc(var(--gap, 0) * var(--u)); }
+
+  /* ---- the hero fits the window: on desktops the hero group (red band, hero, stage) takes its own design pixel, --hu,
+     small enough that all 1115 design px show at once, and is centred on the page; everything after it moves up by
+     the height saved (--shift), so no gap opens. ---- */
+  @media (min-width: 901px) {
+    .falcon-page { --cu: var(--u); --hu: min(var(--u), calc(100svh / 1115)); --shift: calc(1115 * (var(--cu) - var(--hu))); margin-bottom: calc(-1 * var(--shift)); }
+    /* (descendant selectors: once held, the stage sits inside GSAP's pin wrapper) */
+    .falcon-page :is(.hero, .stage, .hero-band) { --u: var(--hu); }
+    .falcon-page .hero { margin-left: calc(864 * var(--cu) - 864 * var(--u)); overflow: visible; }
+    /* the nav keeps the page's margins, like the other pages, while the hero's content is scaled and centred */
+    .falcon-page .hero__brand { left: calc(104 * var(--cu) - 864 * var(--cu) + 864 * var(--u)); }
+    .falcon-page .hero__resume { left: calc(760 * var(--cu) + 864 * var(--u) - max(104px, calc(144 * var(--nav-u)))); }
+    :global(html:not(.case-motion)) .falcon-page .stage { margin-left: calc(864 * var(--cu) - 864 * var(--u)); }
+    .falcon-page > .at:not(.hero):not(.stage) { top: calc(var(--y) * var(--u) - var(--shift)); }
+    .falcon-page > .bleed:not(.hero-band) { top: calc(var(--y) * var(--u) - var(--shift)); }
+  }
+
+  /* ---- hero ---- */
+  .hero-band { background: linear-gradient(-54.29deg, #b51b03 6.147%, #b51b03 67.06%, #681609 102.86%); }
+  .hero { overflow: hidden; }
+  /* ---- the stage: the hero's picture, layer by layer (Figma 362:234–362:238), with the live screen on the monitor ----
+     Without motion it sits where the hero's picture was. With motion (html.case-motion) it spans the window, is clipped
+     to the hero's right half, and scripts/case-motion.ts holds it, lets the engineers leave and pushes into the screen. */
+  .stage { z-index: 1; overflow: hidden; pointer-events: none; clip-path: inset(0 0 0 calc(876 * var(--u))); }
+  .hero { z-index: 2; }
+  .stage__art { position: absolute; left: 0; top: 0; width: calc(1728 * var(--u)); height: calc(1115 * var(--u)); transform-origin: 0 0; }
+  .stage__art :global(.art) { position: absolute; max-width: none; }
+  .stage__art :global(.art--wall) { left: calc(876 * var(--u)); top: calc(-28 * var(--u)); width: max(calc(859 * var(--u)), calc(var(--vw, 100vw) / 2 - 12 * var(--u))); height: calc(1169 * var(--u)); object-fit: cover; object-position: left center; }
+  .art--shadow { position: absolute; left: calc(1011 * var(--u)); top: calc(857 * var(--u)); width: calc(696 * var(--u)); height: calc(284 * var(--u)); background: #010101; }
+  .stage__art :global(.art--setup) { left: calc((876 - 0.0667 * 959) * var(--u)); top: calc(165 * var(--u)); width: calc(1.0667 * 959 * var(--u)); height: calc(767 * var(--u)); }
+  .stage__art :global(.art--engineers) { left: calc((876 - 0.201 * 852) * var(--u)); top: calc((-91 + 0.1979 * 1206) * var(--u)); width: calc(1.402 * 852 * var(--u)); height: calc(0.8021 * 1206 * var(--u)); }
+  /* the monitor's screen: measured from the monitor picture (pixels 253–1195 × 183–698 of 1448 × 1086), the live
+     Falcon (1600 × 875) is scaled into it by the script below */
+  .stage__screen { position: absolute; left: calc(990.8 * var(--u)); top: calc(294.2 * var(--u)); width: calc(666.2 * var(--u)); height: calc(364.4 * var(--u)); overflow: hidden; }
+  .fs-host :global(.fs) { transform-origin: 0 0; }
+  :global(html.case-motion) .stage { left: calc(50% - var(--vw, 100vw) / 2); width: var(--vw, 100vw) !important; height: max(calc(1115 * var(--u)), 100vh) !important;
+    background: #d3d4d5; }                                                   /* the studio wall's grey, past the picture's edges */
+  :global(html.case-motion) .stage__art { left: calc(var(--vw, 100vw) / 2 - 864 * var(--u)); }
+  /* full width: the studio wall runs on to the window's right edge, past the centred composition */
+  :global(html.case-motion) .stage__art :global(.art--wall) { width: calc(var(--vw, 100vw) / 2 - 12 * var(--u)); }
+  :global(html.case-motion) [data-stage-hide] { visibility: hidden; }
+  .stage.is-live { pointer-events: auto; }
+  /* "See in motion": a pill in the site's ink, a red dot that breathes */
+  .stage__play { position: absolute; left: 50%; bottom: 7vh; z-index: 2;   /* on the stage the script sets its top: just under the screen */ display: inline-flex; align-items: center; gap: 12px; height: 52px; padding: 0 26px 0 22px;
+    border: 0; border-radius: 26px; background: var(--ink); color: var(--paper); font-family: var(--sans); font-size: 16px; letter-spacing: .02em; cursor: pointer;
+    box-shadow: 0 14px 34px rgba(15, 14, 12, .35); transform: translate(-50%, 12px); opacity: 0; pointer-events: none;
+    transition: opacity .5s ease, transform .5s cubic-bezier(.2, .7, .2, 1), background-color .3s ease; }
+  .stage__play span { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 0 rgba(181, 27, 3, .6); animation: breathe 1.8s ease-out infinite; }
+  @keyframes breathe { 70% { box-shadow: 0 0 0 10px rgba(181, 27, 3, 0); } 100% { box-shadow: 0 0 0 0 rgba(181, 27, 3, 0); } }
+  .stage__play:hover { background: var(--accent); }
+  .stage.is-live:not(.is-playing) .stage__play { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .dashboard__play { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  /* the dialog version (phones, reduced motion) */
+  .falcon-dialog { width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 56px 12px 24px; border: 0; background: rgba(15, 14, 12, .92); color: var(--paper); }
+  .falcon-dialog::backdrop { background: rgba(15, 14, 12, .6); }
+  .falcon-dialog[open] { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .falcon-dialog__screen { width: min(100%, calc((100dvh - 120px) * 1600 / 875)); aspect-ratio: 1600 / 875; overflow: hidden; border-radius: 8px; }
+  .falcon-dialog__close { position: absolute; right: 16px; top: 14px; height: 34px; padding: 0 14px; border: 1px solid rgba(252, 251, 248, .4); border-radius: 17px; background: none; color: inherit; font: inherit; cursor: pointer; }
+  .falcon-dialog__hint { margin: 0; font-size: 13px; opacity: .7; }
+  @media (orientation: landscape) { .falcon-dialog__hint { display: none; } }
+  .hero__brand { position: absolute; left: calc(104 * var(--u)); top: calc(53.5 * var(--u)); font-size: max(16px, calc(25 * var(--nav-u))); font-weight: 500; color: var(--paper); z-index: 1; }
+  .hero__resume { position: absolute; left: calc(1624 * var(--u) - max(104px, calc(144 * var(--nav-u)))); top: calc(45 * var(--u)); z-index: 1;
+    display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--nav-u));
+    width: max(104px, calc(144 * var(--nav-u))); height: max(36px, calc(50 * var(--nav-u))); background: var(--grad-resume); color: var(--paper);
+    font-size: max(14px, calc(20 * var(--nav-u))); font-weight: 400; transition: transform .3s ease; }
+  .hero__resume img { width: max(9px, calc(12 * var(--nav-u))); }
+  .hero__resume:hover { transform: translateY(-2px); }
+
+  .hero__card { position: absolute; left: calc(104 * var(--u)); top: calc(130 * var(--u)); width: calc(643 * var(--u)); height: calc(853 * var(--u));
+    background: var(--page); border-radius: var(--radius); box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25); }
+  .hero__card > * { position: absolute; }
+  .hero__card :global(.hero__logo) { left: calc(52 * var(--u)); top: calc(35 * var(--u)); width: calc(52 * var(--u)); height: calc(48 * var(--u)); object-fit: cover; }
+  .hero__title { left: calc(60 * var(--u)); top: calc(127 * var(--u)); width: calc(449 * var(--u)); font-size: calc(61 * var(--u)); line-height: 1.15; font-style: italic; }
+  .hero__title em { color: var(--accent); }
+  /* the lower lines stack from the card's foot, so a larger minimum text size can never overlap them */
+  .hero__foot { left: calc(52 * var(--u)); right: calc(52 * var(--u)); bottom: calc(40 * var(--u)); display: flex; flex-direction: column; gap: calc(10 * var(--u)); }
+  .hero__foot > * { position: static !important; }
+  .hero__meta { left: calc(52 * var(--u)); top: calc(636 * var(--u)); width: calc(560 * var(--u)); color: var(--muted); display: flex; flex-wrap: wrap; gap: 0 calc(52 * var(--u)); }
+  .hero__summary { left: calc(51 * var(--u)); top: calc(667 * var(--u)); width: calc(498 * var(--u)); }
+  .hero__paper { left: calc(52 * var(--u)); top: calc(789 * var(--u)); text-decoration: underline; text-underline-position: from-font; text-decoration-thickness: from-font; }
+  .hero__paper:hover { color: var(--accent); }
+
+  .hero__facts { position: absolute; left: calc(1060 * var(--u)); bottom: calc(40 * var(--u)); width: calc(593 * var(--u));
+    display: flex; flex-direction: column; gap: calc(42 * var(--u)); color: var(--paper); }
+  .hero__line { display: block; width: calc(579 * var(--u)); border-top: 1px solid var(--paper); }
+  .hero__facts dl { display: flex; gap: calc(58 * var(--u)); }
+  .hero__facts dl > div { width: calc(265 * var(--u)); display: flex; flex-direction: column; gap: calc(3 * var(--u)); }
+  .hero__facts dt { font-size: max(12px, calc(16 * var(--u))); }
+  .hero__facts dd { font-size: max(14px, calc(20 * var(--u))); line-height: 1.5; }
+
+  /* ---- sections ---- */
+  .dashboard :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  /* sticky image: the research triptych turns to each method's panel (a gentle push in, the other panels veiled) */
+  .research :global(img) { transition: transform 1.2s cubic-bezier(.2, .7, .2, 1), transform-origin 1.2s cubic-bezier(.2, .7, .2, 1); }
+  .research[data-active="0"] :global(img) { transform: scale(1.12); transform-origin: 20% 50%; }
+  .research[data-active="1"] :global(img) { transform: scale(1.12); transform-origin: 54% 50%; }
+  .research[data-active="2"] :global(img) { transform: scale(1.12); transform-origin: 84% 50%; }
+  /* while the image holds, the three methods are spread down one column so each arrives on its own */
+  :global(html.case-motion) .methods { grid-template-columns: 1fr; row-gap: calc(330 * var(--u)); }
+  .research__veil { position: absolute; inset: 0; pointer-events: none; --v: rgba(15, 14, 12, 0.62); }
+  .research__veil--1 { background: linear-gradient(to right, transparent 0 39.5%, var(--v) 39.5% 100%); }
+  .research__veil--2 { background: linear-gradient(to right, var(--v) 0 39.5%, transparent 39.5% 68%, var(--v) 68% 100%); }
+  .research__veil--3 { background: linear-gradient(to right, var(--v) 0 68%, transparent 68% 100%); }
+  .red-block { background: var(--accent); }
+  .methods { display: grid; grid-template-columns: 1fr 1fr; column-gap: calc(24 * var(--u)); row-gap: calc(40 * var(--u)); }
+  .methods > div { display: flex; flex-direction: column; gap: calc(var(--gap) * var(--u)); }
+  .ia-copy { margin-top: calc(132 * var(--u) - 3 * 31 * 1.25 * var(--u)); width: calc(491 * var(--u)); }
+  .dd3 { justify-content: center; }
+
+  /* ---- phones ---- */
+  @media (max-width: 900px) {
+    .hero-band { display: none; }
+    .hero { background: linear-gradient(-54.29deg, #b51b03 6.147%, #b51b03 67.06%, #681609 102.86%); margin: 0 -20px; width: calc(100% + 40px) !important;
+      padding: 20px 20px 32px; display: flex; flex-direction: column; gap: 24px; overflow: visible; }
+    .stage { display: none; }
+    .hero__brand, .hero__resume { position: static; }
+    .hero__resume { position: absolute; left: auto; right: 20px; top: 14px; width: auto; height: 36px; padding: 0 12px; gap: 8px; white-space: nowrap; }
+    .hero__card :global(.hero__logo) { width: 52px !important; height: 48px; object-fit: contain; align-self: flex-start; }
+    .hero__card { position: relative; left: auto; top: auto; width: auto; height: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .hero__card > * { position: static; width: auto !important; }
+    .hero__title { font-size: 36px; }
+    .hero__summary { width: auto; }
+    .hero__meta { flex-wrap: wrap; gap: 4px 16px; white-space: normal; }
+    .hero__facts { position: static; width: auto; gap: 20px; }
+    .hero__line { width: 100%; }
+    .hero__facts dl { flex-direction: column; gap: 16px; }
+    .hero__facts dl > div { width: auto; }
+    .methods { grid-template-columns: 1fr; gap: 24px; }
+    .ia-copy { margin-top: 16px; width: auto; }
+    .red-block { display: none; }
+    .dashboard { aspect-ratio: 16 / 9; }
+    .dashboard__play { bottom: 16px; height: 42px; font-size: 14px; }
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+// Not found: the site's own error page, in the same voice and type as the rest of it.
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page not found · Suyash" description="This page doesn't exist.">
+  <main class="nf">
+    <p class="nf__label">ERROR 404</p>
+    <h1 class="nf__word t-display">khoya</h1>
+    <p class="nf__lede t-serif">This page wandered off. <em>Let’s get you back.</em></p>
+    <a class="nf__home" href="/">Back to home</a>
+  </main>
+</Base>
+
+<style>
+  .nf { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 0 var(--gutter, calc(104 * var(--u)));
+    max-width: calc(1728 * var(--u)); margin: 0 auto; }
+  .nf__label { font-size: max(12px, calc(16 * var(--u))); }
+  .nf__word { margin-top: calc(8 * var(--u)); font-size: clamp(96px, calc(200 * var(--u)), 200px); line-height: 1; color: var(--accent); }
+  .nf__lede { margin-top: calc(20 * var(--u)); font-size: max(20px, calc(31 * var(--u))); font-style: italic; line-height: 1.25; }
+  .nf__lede em { font-weight: 400; }
+  .nf__home { align-self: flex-start; margin-top: calc(48 * var(--u)); display: inline-flex; align-items: center; justify-content: center;
+    min-width: max(104px, calc(144 * var(--u))); height: max(36px, calc(50 * var(--u))); padding: 0 calc(20 * var(--u));
+    background: var(--grad-resume); color: var(--paper); font-size: max(14px, calc(20 * var(--u))); font-weight: 400;
+    transition: transform .3s ease, box-shadow .3s ease; }
+  .nf__home:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(45, 10, 5, .25); }
+  @media (max-width: 900px) { .nf { padding: 0 20px; } }
+</style>

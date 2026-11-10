@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Work from '../components/Work.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import bgEllipse from '../assets/home/bg-ellipse.svg?url';
+import '../styles/home.css';
+---
+<Base title="Suyash — Product Designer" description="Zero to one product designer with one simple rule: the user wins and the business doesn't lose.">
+  <div class="page page--home">
+    <img class="page__glow" src={bgEllipse} alt="" aria-hidden="true" />
+    <Hero />
+    <main id="content">
+      <Work />
+      <About />
+      <Contact />
+    </main>
+    <Footer />
+  </div>
+</Base>
+
+<style>
+  /* the 1728px design canvas, centred; wider screens get more of the page colour around it */
+  .page { position: relative; width: calc(1728 * var(--u)); margin: 0 auto; overflow-y: clip; }
+  /* Ellipse 6 (362:4): a tall blurred cream glow down the left edge of the whole page */
+  .page__glow { position: absolute; left: calc(-589 * var(--u)); top: calc(-1344 * var(--u)); width: calc(1284 * var(--u)); height: calc(9370 * var(--u));
+    max-width: none; pointer-events: none; }
+  @media (max-width: 900px) { .page { width: 100%; } .page__glow { display: none; } }
+</style>

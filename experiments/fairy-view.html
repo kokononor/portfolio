@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fairy Preview</title>
+<style>html, body { margin: 0; height: 100%; overflow: hidden; background: #2b2f2e; }</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<script type="module">
+// Preview of models/fairy.bin (the converted chibi fairy) from ?view=front|side|back|three
+import * as THREE from 'three';
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.add(new THREE.HemisphereLight('#ffffff', '#6b6b5a', 1.6));
+const key = new THREE.DirectionalLight('#fff3e0', 2.0);
+key.position.set(2, 3, 4);
+scene.add(key);
+const camera = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.01, 10);
+const buf = await (await fetch('models/fairy.bin')).arrayBuffer();
+const head = new Uint32Array(buf, 0, 2), n = head[0], m = head[1];
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(buf, 8, n * 3), 3));
+geo.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(buf, 8 + n * 12, n * 4), 4, true));
+geo.setIndex(new THREE.BufferAttribute(new Uint32Array(buf, 8 + n * 16, m), 1));
+geo.computeVertexNormals();
+scene.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.75, side: THREE.DoubleSide })));
+const view = new URLSearchParams(location.search).get('view') || 'three';
+const dir = { front: [0, 0, 1], back: [0, 0, -1], side: [1, 0, 0], three: [0.7, 0.25, 0.8] }[view];
+camera.position.set(0, 0.18, 0).add(new THREE.Vector3(...dir).normalize().multiplyScalar(1.1));
+camera.lookAt(0, 0.18, 0);
+renderer.setAnimationLoop(() => renderer.render(scene, camera));
+</script>
+</body>
+</html>

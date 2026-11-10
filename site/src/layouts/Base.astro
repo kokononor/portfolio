@@ -1,0 +1,41 @@
+---
+import '../styles/global.css';
+import BackToTop from '../components/BackToTop.astro';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f8f7f0" />
+    <script is:inline>
+      // motion is opt-in: only when scripts run and the visitor has not asked for reduced motion
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('js-motion');
+      // the page's width without the scrollbar (100vw includes it on Windows), so layouts never run under it (--vw)
+      const de = document.documentElement;
+      const setVw = () => de.style.setProperty('--vw', de.clientWidth + 'px');
+      setVw();
+      // the scrollbar only appears once the page has content, so measure again then (and on any later size change)
+      document.addEventListener('DOMContentLoaded', setVw);
+      addEventListener('load', setVw);
+      addEventListener('resize', setVw);
+      new ResizeObserver(setVw).observe(de);
+    </script>
+  </head>
+  <body>
+    <slot />
+    <BackToTop />
+    <script>
+      import '../scripts/motion';
+      import '../scripts/lighting';
+    </script>
+  </body>
+</html>
