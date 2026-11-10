@@ -54,7 +54,6 @@ const toGrid = (src: string) => src.replace(/<(?:div|p)\b[^>]*>/g, tag => tag
 
 // the nav: brand and resume become links
 const html = withPhotos(toGrid(body))
-  .replace(/top: calc(208 * var(--u))([^>]*>Cost shaped)/, 'top: calc(236 * var(--u))$1') // the paragraph above wraps one line longer on the grid
   .replace(/<p [^>]*>Hero photo: Swad storefront<\/p>/, '')
   .replace(/<p [^>]*>SUYASH <\/p>/, '<a href="/" class="swad-link swad-brand">HOME</a>')
   .replace(/<p [^>]*>RESUME<\/p>\s*<div [^>]*data-name="Vector">.*?<\/div><\/div>/, '<a href="/resume.pdf" class="swad-resume">RESUME <img src="/work/swad/imgVector.svg" width="12" height="18" alt="" /></a>');
@@ -82,6 +81,80 @@ const html = withPhotos(toGrid(body))
       if (/^\d\d /.test(block.dataset.name || '')) [...(block.children as HTMLCollectionOf<HTMLElement>)].forEach(tag);
       else tag(block);
     }
+  }
+
+  // Text never drops below a readable size, so on desktop windows (mostly 901–1365px) a paragraph can grow taller
+  // than its Figma slot and run into the block below. Working from the innermost frames out, each block that text
+  // runs into moves down (with everything after it in its frame), and a frame grows when its content outgrew it.
+  // Where nothing collides nothing moves; phones use their own stacked layout.
+  if (canvas) {
+    const desk = matchMedia('(min-width: 901px)');
+    const abs = (el: Element) => [...el.children].filter((c): c is HTMLElement => getComputedStyle(c).position === 'absolute');
+    const reset = () => {
+      canvas.querySelectorAll<HTMLElement>('[data-settled]').forEach(e => {
+        e.style.marginTop = '';
+        if (e.dataset.h0) e.style.height = e.dataset.h0;
+        delete e.dataset.settled;
+      });
+      if (canvas.dataset.h0) canvas.style.height = canvas.dataset.h0;
+    };
+    // how far down a block's text reaches (a frame may be drawn taller or shorter than what is in it)
+    const inkBottom = (e: HTMLElement): number => {
+      const kids = abs(e);
+      if (!kids.length) return e.textContent?.trim() ? e.offsetHeight : 0;
+      return Math.max(0, ...kids.map(c => { const b = inkBottom(c); return b ? c.offsetTop + b : 0; }));
+    };
+    // where a block's content starts (its text or pictures; a frame's top edge may be empty space)
+    const inkTop = (e: HTMLElement): number => {
+      const kids = abs(e);
+      if (!kids.length) return e.textContent?.trim() || e.querySelector('img') || e.tagName === 'IMG' ? 0 : Infinity;
+      return Math.min(Infinity, ...kids.map(c => c.offsetTop + inkTop(c)));
+    };
+    const settle = (box: HTMLElement): number => {
+      const kids = abs(box);
+      kids.forEach(k => { if (abs(k).length) settle(k); });
+      const it = kids.map(e => ({ e, top: e.offsetTop, h: e.offsetHeight, ink: inkBottom(e), lead: inkTop(e), l: e.offsetLeft, w: e.offsetWidth, text: !!e.textContent?.trim(), shift: 0 }))
+        .sort((a, b) => a.top - b.top);
+      for (let i = 0; i < it.length; i++) {
+        const a = it[i];
+        if (!a.text) continue;
+        for (let j = i + 1; j < it.length; j++) {
+          const b = it[j];
+          if (b.top <= a.top + 1) continue;                                                   // only blocks below it
+          if (Math.min(a.l + a.w, b.l + b.w) - Math.max(a.l, b.l) <= 4) continue;            // in the same column
+          if (!isFinite(b.lead)) continue;
+          const over = a.top + a.shift + a.ink - (b.top + b.shift + b.lead);                // text against content, not frame edges
+          if (over > 1) it.forEach(c => { if (c.top >= b.top) c.shift += over; });   // flush rows stay flush
+        }
+      }
+      it.forEach(c => { if (c.shift) { c.e.style.marginTop = `${c.shift}px`; c.e.dataset.settled = ''; } });
+      const bottom = Math.max(0, ...it.map(c => c.top + c.shift + c.h));
+      if (box !== canvas && box.style.height && bottom > box.clientHeight + 1) {
+        box.dataset.h0 ??= box.style.height;
+        box.style.height = `${bottom}px`;
+        box.dataset.settled = '';
+      }
+      return bottom;
+    };
+    let busy = false;
+    const run = () => {
+      if (busy) return;
+      busy = true;
+      reset();
+      if (desk.matches) {
+        canvas.dataset.h0 ??= canvas.style.height;
+        const bottom = settle(canvas);
+        if (bottom > canvas.clientHeight) canvas.style.height = `${bottom}px`;
+      }
+      dispatchEvent(new Event('resize'));                  // scroll triggers and smooth scroll re-measure the page
+      busy = false;
+    };
+    let t = 0;
+    addEventListener('resize', () => { if (!busy) { clearTimeout(t); t = window.setTimeout(run, 200); } });
+    document.fonts.ready.then(run);
+    // faces used further down the page can arrive later and change how tall text is
+    document.fonts.addEventListener('loadingdone', () => { clearTimeout(t); t = window.setTimeout(run, 100); });
+    addEventListener('load', run);
   }
   import('../../scripts/case-motion');
 </script>
