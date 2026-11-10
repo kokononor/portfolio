@@ -73,6 +73,22 @@ if (canvas && !reduce) {
         makeRoom(from, parseFloat(el.dataset.room!));
       });
 
+    // ---- a block with a screen to itself (data-alone): when it sits in the middle of the window, nothing above or
+    // below it is in view. The room depends on the window's height, so it is measured here rather than drawn. ----
+    $$('[data-alone]').forEach(el => {
+      const vh = innerHeight / u();                                          // the window's height, in design px
+      const h = el.offsetHeight / u();
+      const need = (vh - h) / 2 + 40;                                        // the clear space each side needs
+      const bottomOf = (b: HTMLElement) => yOf(b) + b.offsetHeight / u();
+      const others = blocks.filter(b => b !== el && !el.contains(b) && !b.contains(el) && b.offsetHeight > 0);
+      const above = Math.max(0, ...others.filter(b => yOf(b) < yOf(el)).map(bottomOf));
+      const gapAbove = yOf(el) - above;
+      if (gapAbove < need) makeRoom(yOf(el), need - gapAbove);
+      const end = bottomOf(el);
+      const below = Math.min(...others.filter(b => yOf(b) >= end - 1).map(yOf));
+      if (isFinite(below) && below - end < need) makeRoom(below, need - (below - end));
+    });
+
     // ---- reveals along a rule: the hairline draws across, then the image opens down from it ----
     $$('[data-wipe]').forEach(el => {
       const fromLeft = el.dataset.wipe === 'left';
