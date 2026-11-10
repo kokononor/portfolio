@@ -417,16 +417,17 @@ const half = '(max-width: 900px) 100vw, 852px';
   /* ---- sections ---- */
   .dashboard :global(img) { width: 100%; height: 100%; object-fit: cover; }
   /* sticky image: the research triptych turns to each method's panel (a gentle push in, the other panels veiled) */
-  .research :global(img) { transition: transform 1.2s cubic-bezier(.2, .7, .2, 1), transform-origin 1.2s cubic-bezier(.2, .7, .2, 1); }
-  .research[data-active="0"] :global(img) { transform: scale(1.12); transform-origin: 20% 50%; }
-  .research[data-active="1"] :global(img) { transform: scale(1.12); transform-origin: 54% 50%; }
-  .research[data-active="2"] :global(img) { transform: scale(1.12); transform-origin: 84% 50%; }
+  /* the veils zoom with the picture, so their edges stay on the panel edges */
+  .research :global(img), .research__veil { transition: transform 1.2s cubic-bezier(.2, .7, .2, 1), transform-origin 1.2s cubic-bezier(.2, .7, .2, 1), opacity .9s ease; }
+  .research[data-active="0"] :global(img), .research[data-active="0"] .research__veil { transform: scale(1.12); transform-origin: 20% 50%; }
+  .research[data-active="1"] :global(img), .research[data-active="1"] .research__veil { transform: scale(1.12); transform-origin: 54% 50%; }
+  .research[data-active="2"] :global(img), .research[data-active="2"] .research__veil { transform: scale(1.12); transform-origin: 84% 50%; }
   /* while the image holds, the three methods are spread down one column so each arrives on its own */
   :global(html.case-motion) .methods { grid-template-columns: 1fr; row-gap: calc(330 * var(--u)); }
   .research__veil { position: absolute; inset: 0; pointer-events: none; --v: rgba(15, 14, 12, 0.62); }
-  .research__veil--1 { background: linear-gradient(to right, transparent 0 39.5%, var(--v) 39.5% 100%); }
-  .research__veil--2 { background: linear-gradient(to right, var(--v) 0 39.5%, transparent 39.5% 68%, var(--v) 68% 100%); }
-  .research__veil--3 { background: linear-gradient(to right, var(--v) 0 68%, transparent 68% 100%); }
+  .research__veil--1 { background: linear-gradient(to right, transparent 0 39.2%, var(--v) 39.2% 100%); }
+  .research__veil--2 { background: linear-gradient(to right, var(--v) 0 39.2%, transparent 39.2% 67.4%, var(--v) 67.4% 100%); }
+  .research__veil--3 { background: linear-gradient(to right, var(--v) 0 67.4%, transparent 67.4% 100%); }
   .red-block { background: var(--accent); }
   .methods { display: grid; grid-template-columns: 1fr 1fr; column-gap: calc(24 * var(--u)); row-gap: calc(40 * var(--u)); }
   .methods > div { display: flex; flex-direction: column; gap: calc(var(--gap) * var(--u)); }
