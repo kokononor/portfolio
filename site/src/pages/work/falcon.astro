@@ -332,6 +332,9 @@ const half = '(max-width: 900px) 100vw, 852px';
     .falcon-page { --cu: var(--u); --hu: min(var(--u), calc(100svh / 1115)); --shift: calc(1115 * (var(--cu) - var(--hu))); margin-bottom: calc(-1 * var(--shift)); }
     /* (descendant selectors: once held, the stage sits inside GSAP's pin wrapper) */
     .falcon-page :is(.hero, .stage, .hero-band) { --u: var(--hu); }
+    /* ...but its text keeps the page's own type size, so the title, summary and facts match the other case studies
+       on short screens too (only the layout shrinks to fit) */
+    .falcon-page :is(.hero__title, .hero__meta, .hero__summary, .hero__paper, .hero__facts dt, .hero__facts dd) { --u: var(--cu); }
     .falcon-page .hero { margin-left: calc(864 * var(--cu) - 864 * var(--u)); overflow: visible; }
     /* the nav keeps the page's margins, like the other pages, while the hero's content is scaled and centred */
     .falcon-page .hero__brand { left: calc(104 * var(--cu) - 864 * var(--cu) + 864 * var(--u)); }
@@ -445,7 +448,7 @@ const half = '(max-width: 900px) 100vw, 852px';
     .hero__card :global(.hero__logo) { width: 52px !important; height: 48px; object-fit: contain; align-self: flex-start; }
     .hero__card { position: relative; left: auto; top: auto; width: auto; height: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
     .hero__card > * { position: static; width: auto !important; }
-    .hero__title { font-size: 36px; }
+    .hero__title { font-size: 40px; }   /* the same as the other case studies' titles */
     .hero__summary { width: auto; }
     .hero__meta { flex-wrap: wrap; gap: 4px 16px; white-space: normal; }
     .hero__facts { position: static; width: auto; gap: 20px; }

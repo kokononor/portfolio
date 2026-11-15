@@ -196,6 +196,11 @@ const html = withHeadings(withPhotos(toGrid(body)))
      readable scale by giving this page a larger design pixel */
   @media (max-width: 900px) {
     .swad-canvas { --u: 0.55px; height: auto !important; padding: 0 20px 48px; display: block; }
+    /* the Figma sizes mapped onto the case studies' shared phone scale (styles/case.css): title and figures,
+       section headings, sub-headings and quotes */
+    .swad-canvas :global([style*="font-size: calc(61 * var(--u))"]) { font-size: 40px !important; }
+    .swad-canvas :global([style*="font-size: calc(49 * var(--u))"]) { font-size: 34px !important; }
+    .swad-canvas :global([style*="font-size: calc(31 * var(--u))"]) { font-size: 24px !important; }
     .swad-canvas :global(*) { position: static !important; left: auto !important; top: auto !important; transform: none !important;
       width: auto !important; max-width: 100%; white-space: normal !important; }
     .swad-canvas :global(div:not(:has(*))) { height: auto; min-height: 1px; }

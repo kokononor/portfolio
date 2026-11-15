@@ -59,8 +59,11 @@
   .canvas { width: 100%; height: auto !important; padding: 0 20px; display: flex; flex-direction: column; }
   .at { position: relative; left: auto; top: auto; width: auto !important; height: auto !important; margin-top: 28px; }
   .bleed { position: relative; left: auto; top: auto; width: calc(100% + 40px); margin: 40px -20px 0; height: auto; }
+  /* the phone type scale, shared by all three case studies (swad.astro maps its Figma sizes onto it) */
   .c-h2 { font-size: 34px; margin-top: 56px; }
   .c-h3 { font-size: 24px; }
+  .c-lead, .c-quote { font-size: 17px; }
+  .c-body { font-size: 15px; }
   .c-img { aspect-ratio: 4 / 5; }
   .c-vrule { display: none; }
   .c-why, .c-why .c-body { width: auto; padding: 24px; }

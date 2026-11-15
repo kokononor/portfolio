@@ -160,14 +160,15 @@ import redefining from '../assets/home/redefining.png';
     .falcon::before { width: calc(6.645% + 207 * var(--u)); border-radius: var(--radius) 0 0 var(--radius);   /* square where it meets the image */
       background: linear-gradient(to bottom, #d93219 0%, #ce2d15 7%, #bb260f 21%, #9f1b06 41%, #881402 64%, #781101 87%, #6f1001 100%); }
     .falcon__img { width: calc(414 * var(--u)); height: calc(546 * var(--u)); }
-    .falcon .falcon__case { flex: 1; width: auto; margin: 0 0 0 calc(96 * var(--u));
-      display: grid; grid-template-columns: minmax(0, 1.25fr) auto minmax(0, 1fr); column-gap: calc(44 * var(--u)); align-items: center; }
-    .falcon .case__title { font-size: max(26px, calc(50 * var(--u))); }
-    .falcon .case__lede { font-size: max(16px, calc(25 * var(--u))); }
+    /* the intro gets the larger share so the heading (the same size as the other cards') wraps to three lines */
+    .falcon .falcon__case { flex: 1; width: auto; margin: 0 0 0 calc(80 * var(--u));
+      display: grid; grid-template-columns: minmax(0, 1.75fr) auto minmax(0, 1fr); column-gap: calc(44 * var(--u)); align-items: center; }
     .falcon .case__rule { align-self: stretch; width: 0; height: auto; margin: 0; border-top: 0; border-left: 1px solid var(--muted); opacity: .45; }
     .falcon .case__facts { width: auto; grid-template-columns: 1fr 1fr; column-gap: calc(22 * var(--u)); }
     .falcon .case__links { flex-wrap: wrap; row-gap: calc(12 * var(--u)); }
   }
+  /* small laptops: the facts column is too narrow for two side by side, so they stack */
+  @media (min-width: 901px) and (max-width: 1279px) { .falcon .case__facts { grid-template-columns: 1fr; row-gap: calc(18 * var(--u)); } }
 
   /* ---- Swad (362:102 dark card, 362:103 plate, 362:104 text card) ---- */
   .swad { width: calc(1520 * var(--u)); min-height: calc(986 * var(--u)); display: grid; grid-template-columns: 1fr 1fr; column-gap: 1.72%; }
