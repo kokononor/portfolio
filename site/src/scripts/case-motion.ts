@@ -270,7 +270,9 @@ if (canvas && !reduce) {
 
       const tl = gsap.timeline({
         defaults: { ease: 'power2.inOut' },
-        scrollTrigger: { trigger: scene, start: 'top top', end: () => `+=${half * u()}`, pin: true, pinSpacing: false, scrub: 0.6 },
+        // it holds once the scene's content (its first 737 design px, the length of its rule) is centred in the window,
+        // or at the top when that content is taller than the window
+        scrollTrigger: { trigger: scene, start: () => `top ${Math.max(0, innerHeight / 2 - 368.5 * u())}px`, end: () => `+=${half * u()}`, pin: true, pinSpacing: false, scrub: 0.6 },
       });
       tl.to({}, { duration: 0.1 });                                    // a beat to read the findings
       const a = items.filter(i => !i.b), b = items.filter(i => i.b);

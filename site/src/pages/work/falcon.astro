@@ -332,9 +332,10 @@ const half = '(max-width: 900px) 100vw, 852px';
     .falcon-page { --cu: var(--u); --hu: min(var(--u), calc(100svh / 1115)); --shift: calc(1115 * (var(--cu) - var(--hu))); margin-bottom: calc(-1 * var(--shift)); }
     /* (descendant selectors: once held, the stage sits inside GSAP's pin wrapper) */
     .falcon-page :is(.hero, .stage, .hero-band) { --u: var(--hu); }
-    /* ...but its text keeps the page's own type size, so the title, summary and facts match the other case studies
-       on short screens too (only the layout shrinks to fit) */
-    .falcon-page :is(.hero__title, .hero__meta, .hero__summary, .hero__paper, .hero__facts dt, .hero__facts dd) { --u: var(--cu); }
+    /* ...the facts keep the page's own type size; the card's text shrinks with the card on short windows (so it can
+       never spill out of it), down to the phone sizes */
+    .falcon-page :is(.hero__facts dt, .hero__facts dd) { --u: var(--cu); }
+    .falcon-page .hero__title { font-size: max(36px, calc(61 * var(--u))); width: min(calc(523 * var(--u)), max(265px, calc(449 * var(--u)))); }
     .falcon-page .hero { margin-left: calc(864 * var(--cu) - 864 * var(--u)); overflow: visible; }
     /* the nav keeps the page's margins, like the other pages, while the hero's content is scaled and centred */
     .falcon-page .hero__brand { left: calc(104 * var(--cu) - 864 * var(--cu) + 864 * var(--u)); }
@@ -404,8 +405,8 @@ const half = '(max-width: 900px) 100vw, 852px';
   /* the lower lines stack from the card's foot, so a larger minimum text size can never overlap them */
   .hero__foot { left: calc(52 * var(--u)); right: calc(52 * var(--u)); bottom: calc(40 * var(--u)); display: flex; flex-direction: column; gap: calc(10 * var(--u)); }
   .hero__foot > * { position: static !important; }
-  .hero__meta { left: calc(52 * var(--u)); top: calc(636 * var(--u)); width: calc(560 * var(--u)); color: var(--muted); display: flex; flex-wrap: wrap; gap: 0 calc(52 * var(--u)); }
-  .hero__summary { left: calc(51 * var(--u)); top: calc(667 * var(--u)); width: calc(498 * var(--u)); }
+  .hero__meta { left: calc(52 * var(--u)); top: calc(636 * var(--u)); color: var(--muted); display: flex; flex-wrap: wrap; gap: 0 calc(52 * var(--u)); }
+  .hero__summary { left: calc(51 * var(--u)); top: calc(667 * var(--u)); max-width: calc(498 * var(--cu, var(--u))); }
   .hero__paper { left: calc(52 * var(--u)); top: calc(789 * var(--u)); text-decoration: underline; text-underline-position: from-font; text-decoration-thickness: from-font; }
   .hero__paper:hover { color: var(--accent); }
 
