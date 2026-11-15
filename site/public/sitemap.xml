@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Add a <url> here when a new page goes up under src/pages/. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.notfiguredyet.com/</loc></url>
+  <url><loc>https://www.notfiguredyet.com/work/falcon/</loc></url>
+  <url><loc>https://www.notfiguredyet.com/work/diviniti/</loc></url>
+  <url><loc>https://www.notfiguredyet.com/work/swad/</loc></url>
+</urlset>
