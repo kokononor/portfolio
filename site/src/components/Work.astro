@@ -16,18 +16,22 @@ import redefining from '../assets/home/redefining.png';
     <div class="falcon__img">
       <Image src={falcon} alt="Two engineers in silhouette at the Falcon network operations dashboard" widths={[618, 1075]} sizes="(max-width: 900px) 90vw, 618px" data-parallax="4" />
     </div>
-    <div class="case">
-      <p class="case__meta">FALCON - VI SNOC <span class="dot dot--accent"></span>LIVE</p>
-      <h3 class="case__title t-serif">Making millions of network events explain a <em>single outage.</em></h3>
-      <p class="case__lede">A network operations dashboard, redesigned for the moments when every minute of downtime counts.</p>
+    <div class="case falcon__case">
+      <div class="falcon__intro">
+        <p class="case__meta">FALCON - VI SNOC <span class="dot dot--accent"></span>LIVE</p>
+        <h3 class="case__title t-serif">Making millions of network events explain a <em>single outage.</em></h3>
+        <p class="case__lede">A network operations dashboard, redesigned for the moments when every minute of downtime counts.</p>
+      </div>
       <hr class="case__rule" />
-      <dl class="case__facts">
-        <div><dt>Outcome</dt><dd>Outage to correlation time reduced from 1 min to under 10 seconds</dd></div>
-        <div><dt>Company</dt><dd>Vodafone Idea, Internship</dd></div>
-        <div><dt>Role</dt><dd>Product Designer</dd></div>
-      </dl>
-      <div class="case__links">
-        <a class="case__more" href="/work/falcon">Read More</a>
+      <div class="falcon__side">
+        <dl class="case__facts">
+          <div><dt>Outcome</dt><dd>Outage to correlation time reduced from 1 min to under 10 seconds</dd></div>
+          <div><dt>Company</dt><dd>Vodafone Idea, Internship</dd></div>
+          <div><dt>Role</dt><dd>Product Designer</dd></div>
+        </dl>
+        <div class="case__links">
+          <a class="case__more" href="/work/falcon">Read More</a>
+        </div>
       </div>
     </div>
   </article>
@@ -149,11 +153,27 @@ import redefining from '../assets/home/redefining.png';
   .falcon__img :global(img) { width: 100%; height: 110%; margin-top: -5%; object-fit: cover; }
   .falcon .case { position: relative; width: max(calc(517 * var(--u)), 36%); margin: 0 auto; }   /* centred in the space beside the image */
 
+  /* wider screens: a shorter, wider card. The intro and the facts sit side by side, split by a vertical rule, and the
+     image shrinks to make room (the red block still ends at its centre) */
+  @media (min-width: 901px) {
+    .falcon { min-height: calc(680 * var(--u)); }
+    .falcon::before { width: calc(6.645% + 207 * var(--u)); border-radius: var(--radius) 0 0 var(--radius);   /* square where it meets the image */
+      background: linear-gradient(to bottom, #d93219 0%, #ce2d15 7%, #bb260f 21%, #9f1b06 41%, #881402 64%, #781101 87%, #6f1001 100%); }
+    .falcon__img { width: calc(414 * var(--u)); height: calc(546 * var(--u)); }
+    .falcon .falcon__case { flex: 1; width: auto; margin: 0 0 0 calc(96 * var(--u));
+      display: grid; grid-template-columns: minmax(0, 1.25fr) auto minmax(0, 1fr); column-gap: calc(44 * var(--u)); align-items: center; }
+    .falcon .case__title { font-size: max(26px, calc(50 * var(--u))); }
+    .falcon .case__lede { font-size: max(16px, calc(25 * var(--u))); }
+    .falcon .case__rule { align-self: stretch; width: 0; height: auto; margin: 0; border-top: 0; border-left: 1px solid var(--muted); opacity: .45; }
+    .falcon .case__facts { width: auto; grid-template-columns: 1fr 1fr; column-gap: calc(22 * var(--u)); }
+    .falcon .case__links { flex-wrap: wrap; row-gap: calc(12 * var(--u)); }
+  }
+
   /* ---- Swad (362:102 dark card, 362:103 plate, 362:104 text card) ---- */
   .swad { width: calc(1520 * var(--u)); min-height: calc(986 * var(--u)); display: grid; grid-template-columns: 1fr 1fr; column-gap: 1.72%; }
   .swad__visual, .swad__body { position: relative; border-radius: var(--radius); }
   .swad__visual { background: var(--ink); box-shadow: var(--shadow-big); }
-  .swad__plate { position: absolute; left: calc(50% - 245.5 * var(--u)); top: calc(242 * var(--u)); width: calc(491 * var(--u)); height: calc(503 * var(--u));
+  .swad__plate { position: absolute; left: calc(50% - 300 * var(--u)); top: calc(50% - 307.5 * var(--u)); width: calc(600 * var(--u)); height: calc(615 * var(--u));   /* centred in the dark panel */
     border-radius: var(--radius); background: var(--grad-swad); object-fit: cover; }
   .swad__body { background: var(--white); filter: var(--drop-big, drop-shadow(-20px 20px 13px rgba(0, 0, 0, 0.08)));
     padding: calc(92 * var(--u)) calc(101 * var(--u)) calc(86 * var(--u)) calc(129 * var(--u)); }
