@@ -9,8 +9,9 @@
 // Until then a placeholder plays: a soft lo-fi chord loop with vinyl crackle, generated in the browser.
 import { gsap } from 'gsap';
 
-const TRACK_URL = '';   // no licensed track yet: the generated lo-fi loop below plays
-const TRACK_NAME = 'a lo-fi loop, made in the browser';   // read out with the play / pause label
+// Not licensed: shipped by the site owner's choice. Set TRACK_URL to '' to fall back to the generated loop.
+const TRACK_URL = '/audio/heaven-knows-im-miserable-now.mp3';
+const TRACK_NAME = "Heaven Knows I'm Miserable Now by The Smiths";   // read out with the play / pause label
 const VOLUME = 0.6;
 const RPM_DEG = 200;                        // ~33⅓ rpm, in degrees per second
 const ARM_PLAY = 34;                        // degrees the arm swings to sit over the record
