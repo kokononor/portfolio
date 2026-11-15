@@ -1,0 +1,10 @@
+# Netlify build settings. The Astro site lives in site/; the rest of the repo
+# (experiments/, .claude/) is not deployed. Security and caching headers come
+# from site/public/_headers, which Astro copies into dist/.
+[build]
+  base = "site"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
