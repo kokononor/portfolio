@@ -150,7 +150,7 @@ import redefining from '../assets/home/redefining.png';
     background: var(--accent); border-radius: var(--radius); }
   .falcon__img { position: relative; flex: none; width: calc(618 * var(--u)); height: calc(799 * var(--u));   /* centred on the red block: the same red shows above and below */
     border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-soft); }
-  .falcon__img :global(img) { width: 100%; height: 110%; margin-top: -5%; object-fit: cover; }
+  .falcon__img :global(img) { position: absolute; left: 0; top: -6%; width: 100%; height: 112%; object-fit: cover; }   /* covers the ±4% parallax drift */
   .falcon .case { position: relative; width: max(calc(517 * var(--u)), 36%); margin: 0 auto; }   /* centred in the space beside the image */
 
   /* wider screens: a shorter, wider card. The intro and the facts sit side by side, split by a vertical rule, and the
@@ -184,7 +184,9 @@ import redefining from '../assets/home/redefining.png';
     border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-big); color: var(--paper);
     padding: calc(140 * var(--u)) 0 0 calc(129 * var(--u)); }
   .story__bg { position: absolute; inset: 0; }
-  .story__bg :global(img) { width: 100%; height: 112%; margin-top: -6%; object-fit: cover; }
+  /* 8% spare above and below (top is a share of the card's height; a % margin would be a share of its width), so the
+     ±6% parallax drift never shows the card's edge */
+  .story__bg :global(img) { position: absolute; left: 0; top: -8%; width: 100%; height: 116%; object-fit: cover; }
   .story::after { content: ''; position: absolute; inset: 0; background: var(--grad-story); pointer-events: none; }
   .story__body { position: relative; z-index: 1; width: max(calc(517 * var(--u)), 36%); }
   .case--light .case__meta, .case--light .case__facts dt, .case--light .case__title, .case--light .case__title em { color: var(--paper); }
