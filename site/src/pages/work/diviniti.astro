@@ -2,11 +2,11 @@
 // Diviniti case study — "Redefining Design". Figma: "Diviniti — Fixed" (362:391), 1728 × 11621, page fill #fcfbf8,
 // accent/diviniti #681609. Blocks sit at their design coordinates (styles/case.css); the order is reading order for phones.
 import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import NextProject from '../../components/NextProject.astro';
 import { Image } from 'astro:assets';
 import '../../styles/case.css';
-import arrowDown from '../../assets/home/arrow-down.svg?url';
 
 import hero from '../../assets/diviniti/hero.png';
 import logoMask from '../../assets/diviniti/logo-mask.png';
@@ -24,6 +24,7 @@ import intelligence from '../../assets/diviniti/intelligence.png';
 const half = '(max-width: 900px) 100vw, 852px';
 ---
 <Base title="Redefining Design — Diviniti · Suyash" description="Redefining Design at Diviniti India: a journey from visual execution to product thinking, across brand, commerce and information architecture.">
+  <Nav solid />
   <main class="canvas diviniti-page" style="height: calc(11050 * var(--u));">
 
     <!-- ===== Hero (Diviniti Global 362:392) ===== -->
@@ -31,8 +32,6 @@ const half = '(max-width: 900px) 100vw, 852px';
       <Image class="hero__img" src={hero} alt="An incense stick smoking on a dark stone tray in warm light" widths={[1440, 1728]} sizes="100vw" loading="eager" />
       <span class="hero__shade" aria-hidden="true"></span>
     </header>
-    <a class="at hero__brand" href="/" style="--x: 104; --y: 55.5;">HOME</a>
-    <a class="at hero__resume" href="/resume.pdf" style="--x: 1480; --y: 47;">RESUME <img src={arrowDown} width="12" height="18" alt="" /></a>
     <span class="at hero__logo" style={`--x: 104; --y: 145; --w: 131.664; --h: 130.263; --mask: url('${logoMask.src}');`} aria-label="Diviniti" role="img"></span>
     <p class="at c-label hero__text" style="--x: 104; --y: 684;" data-hero-in>Diviniti India · 2025–26</p>
     <h1 class="at hero__title hero__text" style="--x: 104; --y: 718;" data-hero-in>Redefining Design</h1>
@@ -250,13 +249,7 @@ const half = '(max-width: 900px) 100vw, 852px';
   .hero :global(.hero__img) { width: 100%; height: 100%; object-fit: cover; }
   .hero__shade { position: absolute; left: calc((var(--vw, 100vw) - 1728 * var(--u)) / 2); top: calc(19 * var(--u)); width: calc(985 * var(--u)); height: calc(1098 * var(--u));
     background: linear-gradient(to left, rgba(12, 11, 9, 0), rgba(14, 13, 10, 0) 31.25%, #17120e); }
-  .hero__text, .hero__brand { color: var(--paper); }
-  .hero__brand { font-size: max(16px, calc(25 * var(--nav-u))); font-weight: 500; z-index: 1; }
-  .hero__resume { z-index: 1; display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--nav-u));
-    width: max(104px, calc(144 * var(--nav-u))); height: max(36px, calc(50 * var(--nav-u))); background: var(--grad-resume); color: var(--paper);
-    font-size: max(14px, calc(20 * var(--nav-u))); font-weight: 400; transition: transform .3s ease; }
-  .hero__resume img { width: max(9px, calc(12 * var(--nav-u))); }
-  .hero__resume:hover { transform: translateY(-2px); }
+  .hero__text { color: var(--paper); }
   .hero__logo { background: #d9d9d9; -webkit-mask: var(--mask) center / 100% 100% no-repeat; mask: var(--mask) center / 100% 100% no-repeat; }
   .hero__title { font-family: var(--serif); font-weight: 300; font-style: italic; font-variation-settings: "SOFT" 0, "WONK" 1;
     font-size: calc(61 * var(--u)); line-height: 1.15; white-space: nowrap; }
@@ -276,9 +269,6 @@ const half = '(max-width: 900px) 100vw, 852px';
   @media (max-width: 900px) {
     .hero { position: relative; aspect-ratio: 4 / 5; margin: 0 -20px; width: calc(100% + 40px); }
     .hero__shade { left: 0; top: 0; width: 100%; height: 100%; background: linear-gradient(to top, #17120e 10%, rgba(23, 18, 14, 0) 70%); }
-    .hero__brand, .hero__resume { position: absolute !important; top: 20px !important; margin: 0 !important; }
-    .hero__brand { left: 20px !important; }
-    .hero__resume { left: auto !important; right: 20px; width: auto !important; height: 36px !important; padding: 0 12px; gap: 8px; }
     .hero__logo { position: absolute !important; top: 80px !important; left: 20px !important; width: 72px !important; height: 72px !important; margin: 0 !important; }
     .hero__text { color: var(--ink); }
     .hero__title { font-size: 40px; white-space: normal; }

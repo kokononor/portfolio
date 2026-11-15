@@ -4,6 +4,7 @@
 // by var(--u)); regenerate it after design changes with:
 //   node tools/figma-jsx-to-astro.mjs design/swad-362-500.jsx design/swad-body.html --cut-from 27895 --asset-url /work/swad/
 import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import NextProject from '../../components/NextProject.astro';
 import body from '../../../design/swad-body.html?raw';
@@ -69,10 +70,11 @@ const toGrid = (src: string) => src.replace(/<(?:div|p)\b[^>]*>/g, tag => tag
 // the nav: brand and resume become links
 const html = withHeadings(withPhotos(toGrid(body)))
   .replace(/<p [^>]*>Hero photo: Swad storefront<\/p>/, '')
-  .replace(/<p [^>]*>SUYASH <\/p>/, '<a href="/" class="swad-link swad-brand">HOME</a>')
-  .replace(/<p [^>]*>RESUME<\/p>\s*<div [^>]*data-name="Vector">.*?<\/div><\/div>/, '<a href="/resume.pdf" class="swad-resume">RESUME <img src="/work/swad/imgVector.svg" width="12" height="18" alt="" /></a>');
+  .replace(/<p [^>]*>SUYASH <\/p>/, '')
+  .replace(/<p [^>]*>RESUME<\/p>\s*<div [^>]*data-name="Vector">.*?<\/div><\/div>/, '');
 ---
 <Base title="Swad: How a Momo Café That Couldn't Make Rent Found Its Regulars · Suyash" description="A quiet-lane café in Ranchi went from losing ₹10,000 a month to ₹20,000 in profit in six months.">
+  <Nav solid />
   <main class="canvas swad-canvas" style="height: calc(27895 * var(--u));" set:html={html}></main>
   <NextProject href="/work/diviniti" label="DIVINITI" title="Redefining Design" />
   <Footer />
@@ -181,11 +183,6 @@ const html = withHeadings(withPhotos(toGrid(body)))
   .swad-canvas :global([data-name^="Tag"] p) { position: static !important; }
   .swad-canvas :global([data-name="Count"]) { width: 100% !important; }
   /* the same nav as the other case studies */
-  .swad-canvas :global(.swad-brand) { position: absolute; z-index: 2; left: calc(104 * var(--u)); top: calc(55.5 * var(--u)); font-size: max(16px, calc(25 * var(--nav-u))); font-weight: 500; color: var(--paper); }
-  .swad-canvas :global(.swad-resume) { position: absolute; z-index: 2; left: calc(1624 * var(--u) - max(104px, calc(144 * var(--nav-u)))); top: calc(45 * var(--u)); display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--nav-u));
-    width: max(104px, calc(144 * var(--nav-u))); height: max(36px, calc(50 * var(--nav-u))); background: var(--grad-resume); color: var(--paper); font-size: max(14px, calc(20 * var(--nav-u))); font-weight: 400; transition: transform .3s ease; }
-  .swad-canvas :global(.swad-resume img) { width: max(9px, calc(12 * var(--nav-u))); height: auto; }
-  .swad-canvas :global(.swad-resume:hover) { transform: translateY(-2px); }
   /* "Met" sits on a black tag: Figma has it dark on dark */
   .swad-canvas :global([data-name="Tag Met"] p) { color: #fcfbf8 !important; }
   /* the grid narrows some text by a line: let it run rather than clip (images keep their crop) */
@@ -211,8 +208,6 @@ const html = withHeadings(withPhotos(toGrid(body)))
     /* photos run edge to edge; the hero starts at the top of the page */
     .swad-canvas :global([data-name^="Image:"]), .swad-canvas :global([data-name*="placeholder"]) { max-width: none; }
     .swad-canvas :global([data-name^="Hero"]) { margin-top: 0 !important; height: 300px !important; }
-    .swad-canvas :global(a.swad-brand) { position: absolute !important; left: 20px !important; top: 20px !important; z-index: 2; }
-    .swad-canvas :global(a.swad-resume) { position: absolute !important; left: auto !important; right: 20px; top: 14px !important; width: auto !important; height: 36px; padding: 0 12px; gap: 8px; }
     .swad-canvas :global(.swad-photo) { display: block; width: 100% !important; height: 100%; object-fit: cover; }
     .swad-canvas :global([data-name^="Image"]:has(> .swad-photo)), .swad-canvas :global([data-name*="placeholder"]) { overflow: hidden; }
     .swad-canvas :global([data-name^="Image"]:has(> .swad-photo) > :not(.swad-photo)) { display: none; }

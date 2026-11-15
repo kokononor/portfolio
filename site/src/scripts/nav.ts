@@ -10,7 +10,7 @@ if (nav) {
   const menu = document.getElementById('menu')!;
 
   // ---- stuck state and height ----
-  const stick = () => nav.classList.toggle('is-stuck', scrollY > 8 || nav.classList.contains('is-open'));
+  const stick = () => nav.classList.toggle('is-stuck', nav.hasAttribute('data-solid') || scrollY > 8 || nav.classList.contains('is-open'));
   // measured in its stuck state, which is how it sits over every section after the hero
   const measure = () => {
     const was = nav.classList.contains('is-stuck');

@@ -2,12 +2,12 @@
 // Falcon case study. Figma: "Vodafone Idea — Fixed" (362:219), 1728 × 15973, page fill #fcfbf8.
 // Blocks are placed at their design coordinates (see styles/case.css); the order below is reading order for phones.
 import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import NextProject from '../../components/NextProject.astro';
 import FalconScreen from '../../components/FalconScreen.astro';
 import { Image } from 'astro:assets';
 import '../../styles/case.css';
-import arrowDown from '../../assets/home/arrow-down.svg?url';
 
 import studioWall from '../../assets/falcon/studio-wall.png';
 import monitorSetup from '../../assets/falcon/monitor-setup.png';
@@ -26,7 +26,8 @@ import decision3 from '../../assets/falcon/decision-3.png';
 const half = '(max-width: 900px) 100vw, 852px';
 ---
 <Base title="Falcon — Making millions of network events explain a single outage · Suyash" description="Redesigning Falcon, Vodafone Idea's network operations intelligence platform, so engineers can trust, connect and act on information during live outages.">
-  <main class="canvas falcon-page" style="height: calc(15402 * var(--u));">
+  <Nav solid />
+  <main class="canvas falcon-page" style="height: calc(16480 * var(--u));">
 
     <!-- ===== Hero (MacBook Pro 16' - 11): red band, cream title card, the engineers at their monitor ===== -->
     <span class="bleed hero-band" style="--y: 0; --h: 1115;" aria-hidden="true"></span>
@@ -46,8 +47,6 @@ const half = '(max-width: 900px) 100vw, 852px';
     </div>
 
     <header class="at hero" style="--x: 0; --y: 0; --w: 1728; --h: 1115;">
-      <a class="hero__brand" href="/">HOME</a>
-      <a class="hero__resume" href="/resume.pdf">RESUME <img src={arrowDown} width="12" height="18" alt="" /></a>
 
       <div class="hero__card" data-reveal>
         <Image class="hero__logo" src={viLogo} alt="Vodafone Idea" widths={[104]} sizes="52px" />
@@ -271,23 +270,45 @@ const half = '(max-width: 900px) 100vw, 852px';
     <p class="at c-lead" style="--x: 104; --y: 14551; --w: 643; font-style: italic;" data-reveal>Could engineers reach confident decisions faster during live incidents?</p>
     <p class="at c-body" style="--x: 104; --y: 14636; --w: 491;" data-reveal>Following deployment, incident resolution time decreased by 25%, reducing the time required to move from investigation to action. Engineers spent less time gathering context, manually correlating information, and determining where to focus their attention.</p>
     <p class="at c-body" style="--x: 104; --y: 14735; --w: 491;" data-reveal>The impact extended beyond speed. By making system state visible, consolidating evidence into a single workflow, and surfacing explainable recommendations, Falcon became a more trusted source of operational truth during outages.</p>
-    <div class="at c-body" style="--x: 104; --y: 14853; --w: 515;" data-reveal>
-      <p>Outcomes</p>
-      <ul>
-        <li>25% reduction in incident resolution time</li>
-        <li>Faster context gathering during investigations</li>
-        <li>Reduced manual correlation across systems</li>
-        <li>Clearer prioritization of active incidents</li>
-        <li>Increased confidence in recommendations through visible reasoning</li>
-      </ul>
-    </div>
 
-    <!-- ===== Reflection ===== -->
-    <h2 class="at c-h3" style="--x: 880; --y: 14573;" data-reveal>Reflection</h2>
-    <p class="at c-body" style="--x: 880; --y: 14636;" data-reveal>Designing Falcon changed how I think about enterprise products.</p>
-    <p class="at c-body" style="--x: 880; --y: 14672; --w: 486;" data-reveal>The biggest challenges weren't visual or technical. They were about trust. Engineers already had access to the information they needed; the real challenge was helping them understand whether that information was complete, connected, and reliable enough to act on.</p>
-    <p class="at c-body" style="--x: 880; --y: 14801; --w: 487;" data-reveal>This project reinforced an important lesson: in operational systems, speed alone doesn't create confidence. Trust emerges when systems clearly communicate what they know, what they don't know, and why a recommendation was made.</p>
-    <p class="at c-body" style="--x: 880; --y: 14918; --w: 486;" data-reveal>By shifting Falcon from a collection of monitoring tools to a unified investigation platform, the redesign reduced friction in the workflow while keeping engineers in control of the decision-making process.</p>
+    <!-- ===== Outcomes, drawn: the two measured results as figures (type and hairlines, like the rest of the page), then
+         the qualitative outcomes as a numbered row. With motion the marks draw in as the band arrives. ===== -->
+    <section class="at metrics" style="--x: 104; --y: 14950; --w: 1520;" aria-label="Outcomes" data-reveal>
+      <header class="metrics__head c-label"><span>Outcomes</span><span>After deployment</span></header>
+      <div class="metrics__figs">
+        <figure class="metric">
+          <p class="metric__num" aria-hidden="true">25<span>%</span></p>
+          <figcaption class="c-lead">less time to resolve an incident, from first alert to action</figcaption>
+          <div class="cut" role="img" aria-label="Incident resolution time: the redesign removed a quarter of it">
+            <div class="cut__bar"><span class="cut__kept"></span><span class="cut__gone"><i>&minus;25%</i></span></div>
+            <div class="cut__scale c-label"><span>Resolution time</span><span>was</span></div>
+          </div>
+        </figure>
+        <span class="metrics__rule" aria-hidden="true"></span>
+        <figure class="metric">
+          <p class="metric__num" aria-hidden="true"><small>&lt;</small>10<span>s</span></p>
+          <figcaption class="c-lead">from an outage to its correlated cause, down from a full minute</figcaption>
+          <div class="clock" role="img" aria-label="Outage to correlation time: about 60 seconds before, under 10 seconds now">
+            <div class="clock__track"><span class="clock__before"></span><span class="clock__after"></span></div>
+            <ol class="clock__ticks" aria-hidden="true"><li>0</li><li>10</li><li>20</li><li>30</li><li>40</li><li>50</li><li>60 s</li></ol>
+            <div class="clock__key c-label"><span><b class="k-after"></b>Now</span><span><b class="k-before"></b>Before</span></div>
+          </div>
+        </figure>
+      </div>
+      <ol class="metrics__list">
+        <li><span>01</span><p class="c-body">Faster context gathering during investigations</p></li>
+        <li><span>02</span><p class="c-body">Less manual correlation across systems</p></li>
+        <li><span>03</span><p class="c-body">Clearer prioritisation of active incidents</p></li>
+        <li><span>04</span><p class="c-body">More confidence in recommendations, through visible reasoning</p></li>
+      </ol>
+    </section>
+
+    <!-- ===== Reflection: its own section, the heading on the left and the text on the right ===== -->
+    <h2 class="at c-h2" style="--x: 104; --y: 15760; --w: 492;" data-reveal>Reflection</h2>
+    <p class="at c-lead" style="--x: 880; --y: 15776; --w: 600;" data-reveal>Designing Falcon changed how I think about enterprise products.</p>
+    <p class="at c-body" style="--x: 880; --y: 15860; --w: 486;" data-reveal>The biggest challenges weren't visual or technical. They were about trust. Engineers already had access to the information they needed; the real challenge was helping them understand whether that information was complete, connected, and reliable enough to act on.</p>
+    <p class="at c-body" style="--x: 880; --y: 15989; --w: 487;" data-reveal>This project reinforced an important lesson: in operational systems, speed alone doesn't create confidence. Trust emerges when systems clearly communicate what they know, what they don't know, and why a recommendation was made.</p>
+    <p class="at c-body" style="--x: 880; --y: 16106; --w: 486;" data-reveal>By shifting Falcon from a collection of monitoring tools to a unified investigation platform, the redesign reduced friction in the workflow while keeping engineers in control of the decision-making process.</p>
   </main>
   <NextProject href="/work/swad" label="SWAD" title="How a momo café that couldn’t make rent found its regulars" />
   <Footer />
@@ -296,6 +317,12 @@ const half = '(max-width: 900px) 100vw, 852px';
 <script>
   import '../../scripts/case-motion';
   import { playFalcon } from '../../scripts/falcon-screen';
+
+  // the outcome marks draw in once their band is a third of the way into the window
+  const metrics = document.querySelector('.metrics');
+  if (metrics) new IntersectionObserver((entries, io) => {
+    if (entries.some(e => e.isIntersecting)) { metrics.classList.add('is-in'); io.disconnect(); }
+  }, { rootMargin: '0px 0px -30% 0px' }).observe(metrics);
 
   // every Falcon screen is drawn at 1600 × 875 and scaled to the box it sits in
   document.querySelectorAll<HTMLElement>('.fs-host').forEach(host => {
@@ -337,9 +364,6 @@ const half = '(max-width: 900px) 100vw, 852px';
     .falcon-page :is(.hero__facts dt, .hero__facts dd) { --u: var(--cu); }
     .falcon-page .hero__title { font-size: max(36px, calc(61 * var(--u))); width: min(calc(523 * var(--u)), max(265px, calc(449 * var(--u)))); }
     .falcon-page .hero { margin-left: calc(864 * var(--cu) - 864 * var(--u)); overflow: visible; }
-    /* the nav keeps the page's margins, like the other pages, while the hero's content is scaled and centred */
-    .falcon-page .hero__brand { left: calc(104 * var(--cu) - 864 * var(--cu) + 864 * var(--u)); }
-    .falcon-page .hero__resume { left: calc(760 * var(--cu) + 864 * var(--u) - max(104px, calc(144 * var(--nav-u)))); }
     :global(html:not(.case-motion)) .falcon-page .stage { margin-left: calc(864 * var(--cu) - 864 * var(--u)); }
     .falcon-page > .at:not(.hero):not(.stage) { top: calc(var(--y) * var(--u) - var(--shift)); }
     .falcon-page > .bleed:not(.hero-band) { top: calc(var(--y) * var(--u) - var(--shift)); }
@@ -388,13 +412,6 @@ const half = '(max-width: 900px) 100vw, 852px';
   .falcon-dialog__close { position: absolute; right: 16px; top: 14px; height: 34px; padding: 0 14px; border: 1px solid rgba(252, 251, 248, .4); border-radius: 17px; background: none; color: inherit; font: inherit; cursor: pointer; }
   .falcon-dialog__hint { margin: 0; font-size: 13px; opacity: .7; }
   @media (orientation: landscape) { .falcon-dialog__hint { display: none; } }
-  .hero__brand { position: absolute; left: calc(104 * var(--u)); top: calc(53.5 * var(--u)); font-size: max(16px, calc(25 * var(--nav-u))); font-weight: 500; color: var(--paper); z-index: 1; }
-  .hero__resume { position: absolute; left: calc(1624 * var(--u) - max(104px, calc(144 * var(--nav-u)))); top: calc(45 * var(--u)); z-index: 1;
-    display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--nav-u));
-    width: max(104px, calc(144 * var(--nav-u))); height: max(36px, calc(50 * var(--nav-u))); background: var(--grad-resume); color: var(--paper);
-    font-size: max(14px, calc(20 * var(--nav-u))); font-weight: 400; transition: transform .3s ease; }
-  .hero__resume img { width: max(9px, calc(12 * var(--nav-u))); }
-  .hero__resume:hover { transform: translateY(-2px); }
 
   .hero__card { position: absolute; left: calc(104 * var(--u)); top: calc(130 * var(--u)); width: calc(643 * var(--u)); height: calc(853 * var(--u));
     background: var(--page); border-radius: var(--radius); box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25); }
@@ -438,19 +455,66 @@ const half = '(max-width: 900px) 100vw, 852px';
   .ia-copy { margin-top: calc(132 * var(--u) - 3 * 31 * 1.25 * var(--u)); width: calc(491 * var(--u)); }
   .dd3 { justify-content: center; }
 
+  /* ---- outcomes, drawn ---- */
+  .metrics { display: flex; flex-direction: column; gap: calc(56 * var(--u)); }
+  .metrics__head { display: flex; justify-content: space-between; padding-top: calc(14 * var(--u)); border-top: 1px solid var(--ink);
+    color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .metrics__figs { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); column-gap: calc(96 * var(--u)); }
+  .metrics__rule { width: 0; border-left: 1px solid var(--muted); opacity: .45; }
+  .metric { margin: 0; display: flex; flex-direction: column; gap: calc(22 * var(--u)); }
+  .metric__num { font-family: var(--serif); font-weight: 300; font-style: italic; font-variation-settings: "SOFT" 0, "WONK" 1;
+    font-size: max(72px, calc(168 * var(--u))); line-height: .9; letter-spacing: -.02em; color: var(--accent); }
+  .metric__num span { font-size: .42em; letter-spacing: 0; margin-left: .06em; }
+  .metric__num small { font-size: .5em; vertical-align: .32em; margin-right: .04em; }
+  .metric figcaption { max-width: max(260px, calc(420 * var(--u))); }
+
+  /* the cut: one bar of the old resolution time, with its last quarter taken away */
+  .cut, .clock { margin-top: calc(30 * var(--u)); display: flex; flex-direction: column; gap: calc(10 * var(--u)); }
+  .cut__bar { display: flex; height: max(8px, calc(14 * var(--u))); }
+  .cut__kept { flex: 75 0 0; background: var(--ink); transform-origin: left; }
+  .cut__gone { flex: 25 0 0; position: relative; border: 1px solid var(--accent); border-left: 0;
+    background: repeating-linear-gradient(-45deg, transparent 0 5px, color-mix(in oklab, var(--accent) 45%, transparent) 5px 6px); }
+  .cut__gone i { position: absolute; right: 0; bottom: calc(100% + 8px); font-family: var(--serif); font-style: italic; font-weight: 300;
+    font-size: max(15px, calc(20 * var(--u))); color: var(--accent); }
+  .cut__scale { display: flex; justify-content: space-between; color: var(--muted); }
+
+  /* the clock: a minute on a hairline axis, and the ten seconds it takes now */
+  .clock__track { position: relative; height: max(8px, calc(14 * var(--u))); }
+  .clock__before { position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid var(--muted); }
+  .clock__after { position: absolute; left: 0; top: 0; bottom: 0; width: 16.667%; background: var(--accent); transform-origin: left; }
+  .clock__ticks { display: flex; justify-content: space-between; margin: 0; padding: 0; list-style: none; color: var(--muted);
+    font-family: var(--mono); font-size: max(11px, calc(13 * var(--u))); }
+  .clock__ticks li { width: 0; display: flex; justify-content: center; white-space: nowrap; }
+  .clock__ticks li:first-child { justify-content: flex-start; }
+  .clock__ticks li:last-child { justify-content: flex-end; }
+  .clock__key { display: flex; gap: calc(28 * var(--u)); color: var(--muted); }
+  .clock__key span { display: inline-flex; align-items: center; gap: 8px; }
+  .clock__key b { display: inline-block; width: 18px; }
+  .k-after { height: 6px; background: var(--accent); }
+  .k-before { border-top: 1px solid var(--muted); }
+
+  .metrics__list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: calc(40 * var(--u)); margin: 0; padding: 0; list-style: none; }
+  .metrics__list li { display: flex; flex-direction: column; gap: calc(12 * var(--u)); padding-top: calc(16 * var(--u));
+    border-top: 1px solid color-mix(in oklab, var(--muted) 45%, transparent); }
+  .metrics__list span { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: max(18px, calc(25 * var(--u))); color: var(--accent); }
+
+  /* with motion, the marks draw in once the band is in view (the page script adds .is-in) */
+  :global(html.case-motion) .metrics :is(.cut__kept, .clock__after) { transition: transform 1.4s cubic-bezier(.2, .7, .2, 1) .3s; }
+  :global(html.case-motion) .metrics .cut__gone { transition: opacity .8s ease 1.4s; }
+  :global(html.case-motion) .metrics:not(.is-in) :is(.cut__kept, .clock__after) { transform: scaleX(0); }
+  :global(html.case-motion) .metrics:not(.is-in) .cut__gone { opacity: 0; }
+
   /* ---- phones ---- */
   @media (max-width: 900px) {
     .hero-band { display: none; }
     .hero { background: linear-gradient(-54.29deg, #b51b03 6.147%, #b51b03 67.06%, #681609 102.86%); margin: 0 -20px; width: calc(100% + 40px) !important;
-      padding: 20px 20px 32px; display: flex; flex-direction: column; gap: 24px; overflow: visible; }
+      padding: calc(var(--nav-h) + 16px) 20px 32px; display: flex; flex-direction: column; gap: 24px; overflow: visible; }
     .stage { display: none; }
-    .hero__brand, .hero__resume { position: static; }
-    .hero__resume { position: absolute; left: auto; right: 20px; top: 14px; width: auto; height: 36px; padding: 0 12px; gap: 8px; white-space: nowrap; }
     .hero__card :global(.hero__logo) { width: 52px !important; height: 48px; object-fit: contain; align-self: flex-start; }
     .hero__card { position: relative; left: auto; top: auto; width: auto; height: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
     .hero__card > * { position: static; width: auto !important; }
     .hero__title { font-size: 40px; }   /* the same as the other case studies' titles */
-    .hero__summary { width: auto; }
+    .hero__summary { width: auto; max-width: none; }
     .hero__meta { flex-wrap: wrap; gap: 4px 16px; white-space: normal; }
     .hero__facts { position: static; width: auto; gap: 20px; }
     .hero__line { width: 100%; }
@@ -461,6 +525,10 @@ const half = '(max-width: 900px) 100vw, 852px';
     .red-block { display: none; }
     .dashboard { aspect-ratio: 16 / 9; }
     .dashboard__play { bottom: 16px; height: 42px; font-size: 14px; }
+    .metrics { gap: 36px; margin-top: 64px; }
+    .metrics__figs { grid-template-columns: 1fr; row-gap: 48px; }
+    .metrics__rule { display: none; }
+    .metrics__list { grid-template-columns: 1fr 1fr; row-gap: 24px; column-gap: 20px; }
   }
 
   /* mid-size windows: the text keeps a readable minimum size, so the decision columns use the free space up to the

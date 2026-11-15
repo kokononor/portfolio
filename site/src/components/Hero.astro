@@ -5,37 +5,13 @@ import { Image } from 'astro:assets';
 import portrait from '../assets/home/portrait.jpg';
 import arrowDown from '../assets/home/arrow-down.svg?url';
 import RecordPlayer from './RecordPlayer.astro';
+import Nav from './Nav.astro';
 import signatureMask from '../assets/home/signature-mask.png';
 import divinitiLogo from '../assets/home/diviniti-emblem.png';
 import viLogo from '../assets/falcon/vi-logo.png';
 ---
 <header class="hero fit" id="top" style="--fit-h: 1074; --fit-room: 100svh">
-  <nav class="nav" aria-label="Main">
-    <a class="nav__brand" href="#top">SUYASH</a>
-    <div class="nav__links">
-      <a href="#work" data-section="work">WORK</a>
-      <a href="#about" data-section="about">ABOUT</a>
-      <a href="#contact" data-section="contact">CONNECT</a>
-    </div>
-    <div class="nav__end">
-      <a class="nav__resume" href="/resume.pdf" download="Suyash-Resume.pdf">RESUME <img src={arrowDown} width="12" height="18" alt="" /></a>
-      <!-- phones: the links live in a full-screen menu -->
-      <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
-    </div>
-  </nav>
-
-  <!-- the phone menu: big serif links on paper, under the nav bar (outside the nav, whose frosted ground would trap it) -->
-  <div class="menu" id="menu" hidden>
-    <nav class="menu__links" aria-label="Menu">
-      <a href="#work" data-section="work"><small>01</small>Work</a>
-      <a href="#about" data-section="about"><small>02</small>About</a>
-      <a href="#contact" data-section="contact"><small>03</small>Connect</a>
-    </nav>
-    <div class="menu__foot">
-      <a href="/resume.pdf" download="Suyash-Resume.pdf">Download Resume</a>
-      <p>Product designer, Delhi</p>
-    </div>
-  </div>
+  <Nav />
 
   <h1 class="hero__title t-display" data-greet="Namaste!|Hello!|Bonjour!">Namaste!</h1>
   <p class="hero__lede t-serif" data-hero-in>
@@ -71,68 +47,12 @@ import viLogo from '../assets/falcon/vi-logo.png';
 
 <script>
   import '../scripts/greeting';
-  import '../scripts/nav';
 </script>
 
 <style>
   .hero { position: relative; height: calc(1074 * var(--u)); }
   .hero > * { position: absolute; }
 
-  /* ---- nav (362:6): brand · links · resume, 104px from the canvas edges, 24px from the top ----
-     It stays pinned to the top of the window. Over the hero it is bare, as in the design; once the page scrolls
-     (.is-stuck) it gains a frosted paper ground and a hairline so it reads over the sections below. */
-  .hero > .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-    /* the canvas sits at max(0, (100% − 1728)/2) and can run under the scrollbar, so the right edge is measured from its left */
-    padding: calc(24 * var(--u)) calc(100% - max(0px, (100% - 1728 * var(--ux)) / 2) - 1624 * var(--ux))
-      calc(18 * var(--u)) calc(max(0px, (100% - 1728 * var(--ux)) / 2) + 104 * var(--ux));
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 0.5px solid transparent;
-    transition: background-color .4s ease, border-color .4s ease, backdrop-filter .4s ease, padding .4s ease; }
-  .hero > .nav.is-stuck { background-color: color-mix(in oklab, var(--page) 82%, transparent);
-    -webkit-backdrop-filter: blur(12px) saturate(1.1); backdrop-filter: blur(12px) saturate(1.1);
-    border-bottom-color: rgba(15, 14, 12, 0.12); padding-top: calc(16 * var(--u)); padding-bottom: calc(14 * var(--u)); }
-  .nav__brand { font-size: max(16px, calc(25 * var(--nav-u))); font-weight: 500; }
-  .nav__links { display: flex; gap: calc(63 * var(--u)); font-size: max(12px, calc(16 * var(--u))); font-weight: 300; }
-  .nav__links a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .4s ease; }
-  .nav__links a:hover { background-size: 100% 1px; }
-  /* the section being read keeps its underline (scripts/nav.ts) */
-  .nav__links a.is-active { background-size: 100% 1px; font-weight: 400; }
-  .nav__end { display: flex; align-items: center; gap: 12px; }
-
-  /* phones: the menu toggle, two hairlines that cross into an ✕ */
-  .nav__toggle { display: none; position: relative; width: 44px; height: 44px; margin-right: -10px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--ink); }
-  .nav__toggle span { position: absolute; left: 11px; width: 22px; height: 1.5px; background: currentColor; border-radius: 1px;
-    transition: transform .45s cubic-bezier(.65, 0, .35, 1), top .45s cubic-bezier(.65, 0, .35, 1); }
-  .nav__toggle span:first-child { top: 18px; }
-  .nav__toggle span:last-child { top: 25px; }
-  .nav.is-open .nav__toggle span:first-child { top: 21.5px; transform: rotate(45deg); }
-  .nav.is-open .nav__toggle span:last-child { top: 21.5px; transform: rotate(-45deg); }
-  .hero > .nav.is-open { background-color: var(--page); -webkit-backdrop-filter: none; backdrop-filter: none; border-bottom-color: transparent; }
-
-  /* the phone menu: a paper sheet under the bar, big serif links, resume at the foot */
-  .hero > .menu { position: fixed; inset: 0; z-index: 49; display: flex; flex-direction: column; justify-content: space-between;
-    padding: calc(var(--nav-h) + 48px) 20px 32px; background: var(--page); animation: menu-in .5s cubic-bezier(.2, .7, .2, 1) both; }
-  .hero > .menu[hidden] { display: none; }
-  @keyframes menu-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
-  .menu__links { display: flex; flex-direction: column; }
-  .menu__links a { display: flex; align-items: baseline; gap: 16px; padding: 14px 0; border-bottom: 0.5px solid rgba(15, 14, 12, 0.18);
-    font-family: var(--serif); font-variation-settings: 'SOFT' 0, 'WONK' 1; font-weight: 300; font-size: 44px; line-height: 1.1;
-    animation: menu-link .6s cubic-bezier(.2, .7, .2, 1) both; }
-  .menu__links a:nth-child(2) { animation-delay: .05s; }
-  .menu__links a:nth-child(3) { animation-delay: .1s; }
-  @keyframes menu-link { from { opacity: 0; transform: translateY(16px); } }
-  .menu__links small { font-family: var(--mono); font-size: 12px; color: var(--accent); }
-  .menu__links a.is-active { font-style: italic; color: var(--accent); }
-  .menu__foot { display: flex; justify-content: space-between; align-items: flex-end; font-size: 14px; color: var(--muted); }
-  .menu__foot a { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; padding: 12px 0; }
-  :global(html.menu-open) { overflow: hidden; }
-  @media (prefers-reduced-motion: reduce) { .hero > .menu, .menu__links a { animation: none; } }
-  .nav__resume { display: inline-flex; align-items: center; justify-content: center; gap: calc(12 * var(--nav-u));
-    width: max(104px, calc(144 * var(--nav-u))); height: max(36px, calc(50 * var(--nav-u)));
-    background: var(--grad-resume); color: var(--paper); font-size: max(14px, calc(20 * var(--nav-u))); font-weight: 400;
-    transition: transform .3s ease, box-shadow .3s ease; }
-  .nav__resume img { width: max(9px, calc(12 * var(--nav-u))); height: auto; }
-  .nav__resume:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(45, 10, 5, .25); }
 
   /* ---- greeting and lede (362:17, 362:18) ---- */
   .hero__title { left: calc(104 * var(--u)); top: calc(245.35 * var(--u)); width: calc(1005 * var(--u));
@@ -208,10 +128,6 @@ import viLogo from '../assets/falcon/vi-logo.png';
   @media (max-width: 900px) {
     .hero { height: auto; padding: 20px 20px 56px; display: flex; flex-direction: column; }
     .hero > * { position: static; }
-    .hero > .nav { position: fixed; padding: 14px 20px; }
-    .hero > .nav.is-stuck { padding: 10px 20px; }
-    .nav__links { display: none; }
-    .nav__toggle { display: block; }
     .hero__title { order: 1; margin-top: 72px; font-size: clamp(64px, 21vw, 120px); width: auto; }
     .hero__lede { order: 2; margin-top: 20px; width: auto; font-size: 20px; }
     .hero__rule { order: 3; width: 100%; margin: 28px 0; }
