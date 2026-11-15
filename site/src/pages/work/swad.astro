@@ -1,215 +1,923 @@
 ---
-// Swad case study. Figma: "Swad — Case Study" (362:500), 1728 × 28466, page fill #fcfbf8.
-// The body is generated from the frame's design context by tools/figma-jsx-to-astro.mjs (exact Figma values, scaled
-// by var(--u)); regenerate it after design changes with:
-//   node tools/figma-jsx-to-astro.mjs design/swad-362-500.jsx design/swad-body.html --cut-from 27895 --asset-url /work/swad/
+// Swad case study. Written in the page's own flow on the site's 12-column grid (1728 design: margins 104,
+// gutters 64, columns 68), so copy can change length without anything being re-placed. The figures are drawn
+// from the data below: a ledger with menu-style leaders, a street of 300 marks for the footfall, a rupee ladder
+// for the prices. Motion uses the shared vocabulary (scripts/case-motion.ts): data-slide for text, data-wipe for images.
 import Base from '../../layouts/Base.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import NextProject from '../../components/NextProject.astro';
-import body from '../../../design/swad-body.html?raw';
+import '../../styles/case.css';
 
-// the photos from Figma, placed in their slots by layer name (the delivery-apps and regulars slots are still placeholders there)
-const PHOTOS: Record<string, [string, string]> = {
-  "Hero photo (placeholder)": ['hero', 'The Swad counter seen through its open shopfront'],
-  "Image: Swad's lane, Ranchi": ['lane', "Swad's quiet residential lane in Ranchi"],
-  'Image: Swad before the relaunch': ['before-relaunch', 'The Swad shopfront before the relaunch, with a Momos banner'],
-  'Image: Outside Swad, during an observation session': ['outside', 'The lane outside Swad during an observation session'],
-  'Image: Old menu against new menu': ['menus', 'The old and new Swad menu prices side by side'],
-  'Image: All five plates, mild to hot': ['plates', 'Five plates of momos, from mild to hot'],
-  'Image: The five blends': ['blends', 'Jars of the Delhi, Lucknow and Hyderabad momo masalas'],
-  'Image: The procedures binder': ['binder', 'A printed recipe sheet beside a mint mojito'],
-  'Image: Storefront, before': ['store-before', 'The storefront before the relaunch'],
-  'Image: Storefront, after': ['store-after', 'The storefront after the relaunch, with a dark Swad counter'],
-  'Image: The new interior': ['interior', 'Shelving being built for the new interior'],
-  'Image: The nine-item menu': ['menu', 'A corner of the kitchen during the rebuild'],
-};
-const withPhotos = (src: string) => Object.entries(PHOTOS).reduce((out, [name, [file, alt]]) => {
-  const attr = `data-name="${name}"`;
-  const at = out.indexOf(attr);
-  if (at < 0) return out;
-  const close = out.indexOf('>', at);
-  const start = out.lastIndexOf('<div', at);
-  const open = out.slice(start, close + 1).replace(/; border: 1px dashed #0f0e0c/, '');
-  // the slot's own end, so its placeholder labels ("IMAGE PLACEHOLDER", the shot description) can go: the photo
-  // covers them, but screen readers would still read them out
-  let depth = 0, end = start;
-  const tags = /<div[\s>]|<\/div>/g;
-  tags.lastIndex = start;
-  for (let m; (m = tags.exec(out)); ) { depth += m[0] === '</div>' ? -1 : 1; if (!depth) { end = tags.lastIndex; break; } }
-  const inside = out.slice(close + 1, end).replace(/<p [^>]*>.*?<\/p>/gs, '');
-  return out.slice(0, start) + open + `<img class="swad-photo" src="/work/swad/photos/${file}.webp" alt="${alt}" loading="lazy" />` + inside + out.slice(end);
-}, src);
-// real headings for the generated body: the title is the page's h1, the numbered section titles are h2s
-const withHeadings = (src: string) => src
-  .replace(/<p (style="[^"]*")>(<span[^>]*>Swad:<\/span>.*?)<\/p>/s, '<h1 $1>$2</h1>')
-  .replace(/<p (style="[^"]*font-size: calc\(49 \* var\(--u\)\); color: #681609[^"]*")>(.*?)<\/p>/g,
-    (_, style: string, text: string) => style.includes('white-space: nowrap')
-      ? `<h2 ${style}>${text}</h2>`         // the numbered section titles sit on one line
-      : `<h3 ${style}>${text}</h3>`);       // callouts and the closing lessons in the same face
+const photo = (name: string) => `/work/swad/photos/${name}.webp`;
 
-// The 12-column grid, on the 1728 design: margins 104, gutters 64, columns 68. The generated body sits on 24px gutters
-// (with section 02 off the margin), so its offsets and spans are mapped to the grid here, which also
-// survives regenerating the body. Offsets are inside the 1520 content box; spans are 3, 6 and 9 columns.
-const GRID_LEFT: Record<string, string> = { '386': '396', '772': '792', '1158': '1188' };
-const GRID_WIDTH: Record<string, string> = {
-  '362': '332', '748': '728', '1134': '1124', // 3, 6 and 9 columns
-  '852': '832',                               // the hero photo: bleeds in from the left to the end of column 6
-  '722': '702', '650': '630', '652': '632', '620': '600', // text inset inside a span keeps its inset
-  '338': '310', '194': '178', '164': '150',   // comparison bars, in proportion to their 3-column track
-};
-const toGrid = (src: string) => src.replace(/<(?:div|p)\b[^>]*>/g, tag => tag
-  .replace(/left: calc\((116|49) \* var\(--u\)\)(?=[^>]*width: calc\(1520 \*)/, 'left: calc(104 * var(--u))')
-  .replace(/left: calc\((386|772|1158) \* var/, (_, v) => `left: calc(${GRID_LEFT[v]} * var`)
-  .replace(/left: calc\(50% \+ 12 \* var/, 'left: calc(50% + 32 * var')
-  .replace(/left: calc\(75% - 34 \* var/, 'left: calc(75% - 4 * var')
-  .replace(/left: calc\(91\.67% \+ 6\.5 \* var/, 'left: calc(91.67% + 27.5 * var')
-  .replace(/left: calc\(91\.67% - 5\.5 \* var/, 'left: calc(91.67% + 15.5 * var')
-  .replace(/(^|[ ;"])width: calc\((\d+) \* var/, (m, pre, v) => GRID_WIDTH[v] ? `${pre}width: calc(${GRID_WIDTH[v]} * var` : m));
+const ledger = [
+  { label: 'Customers a day', before: '1–2', after: '20' },
+  { label: 'Monthly profit', before: '−₹10,000', after: '+₹20,000' },
+  { label: 'Orders from returning customers', before: 'about 10%', after: 'about 80%', mark: '†' },
+  { label: 'Average order value', before: '₹67.50', after: '₹139' },
+];
 
-// the nav: brand and resume become links
-const html = withHeadings(withPhotos(toGrid(body)))
-  .replace(/<p [^>]*>Hero photo: Swad storefront<\/p>/, '')
-  .replace(/<p [^>]*>SUYASH <\/p>/, '')
-  .replace(/<p [^>]*>RESUME<\/p>\s*<div [^>]*data-name="Vector">.*?<\/div><\/div>/, '');
+const facts = [
+  { title: 'Nobody discovers Swad.', body: 'It’s on a residential lane, not a market street. The only people who pass are neighbours, and they pass every day. A café like this lives or dies on whether those same people come back.' },
+  { title: 'Good cooks don’t stay.', body: 'Ranchi’s café kitchens hire from a small pool with high turnover. Any plan that depended on one talented cook would collapse the week that cook left.' },
+  { title: 'The money was real.', body: 'The café belongs to my family. The relaunch had a fixed budget of ₹2,00,000 and no investor behind it, so every rupee had to come back out of the till.' },
+];
+
+// the footfall in an average session: 300 marks, one per person on the lane
+const street = Array.from({ length: 300 }, (_, i) => (i < 2 ? 'ordered' : i < 20 ? 'entered' : i < 180 ? 'noticed' : 'passed'));
+const funnel = [
+  { n: '300', label: 'Walked past', note: 'Everyone on the lane', tier: 'passed' },
+  { n: '180', label: 'Noticed the café', note: '60% of passers-by', tier: 'noticed' },
+  { n: '20', label: 'Walked in', note: '11% of those who noticed', tier: 'entered' },
+  { n: '1–2', label: 'Ordered', note: '5–10% of walk-ins', tier: 'ordered' },
+];
+
+const answers = [
+  { n: 40, quote: 'They liked the food', note: 'Nothing to fix. This was the base to build on.' },
+  { n: 30, quote: 'Swad didn’t have what they wanted', note: 'Something quick to grab, or something spicier.' },
+  { n: 20, quote: 'The food wasn’t fresh', note: 'No inventory system. Stock was bought in bulk and used past its best.' },
+  { n: 10, quote: 'They never knew if it would be open', note: 'No fixed hours.' },
+];
+
+const options = [
+  { verdict: 'No', title: 'Grow the menu to match the market', fixes: 'The 30 people who couldn’t find what they wanted', why: 'More dishes means more stock sitting around, which hurts freshness, and more skill in the kitchen, which hurts consistency. It would answer one complaint by making two others worse, and Swad would still be one shop against 50.' },
+  { verdict: 'No', title: 'Discounts and offers', fixes: 'Getting more people to try it', why: 'The problem was trust, not price. Swad was already cheaper than the market. Discounts would bring in one-time bargain hunters and break the food-cost limit.' },
+  { verdict: 'Not on its own', title: 'Refresh the storefront and interior only', fixes: 'People noticing Swad but not walking in', why: 'It fixes the street and leaves taste, freshness and hours exactly as they were. More people would walk in and meet the same counter.' },
+  { verdict: 'The bet', title: 'Narrow the menu and make it reliable', fixes: 'People leaving without ordering, stale food, erratic hours, repeat visits', why: 'A small menu built on the dish the area already buys most, made reliable through systems instead of skilled staff, with a storefront that finally says what Swad is.', chosen: true },
+];
+
+const steps = [
+  { fix: 'Fixed opening hours, posted on the door and on Google Maps', addressed: '“Never sure it’s open”', effort: 1, effortLabel: 'Very low effort', why: 'Free, done in a day, and it removes a reason never to try again.' },
+  { fix: 'Daily prep quantities, oldest stock used first', addressed: 'Stale food', effort: 2, effortLabel: 'Low effort', why: 'Nothing else matters if the food isn’t fresh.' },
+  { fix: 'Standard recipes, premixes and written procedures', addressed: 'Inconsistency, walk-outs', effort: 3, effortLabel: 'Medium effort', why: 'The core bet. It had to work before the relaunch.' },
+  { fix: 'The nine-item menu', addressed: '“Nothing I want”, too many choices', effort: 3, effortLabel: 'Medium effort', why: 'Only list what the system can make the same way every time.' },
+  { fix: 'Interior and signage', addressed: 'Passers-by not walking in', effort: 4, effortLabel: 'High effort', why: 'The most expensive fix went last, once the food was worth walking in for.' },
+];
+
+const styles = [
+  { name: 'Lucknow', blend: 'Awadh blend', taste: 'Creamy and soft. The mildest.', heat: 1 },
+  { name: 'Sikkim', blend: 'Raw coriander blend', taste: 'Fresh and green. Clean and traditional.', heat: 2 },
+  { name: 'Jharkhandi', blend: 'Rustic earthy blend', taste: 'Sharp mustard and ginger, rounded off with tomato. Our own.', heat: 3 },
+  { name: 'Delhi', blend: 'Butter-soft blend', taste: 'Tandoor smoke and butter. Street food.', heat: 4 },
+  { name: 'Hyderabadi', blend: 'Spicy nutty blend', taste: 'Coconut and cashew under the heat. The hottest, in gravy.', heat: 5 },
+];
+
+const kitchen = [
+  { title: 'Batch premixes', body: 'Everything that defines the flavour is made once, correctly, before service starts. Nobody makes judgment calls during the rush.' },
+  { title: 'Printed procedures', body: 'Prep, cleaning, opening and closing are written down, so nothing depends on someone remembering.' },
+  { title: 'The staff-swap test', body: 'If today’s cook leaves tomorrow, does the food change? Since the relaunch, the kitchen has changed hands three times, and the taste hasn’t moved.' },
+];
+
+const results = [
+  { metric: 'Repeat rate', kind: 'North star', target: '50%', result: '≈80%', verdict: 'Beat', note: 'An estimate, from phone orders. Read the note below before trusting it.' },
+  { metric: 'Monthly operating profit', target: '₹10,000', result: '₹20,000', verdict: 'Beat, 2×', note: 'From the first month.' },
+  { metric: 'Walk-in to order conversion', target: '80%', result: '60%', verdict: 'Missed', note: 'Up from 5–10%. See below.', missed: true },
+  { metric: 'Food cost per plate', kind: 'Guardrail', target: '20% or less', result: '14–20%', verdict: 'Met', note: 'The Lucknow gravy, ₹24 a plate, against its ₹169 and ₹119 menu prices.' },
+  { metric: 'Same taste whoever cooks', kind: 'Guardrail', target: 'Pass', result: 'Pass', verdict: 'Met', note: 'Three staff changes, no change in taste.' },
+];
+
+// the rupee ladder: where a full plate of momos sits, on one scale (₹40 to ₹180)
+const at = (v: number) => `${((v - 40) / 140) * 100}%`;
+const ladder = [
+  { label: 'Swad, before', value: '₹50–60', from: 50, to: 60 },
+  { label: 'The market', value: '₹80', from: 80, to: 80 },
+  { label: 'Swad, now', value: '₹89–169', from: 89, to: 169, now: true },
+];
+
+const differently = [
+  { title: 'Measure from day one.', body: 'I’d log every order against a phone number or UPI handle from the first day. My repeat figure is a careful estimate. Tracked data would have made it a fact, and would have shown which fix moved which number.' },
+  { title: 'Stagger the launch.', body: 'Shipping the hours and freshness fixes two weeks ahead of the new menu and interior would have shown how much reliability alone did for conversion. It was a free experiment, and I skipped it.' },
+  { title: 'Close the loop with the 30.', body: 'After the launch I’d go back to the people who said Swad didn’t have what they wanted and ask whether five styles of momo answered them. I believe it did, but I didn’t check.' },
+];
+
+const taught = [
+  { title: 'The product is everything the customer meets.', body: 'The storefront, the menu and the binder of procedures in the kitchen were one problem seen at three distances. If I’d fixed only what people could see, I’d have improved the first impression and left the real failure in place.' },
+  { title: 'Deciding what you won’t be is a strategy.', body: 'The most valuable call in this project was what Swad would not offer: not variety, not discounts, and not delivery until the food was ready for it. Every no made consistency easier.' },
+  { title: 'A constraint is a requirement.', body: 'The hiring market wasn’t a risk to note in a slide. It was a spec. Designing recipes that don’t need a skilled cook is why the results lasted beyond launch month.' },
+];
+
+const pad = (n: number) => String(n).padStart(2, '0');
 ---
 <Base title="Swad: How a Momo Café That Couldn't Make Rent Found Its Regulars · Suyash" description="A quiet-lane café in Ranchi went from losing ₹10,000 a month to ₹20,000 in profit in six months.">
   <Nav solid />
-  <main class="canvas swad-canvas" style="height: calc(27895 * var(--u));" set:html={html}></main>
+  <main class="canvas swad">
+
+    <!-- ===== Hero ===== -->
+    <header class="hero">
+      <div class="hero__photo" data-wipe="left"><img src={photo('hero')} alt="The Swad counter seen through its open shopfront, the menu on the wall behind it" width="852" height="1117" /></div>
+      <div class="hero__text">
+        <p class="mono" data-slide="right">Swad · Momo café · Ranchi · 2026</p>
+        <h1 class="hero__title" data-slide="right"><span>Swad:</span> How a Momo Café That Couldn’t Make Rent Found Its Regulars</h1>
+        <div class="lead hero__lede" data-slide="right" data-delay="0.08">
+          <p>In December 2025, Swad served one or two customers a day and lost ₹10,000 a month. It sits on a quiet residential lane in Ranchi, where nobody wanders past by accident. By June 2026, a month after its relaunch, it was serving twenty a day, most of them people who had ordered before, and clearing ₹20,000 a month.</p>
+          <p>The street didn’t change. What changed was what Swad promised its customers, and whether it kept that promise every day.</p>
+        </div>
+        <dl class="hero__facts" data-slide="right" data-delay="0.16">
+          <div><dt>Role</dt><dd>Product manager, owning strategy, P&amp;L, roadmap and launch</dd></div>
+          <div><dt>Timeline</dt><dd>January 2026 to present. Relaunched May 2026.</dd></div>
+          <div><dt>My own hands</dt><dd>The research, the menu, the five spice blends and their recipes, the kitchen procedures</dd></div>
+          <div><dt>Team</dt><dd>Rushikesh Pawar (interior design partner), the kitchen staff, and my family, who own the café</dd></div>
+        </dl>
+      </div>
+    </header>
+
+    <!-- ===== 01 In short ===== -->
+    <section class="sec" aria-labelledby="s1">
+      <header class="sec__head" data-slide="left"><span class="mono">01</span><h2 id="s1">In short</h2></header>
+      <div class="g">
+        <p class="statement" style="grid-column: 1 / span 7;" data-slide="left">Swad didn’t have an awareness problem. It had a <em>trust</em> problem.</p>
+      </div>
+      <div class="g gap-m">
+        <p class="body" style="grid-column: 4 / span 4;" data-slide="left">Six in ten people on the lane already noticed the café. Some walked in, looked around, and still left without ordering, because they couldn’t count on it being open, fresh, or the same as last time.</p>
+        <p class="body" style="grid-column: 8 / span 5;" data-slide="right" data-delay="0.1">So I stopped trying to out-stock a market of 50 shops. I cut the menu to nine items built around momos, rebuilt every recipe so it didn’t need a skilled cook, and fixed the basics customers had stopped believing in. Monthly profit swung by ₹30,000, from a ₹10,000 loss to a ₹20,000 profit.</p>
+      </div>
+
+      <!-- the ledger: before and after, set like the lines of a menu -->
+      <div class="ledger gap-l" data-slide="left">
+        <div class="ledger__head mono"><span>The ledger</span><span>December 2025</span><span>June 2026</span></div>
+        {ledger.map(row => (
+          <div class="ledger__row">
+            <span class="ledger__label">{row.label}{row.mark && <sup>{row.mark}</sup>}</span>
+            <span class="ledger__dots" aria-hidden="true"></span>
+            <span class="ledger__before">{row.before}</span>
+            <span class="ledger__after">{row.after}</span>
+          </div>
+        ))}
+        <div class="ledger__foot">
+          <p class="small"><sup>†</sup> Estimated from phone orders. How, and how far to trust it, is in section 07.</p>
+          <p class="small ledger__since"><span class="mono">November 2026</span> Profitable every month since the relaunch, and now on Swiggy and Zomato.</p>
+        </div>
+      </div>
+
+      <figure class="g fig gap-l">
+        <figcaption style="grid-column: 1 / span 3;" data-slide="left"><span class="mono">Fig. 1</span>Swad’s lane. Homes, a grocery, a tailor. It is not a market street, and nobody walks down it by accident.<small>Google Street View</small></figcaption>
+        <div class="fig__img" style="grid-column: 4 / span 9; aspect-ratio: 1128 / 445;" data-wipe="right"><img src={photo('lane-wide')} alt="A quiet residential lane in Ranchi with a grocery on one side" width="1128" height="445" loading="lazy" /></div>
+      </figure>
+    </section>
+
+    <!-- ===== 02 Where Swad stood ===== -->
+    <section class="sec" aria-labelledby="s2">
+      <header class="sec__head" data-slide="left"><span class="mono">02</span><h2 id="s2">Where Swad stood</h2></header>
+      <div class="g">
+        <p class="statement" style="grid-column: 1 / span 7;" data-slide="left">Three facts shaped every decision that followed.</p>
+      </div>
+      <div class="g gap-m">
+        <figure class="fig" style="grid-column: 1 / span 5;">
+          <div class="fig__img" style="aspect-ratio: 688 / 780;" data-wipe="left"><img src={photo('before')} alt="The Swad shopfront before the relaunch: a Momos banner behind a locked mesh cage" width="688" height="780" loading="lazy" /></div>
+          <figcaption data-slide="left"><span class="mono">Fig. 2</span>Swad before the relaunch. A banner behind a locked cage, full plates at ₹50 and ₹60, and no hours posted anywhere.<small>Google Street View</small></figcaption>
+        </figure>
+        <ol class="facts" style="grid-column: 7 / span 6;">
+          {facts.map((f, i) => (
+            <li data-slide="right" data-delay={String(i * 0.08)}>
+              <span class="mono">{pad(i + 1)}</span>
+              <h3>{f.title}</h3>
+              <p class="body">{f.body}</p>
+            </li>
+          ))}
+          <li class="facts__sum" data-slide="right">
+            <p class="figure">₹2,00,000</p>
+            <p class="small">Fixed relaunch budget, with no investor behind it</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== 03 Finding the leak ===== -->
+    <section class="sec" aria-labelledby="s3">
+      <header class="sec__head" data-slide="left"><span class="mono">03</span><h2 id="s3">Finding the leak</h2></header>
+      <div class="g">
+        <p class="statement" style="grid-column: 1 / span 8;" data-slide="left">Over January and February I ran 60 observation sessions outside the café, held 100 one-on-one conversations, and walked through 50 competing food shops nearby.</p>
+      </div>
+      <div class="g gap-m tally">
+        <div style="grid-column: 1 / span 4;" data-slide="left"><p class="figure">60</p><p class="small">Observation sessions outside the café</p></div>
+        <div style="grid-column: 5 / span 4;" data-slide="left" data-delay="0.08"><p class="figure">100</p><p class="small">One-on-one conversations</p></div>
+        <div style="grid-column: 9 / span 4;" data-slide="left" data-delay="0.16"><p class="figure">50</p><p class="small">Competing food shops walked through</p></div>
+      </div>
+
+      <!-- footfall -->
+      <div class="g gap-xl">
+        <h3 class="sub" style="grid-column: 1 / span 3;" data-slide="left">What the footfall showed</h3>
+        <div class="body" style="grid-column: 4 / span 7;" data-slide="right">
+          <p>Swad lost about nine in ten people, twice. The first loss was at the street. Most people who noticed the café never came in: the banner said momos, but nothing said the place was open.</p>
+          <p>The second loss was at the counter, and it worried me more. These were people who had already decided to try Swad. They walked in, read the menu, looked around, and still left without ordering. A new sign couldn’t fix that. Something inside was telling them not to trust the place.</p>
+        </div>
+      </div>
+      <div class="street gap-m" data-street>
+        <p class="mono street__title">In an average session · one mark is one person on the lane</p>
+        <div class="street__marks" role="img" aria-label="300 marks, one per person who walked past in an average session: 180 noticed the café, 20 walked in, and one or two ordered">
+          {street.map(tier => <i class={tier}></i>)}
+        </div>
+        <div class="g street__key">
+          {funnel.map((f, i) => (
+            <div style={`grid-column: ${1 + i * 3} / span 3;`}>
+              <p class="figure"><i class={`swatch ${f.tier}`} aria-hidden="true"></i>{f.n}</p>
+              <p class="street__label">{f.label}</p>
+              <p class="small">{f.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- interviews -->
+      <div class="g gap-xl">
+        <h3 class="sub" style="grid-column: 1 / span 3;" data-slide="left">What people said</h3>
+        <p class="body" style="grid-column: 4 / span 6;" data-slide="right">I talked to walk-ins, passers-by and staff. Four answers came up again and again.</p>
+      </div>
+      <div class="said gap-m" data-slide="left">
+        <div class="said__bar" aria-hidden="true">{answers.map(a => <span style={`flex: ${a.n};`}>{a.n}</span>)}</div>
+        <div class="g">
+          {answers.map((a, i) => (
+            <div style={`grid-column: ${1 + i * 3} / span 3;`}>
+              <p class="said__n"><b>{a.n}</b> people</p>
+              <p class="said__quote">“{a.quote}”</p>
+              <p class="small">{a.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="g gap-l">
+        <blockquote class="pull" style="grid-column: 4 / span 8;" data-slide="right">
+          <p>Even the 40 who liked the food rarely came back. They told me why: the taste, the portion and even the menu changed from one visit to the next.</p>
+        </blockquote>
+      </div>
+
+      <!-- competition -->
+      <div class="g gap-xl">
+        <h3 class="sub" style="grid-column: 1 / span 3;" data-slide="left">What the competition showed</h3>
+        <div class="body" style="grid-column: 4 / span 7;" data-slide="right">
+          <p>The nearby market had proper seating, fast service, menus of 40 items or more, and momo plates for ₹80. Almost a third of its stalls sold momos. Swad couldn’t win on menu size.</p>
+          <p>It hadn’t won on price either. Its own banner offered a full plate for ₹50 or ₹60, less than the market charged, and the café was still nearly empty.</p>
+        </div>
+      </div>
+      <div class="g gap-m tally">
+        <div style="grid-column: 4 / span 3;" data-slide="left"><p class="figure">40+</p><p class="small">Items on a typical market menu</p></div>
+        <div style="grid-column: 7 / span 3;" data-slide="left" data-delay="0.08"><p class="figure">₹80</p><p class="small">A momo plate at the market</p></div>
+        <div style="grid-column: 10 / span 3;" data-slide="left" data-delay="0.16"><p class="figure">1 in 3</p><p class="small">Market stalls selling momos</p></div>
+      </div>
+    </section>
+
+    <!-- what it added up to: the one dark page in the story -->
+    <section class="band" aria-label="What it added up to">
+      <div class="g band__in">
+        <div style="grid-column: 1 / span 7;" data-slide="left">
+          <p class="mono">What it added up to</p>
+          <p class="band__line">I couldn’t offer more variety than an entire market. I could be more <em>reliable</em> than it.</p>
+          <p class="lead band__body">Six in ten passers-by already noticed Swad, so awareness wasn’t the problem. Trust was. Before they tried it, people couldn’t tell whether it would be open. After they tried it, they couldn’t count on it being fresh, or the same as last time.</p>
+        </div>
+        <figure class="fig" style="grid-column: 9 / span 4;">
+          <div class="fig__img" style="aspect-ratio: 640 / 760;" data-wipe="right"><img src={photo('lane-walk')} alt="People walking down the lane outside Swad" width="640" height="760" loading="lazy" /></div>
+          <figcaption><span class="mono">Fig. 3</span>The lane outside Swad. Sixty sessions of counting who passed, who looked and who went in built the funnel above.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===== 04 What I set out to move ===== -->
+    <section class="sec sec--after-band" aria-labelledby="s4">
+      <header class="sec__head" data-slide="left"><span class="mono">04</span><h2 id="s4">What I set out to move</h2></header>
+      <div class="g">
+        <p class="statement" style="grid-column: 1 / span 7;" data-slide="left">With the leak found, these are the numbers I chose to judge the relaunch by.</p>
+      </div>
+      <div class="g gap-m targets">
+        <div class="targets__star" style="grid-column: 1 / span 5;" data-slide="left">
+          <p class="mono">North star</p>
+          <p class="colossal">50%</p>
+          <h3>30-day repeat rate</h3>
+          <p class="body">On a lane with no passing trade, regulars are the business.</p>
+        </div>
+        <div class="targets__side" style="grid-column: 7 / span 6;">
+          <div data-slide="right">
+            <p class="figure">₹10,000</p>
+            <h3>Monthly operating profit</h3>
+            <p class="body">The café had to stop losing money.</p>
+          </div>
+          <div data-slide="right" data-delay="0.08">
+            <p class="figure">80%</p>
+            <h3>Walk-in to order conversion</h3>
+            <p class="body">The leak that worried me most.</p>
+          </div>
+          <p class="mono targets__rail" data-slide="right">Guardrails: things that couldn’t break along the way</p>
+          <div data-slide="right">
+            <p class="figure">≤20%</p>
+            <h3>Food cost per plate</h3>
+            <p class="body">Growth couldn’t be bought with discounts.</p>
+          </div>
+          <div data-slide="right" data-delay="0.08">
+            <p class="figure">Pass</p>
+            <h3>Same taste whoever cooks</h3>
+            <p class="body">Inconsistency was why people who liked the food didn’t come back.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 05 Choosing one bet ===== -->
+    <section class="sec" aria-labelledby="s5">
+      <header class="sec__head" data-slide="left"><span class="mono">05</span><h2 id="s5">Choosing one bet</h2></header>
+      <div class="g">
+        <p class="statement" style="grid-column: 1 / span 7;" data-slide="left">With ₹2 lakh and a two-person core team, I could afford one real bet. These were the options.</p>
+      </div>
+      <div class="options gap-m">
+        {options.map(o => (
+          <div class:list={['options__row', { 'is-bet': o.chosen, 'is-part': o.verdict === 'Not on its own' }]} data-slide="left">
+            <p class="mono options__verdict">{o.verdict}</p>
+            <h3 class="options__title">{o.title}</h3>
+            <p class="small options__fix"><span class="mono">Would fix</span>{o.fixes}</p>
+            <p class="body options__why">{o.why}</p>
+          </div>
+        ))}
+      </div>
+
+      <!-- the trade-off -->
+      <div class="g gap-xl tradeoff">
+        <div style="grid-column: 1 / span 6;" data-slide="left">
+          <h3 class="sub">The trade-off I had to defend</h3>
+          <div class="body gap-s">
+            <p>Thirty people told me Swad didn’t have what they wanted, and my answer was to cut the menu from more than 30 items to nine. On paper, that looks like ignoring them.</p>
+            <p>So before committing, I went back and asked what they meant.</p>
+          </div>
+          <blockquote class="pull pull--in"><p>Mostly they wanted choice, not a particular dish Swad was missing.</p></blockquote>
+          <div class="body">
+            <p>Five styles of momo, running from mild to properly hot, give a group of four friends something each without adding a single new ingredient to the store room. I accepted that people who wanted a full multi-cuisine menu would keep going to the market, which serves them better anyway.</p>
+            <p>The numbers after the launch suggest the bet held. I haven’t gone back to those thirty to confirm it, which is one of the things I’d do differently.</p>
+          </div>
+        </div>
+        <figure class="fig sheet" style="grid-column: 8 / span 5;">
+          <div class="sheet__paper" data-slide="right"><img src={photo('menus')} alt="The House of Swad menu: five momos in veg and non-veg, half and full plates, and four drinks" width="748" height="960" loading="lazy" /></div>
+          <figcaption data-slide="right"><span class="mono">Fig. 4</span>The whole menu: five momos and four drinks. It replaced a list of more than 30 items.</figcaption>
+        </figure>
+      </div>
+
+      <!-- the order of work -->
+      <div class="g gap-xl">
+        <h3 class="sub" style="grid-column: 1 / span 3;" data-slide="left">What went first</h3>
+        <p class="body" style="grid-column: 4 / span 7;" data-slide="right">I ordered the work by which leak it closed and how cheaply it could be done. The cheapest fixes were built first and the most expensive last. Everything then went live together at the relaunch in May, a choice I’d make differently now.</p>
+      </div>
+      <ol class="steps gap-m">
+        <li class="steps__head mono" aria-hidden="true"><span>Fix</span><span>What it addressed</span><span>Effort</span><span>Why then</span></li>
+        {steps.map((s, i) => (
+          <li data-slide="left">
+            <p class="steps__fix"><span class="mono">{i + 1}</span>{s.fix}</p>
+            <p class="body">{s.addressed}</p>
+            <p class="steps__effort"><span class="pips" aria-hidden="true">{[1, 2, 3, 4].map(n => <i class:list={{ on: n <= s.effort }}></i>)}</span><span class="small">{s.effortLabel}</span></p>
+            <p class="body">{s.why}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- ===== 06 What we built ===== -->
+    <section class="sec" aria-labelledby="s6">
+      <header class="sec__head" data-slide="left"><span class="mono">06</span><h2 id="s6">What we built</h2></header>
+
+      <!-- the menu -->
+      <div class="g">
+        <h3 class="sub" style="grid-column: 1 / span 3;" data-slide="left">A menu that asks one question</h3>
+        <div class="body" style="grid-column: 4 / span 7;" data-slide="right">
+          <p>Momos were already the best-selling food in the area, and already the word on Swad’s banner. I made them its whole identity: five regional styles and four drinks, with the styles running from mild to hot.</p>
+          <p>A first-timer has one question to answer, how hot, instead of 30 items to read. And a regular always has a next step, “try the one hotter”, so they can explore without going anywhere else.</p>
+        </div>
+      </div>
+      <div class="g gap-m plates">
+        <figure class="fig" style="grid-column: 1 / span 5;">
+          <div class="fig__img" style="aspect-ratio: 748 / 760;" data-wipe="left"><img src={photo('plates')} alt="Five plates of momos, from mild to hot" width="748" height="760" loading="lazy" /></div>
+          <figcaption data-slide="left"><span class="mono">Fig. 5</span>The five styles. With four drinks, that is nine items in all.</figcaption>
+        </figure>
+        <div class="heat" style="grid-column: 7 / span 6;" data-slide="right">
+          <div class="heat__ends mono"><span>Mild</span><span class="heat__line" aria-hidden="true"></span><span>Hot</span></div>
+          <ol>
+            {styles.map(s => (
+              <li>
+                <span class="heat__pips pips" role="img" aria-label={`Heat ${s.heat} of 5`}>{[1, 2, 3, 4, 5].map(n => <i class:list={{ on: n <= s.heat }}></i>)}</span>
+                <h4>{s.name}</h4>
+                <p class="mono heat__blend">{s.blend}</p>
+                <p class="body">{s.taste}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+
+      <!-- the blends -->
+      <div class="g gap-xl">
+        <h3 class="sub" style="grid-column: 1 / span 3;" data-slide="left">Five spice blends of my own</h3>
+        <p class="body" style="grid-column: 4 / span 7;" data-slide="right">When one stall in three already sells a similar ₹80 plate, one more momo stall needs a reason to exist. I created a spice blend for each style. None of them is a packet masala.</p>
+      </div>
+      <div class="g gap-m">
+        <div class="body" style="grid-column: 1 / span 6;" data-slide="left">
+          <p>The blends carry most of the strategy. They answer the people who asked for something spicier, and the people who wanted choice, without adding a dish to the menu. They’re mixed in batches and measured by the spoon, so the flavour is fixed at prep time, not by whoever is at the stove. And a rival can copy a menu or a price in a week. Five original blends take far longer to copy.</p>
+          <p>Getting them right took repetition. Lucknow and Hyderabadi needed around 80 test batches between them, and Delhi took 30. Jharkhandi came quickly because it’s the food I grew up with, and Sikkim stays close to the traditional taste.</p>
+          <p>The tasters were neighbours, family, friends and old customers. I dropped ideas drawn from Tamil Nadu and Maharashtra cooking: I’ve never been to either place, and I didn’t want to fake an authenticity I couldn’t vouch for.</p>
+          <p>Cost shaped the recipes too. The first Lucknow gravy used cashews and cream and cost ₹60 a plate, half the price of the ₹119 veg plate. Soaked seeds and well-whisked curd kept the flavour and brought the cost down to ₹24, a fifth.</p>
+        </div>
+        <figure class="fig" style="grid-column: 8 / span 5;">
+          <div class="fig__img" style="aspect-ratio: 748 / 640;" data-wipe="right"><img src={photo('blends')} alt="Jars of the Delhi, Lucknow and Hyderabad momo masalas" width="748" height="640" loading="lazy" /></div>
+          <figcaption data-slide="right"><span class="mono">Fig. 6</span>Three of the five blends. Each is mixed in batches and measured by the spoon.</figcaption>
+        </figure>
+      </div>
+      <div class="g gap-m tally">
+        <div style="grid-column: 1 / span 3;" data-slide="left"><p class="figure">~80</p><p class="small">Test batches for Lucknow and Hyderabadi together</p></div>
+        <div style="grid-column: 4 / span 3;" data-slide="left" data-delay="0.08"><p class="figure">30</p><p class="small">Test batches for Delhi</p></div>
+        <div style="grid-column: 7 / span 3;" data-slide="left" data-delay="0.16"><p class="figure">₹60 → ₹24</p><p class="small">Lucknow gravy cost per plate</p></div>
+        <div style="grid-column: 10 / span 3;" data-slide="left" data-delay="0.24"><p class="figure">½ → ⅕</p><p class="small">That cost as a share of the ₹119 veg plate</p></div>
+      </div>
+
+      <!-- the kitchen -->
+      <div class="g gap-xl">
+        <figure class="fig" style="grid-column: 1 / span 5;">
+          <div class="fig__img" style="aspect-ratio: 748 / 920;" data-wipe="left"><img src={photo('binder')} alt="A printed Swad recipe sheet for a mint mojito, with step-by-step photos, beside the finished drink" width="748" height="920" loading="lazy" /></div>
+          <figcaption data-slide="left"><span class="mono">Fig. 7</span>One page of the procedures: the mojito, step by step.</figcaption>
+        </figure>
+        <div style="grid-column: 7 / span 6;">
+          <h3 class="sub" data-slide="right">A kitchen that doesn’t depend on one cook</h3>
+          <p class="lead gap-s" data-slide="right">In a café this size, the written procedure is the product. It decides whether the next customer gets the same plate as the last one.</p>
+          <dl class="points">
+            {kitchen.map(k => (
+              <div data-slide="right"><dt>{k.title}</dt><dd class="body">{k.body}</dd></div>
+            ))}
+          </dl>
+        </div>
+      </div>
+
+      <!-- the storefront -->
+      <div class="g gap-xl">
+        <h3 class="sub" style="grid-column: 1 / span 3;" data-slide="left">A front that says what Swad is</h3>
+        <p class="body" style="grid-column: 4 / span 7;" data-slide="right">The most expensive fix went last. The interior and signage, designed with Rushikesh Pawar, were only worth paying for once the food was worth walking in for.</p>
+      </div>
+      <div class="g gap-m pair">
+        <figure class="fig" style="grid-column: 1 / span 6;">
+          <div class="fig__img" style="aspect-ratio: 748 / 560;" data-wipe="left"><img src={photo('store-before')} alt="The storefront before the relaunch, a Momos banner behind a mesh cage" width="748" height="560" loading="lazy" /></div>
+          <figcaption data-slide="left"><span class="mono">Before</span>A banner, a cage and a shutter.<small>Google Street View</small></figcaption>
+        </figure>
+        <figure class="fig" style="grid-column: 7 / span 6;">
+          <div class="fig__img" style="aspect-ratio: 748 / 560;" data-wipe="right"><img src={photo('store-after')} alt="The storefront after the relaunch, with a dark Swad counter and the menu on the wall" width="748" height="560" loading="lazy" /></div>
+          <figcaption data-slide="right"><span class="mono">After · May 2026</span>An open counter, with the menu on the wall behind it.</figcaption>
+        </figure>
+      </div>
+      <div class="g gap-m pair">
+        <figure class="fig" style="grid-column: 1 / span 8;">
+          <div class="fig__img" style="aspect-ratio: 1134 / 640;" data-wipe="left"><img src={photo('interior')} alt="Plywood shelving being built outside the café" width="1134" height="640" loading="lazy" /></div>
+          <figcaption data-slide="left"><span class="mono">Fig. 8</span>During the rebuild. The shelving was built on site.</figcaption>
+        </figure>
+        <figure class="fig" style="grid-column: 10 / span 3;">
+          <div class="fig__img" style="aspect-ratio: 332 / 560;" data-wipe="right"><img src={photo('menu')} alt="A corner of the kitchen during the rebuild, the counter half-built" width="362" height="640" loading="lazy" /></div>
+          <figcaption data-slide="right"><span class="mono">Fig. 9</span>The kitchen counter going in.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===== 07 What happened ===== -->
+    <section class="sec" aria-labelledby="s7">
+      <header class="sec__head" data-slide="left"><span class="mono">07</span><h2 id="s7">What happened</h2></header>
+      <div class="g">
+        <p class="statement" style="grid-column: 1 / span 8;" data-slide="left">Swad relaunched in May 2026 and has been profitable every month since. Against the targets, as measured in June:</p>
+      </div>
+      <div class="score gap-m" role="table" aria-label="Results against targets">
+        <div class="score__head mono" role="row"><span role="columnheader">Metric</span><span role="columnheader">Target</span><span role="columnheader">Result</span><span role="columnheader">Verdict</span><span role="columnheader">Note</span></div>
+        {results.map(r => (
+          <div class:list={['score__row', { 'is-missed': r.missed }]} role="row" data-slide="left">
+            <p class="score__metric" role="cell">{r.kind && <span class="mono">{r.kind}</span>}{r.metric}</p>
+            <p class="score__target" role="cell"><span class="mono score__tag">Target</span>{r.target}</p>
+            <p class="score__result figure" role="cell">{r.result}</p>
+            <p class="score__verdict mono" role="cell">{r.verdict}</p>
+            <p class="small" role="cell">{r.note}</p>
+          </div>
+        ))}
+      </div>
+
+      <!-- the miss -->
+      <div class="g gap-xl">
+        <div style="grid-column: 1 / span 6;" data-slide="left">
+          <h3 class="sub">The number I missed</h3>
+          <div class="body gap-s">
+            <p>Conversion rose at least sixfold, but it fell short of my target, and I think the reason matters. Once the trust problem was fixed, price was the main thing still stopping people. A full plate that used to cost ₹50 or ₹60 now costs ₹89 to ₹169, and some walk-ins still compare it with the market’s ₹80 and leave.</p>
+            <p>I chose not to chase them. At least ten times the customers, each order twice the size, is what turned the loss into a profit. Discounting to win back bargain hunters would have broken the food-cost guardrail and brought back the customer mix Swad had just moved away from.</p>
+          </div>
+        </div>
+        <div class="money" style="grid-column: 8 / span 5;" data-slide="right">
+          <p class="mono">A full plate of momos</p>
+          <div class="ladder" role="img" aria-label="A full plate cost 50 to 60 rupees at Swad before, costs 80 rupees at the market, and costs 89 to 169 rupees at Swad now">
+            {ladder.map(l => (
+              <div class:list={['ladder__row', { 'is-now': l.now }]}>
+                <p class="ladder__name">{l.label}<b>{l.value}</b></p>
+                <div class="ladder__track"><span style={`left: ${at(l.from)}; width: calc(${at(l.to)} - ${at(l.from)});`}></span></div>
+              </div>
+            ))}
+            <div class="ladder__axis mono" aria-hidden="true">{[40, 80, 120, 160].map(v => <span style={`left: ${at(v)};`}>₹{v}</span>)}</div>
+          </div>
+          <p class="mono money__next">Average order value</p>
+          <p class="money__aov"><span>₹67.50</span><i aria-hidden="true">→</i><b>₹139</b></p>
+          <p class="small">December 2025 to June 2026</p>
+        </div>
+      </div>
+
+      <!-- notes in the margin of the results -->
+      <div class="g gap-xl notes">
+        <div style="grid-column: 1 / span 4;" data-slide="left">
+          <p class="mono">† How I measured repeat visits</p>
+          <p class="body">The target was a 30-day repeat rate. What I could actually measure was narrower. Most regulars pre-order by phone, and on a lane where people know one another, the owners can tell a returning caller from a new one. I counted repeat callers against all callers. That flatters the number, because people who never come back never call. It’s directional, not precise, and December’s 10% is an estimate too.</p>
+        </div>
+        <div style="grid-column: 5 / span 4;" data-slide="left" data-delay="0.08">
+          <p class="mono">Paying back the ₹2 lakh</p>
+          <p class="body">At ₹20,000 a month, the relaunch pays for itself in ten months. Counting the ₹10,000 a month Swad no longer loses, the swing is ₹30,000 and the payback is about seven. I use the first figure when I talk about the till, and the second when I talk about the decision.</p>
+        </div>
+        <div style="grid-column: 9 / span 4;" data-slide="left" data-delay="0.16">
+          <p class="mono">Since June</p>
+          <p class="body">I held delivery back on purpose. Food that’s inconsistent gets punished harder in app ratings than at the counter. Once the kitchen held steady through staff changes, Swad went live on Swiggy and Zomato. As of November 2026 it has been profitable every month since the relaunch.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 08 Looking back ===== -->
+    <section class="sec" aria-labelledby="s8">
+      <header class="sec__head" data-slide="left"><span class="mono">08</span><h2 id="s8">Looking back</h2></header>
+      <div class="g">
+        <p class="mono" style="grid-column: 1 / span 3;" data-slide="left">What I’d do differently</p>
+        <ol class="lessons" style="grid-column: 4 / span 9;">
+          {differently.map((d, i) => (
+            <li data-slide="right"><span class="mono">{pad(i + 1)}</span><h3>{d.title}</h3><p class="body">{d.body}</p></li>
+          ))}
+        </ol>
+      </div>
+      <div class="g gap-xl">
+        <p class="mono" style="grid-column: 1 / span 3;" data-slide="left">What it taught me</p>
+        <ul class="lessons lessons--taught" style="grid-column: 4 / span 9;">
+          {taught.map(t => (
+            <li data-slide="right"><h3>{t.title}</h3><p class="body">{t.body}</p></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  </main>
   <NextProject href="/work/diviniti" label="DIVINITI" title="Redefining Design" />
   <Footer />
 </Base>
 
 <script>
-  // Motion, in the same vocabulary as the other case studies (scripts/case-motion.ts). This body is generated from
-  // Figma, so the blocks are tagged here rather than in the markup: images wipe open from their
-  // side, and every block of text slides in from its side. Numbered sections are tagged block by block.
-  const canvas = document.querySelector<HTMLElement>('.swad-canvas');
-  if (canvas) {
-    const width = canvas.getBoundingClientRect().width;
-    const tag = (el: HTMLElement) => {
-      if (el.tagName === 'A' || el.dataset.name === 'Vector') return;
-      const side = el.getBoundingClientRect().left - canvas.getBoundingClientRect().left > width * 0.4 ? 'right' : 'left';
-      if (/^Image|placeholder/i.test(el.dataset.name || '')) el.dataset.wipe = side;
-      else el.dataset.slide = side;
-    };
-    for (const block of canvas.children as HTMLCollectionOf<HTMLElement>) {
-      if (/^\d\d /.test(block.dataset.name || '')) [...(block.children as HTMLCollectionOf<HTMLElement>)].forEach(tag);
-      else tag(block);
-    }
-  }
+  import '../../scripts/case-motion';
 
-  // Text never drops below a readable size, so on desktop windows (mostly 901–1365px) a paragraph can grow taller
-  // than its Figma slot and run into the block below. Working from the innermost frames out, each block that text
-  // runs into moves down (with everything after it in its frame), and a frame grows when its content outgrew it.
-  // Where nothing collides nothing moves; phones use their own stacked layout.
-  if (canvas) {
-    const desk = matchMedia('(min-width: 901px)');
-    const abs = (el: Element) => [...el.children].filter((c): c is HTMLElement => getComputedStyle(c).position === 'absolute');
-    const reset = () => {
-      canvas.querySelectorAll<HTMLElement>('[data-settled]').forEach(e => {
-        e.style.marginTop = '';
-        if (e.dataset.h0) e.style.height = e.dataset.h0;
-        delete e.dataset.settled;
-      });
-      if (canvas.dataset.h0) canvas.style.height = canvas.dataset.h0;
-    };
-    // how far down a block's text reaches (a frame may be drawn taller or shorter than what is in it)
-    const inkBottom = (e: HTMLElement): number => {
-      const kids = abs(e);
-      if (!kids.length) return e.textContent?.trim() ? e.offsetHeight : 0;
-      return Math.max(0, ...kids.map(c => { const b = inkBottom(c); return b ? c.offsetTop + b : 0; }));
-    };
-    // where a block's content starts (its text or pictures; a frame's top edge may be empty space)
-    const inkTop = (e: HTMLElement): number => {
-      const kids = abs(e);
-      if (!kids.length) return e.textContent?.trim() || e.querySelector('img') || e.tagName === 'IMG' ? 0 : Infinity;
-      return Math.min(Infinity, ...kids.map(c => c.offsetTop + inkTop(c)));
-    };
-    const settle = (box: HTMLElement): number => {
-      const kids = abs(box);
-      kids.forEach(k => { if (abs(k).length) settle(k); });
-      const it = kids.map(e => ({ e, top: e.offsetTop, h: e.offsetHeight, ink: inkBottom(e), lead: inkTop(e), l: e.offsetLeft, w: e.offsetWidth, text: !!e.textContent?.trim(), shift: 0 }))
-        .sort((a, b) => a.top - b.top);
-      for (let i = 0; i < it.length; i++) {
-        const a = it[i];
-        if (!a.text) continue;
-        for (let j = i + 1; j < it.length; j++) {
-          const b = it[j];
-          if (b.top <= a.top + 1) continue;                                                   // only blocks below it
-          if (Math.min(a.l + a.w, b.l + b.w) - Math.max(a.l, b.l) <= 4) continue;            // in the same column
-          if (!isFinite(b.lead)) continue;
-          const over = a.top + a.shift + a.ink - (b.top + b.shift + b.lead);                // text against content, not frame edges
-          if (over > 1) it.forEach(c => { if (c.top >= b.top) c.shift += over; });   // flush rows stay flush
-        }
-      }
-      it.forEach(c => { if (c.shift) { c.e.style.marginTop = `${c.shift}px`; c.e.dataset.settled = ''; } });
-      const bottom = Math.max(0, ...it.map(c => c.top + c.shift + c.h));
-      if (box !== canvas && box.style.height && bottom > box.clientHeight + 1) {
-        box.dataset.h0 ??= box.style.height;
-        box.style.height = `${bottom}px`;
-        box.dataset.settled = '';
-      }
-      return bottom;
-    };
-    let busy = false;
-    const run = () => {
-      if (busy) return;
-      busy = true;
-      reset();
-      if (desk.matches) {
-        canvas.dataset.h0 ??= canvas.style.height;
-        const bottom = settle(canvas);
-        if (bottom > canvas.clientHeight) canvas.style.height = `${bottom}px`;
-      }
-      dispatchEvent(new Event('resize'));                  // scroll triggers and smooth scroll re-measure the page
-      busy = false;
-    };
-    let t = 0;
-    addEventListener('resize', () => { if (!busy) { clearTimeout(t); t = window.setTimeout(run, 200); } });
-    document.fonts.ready.then(run);
-    // faces used further down the page can arrive later and change how tall text is
-    document.fonts.addEventListener('loadingdone', () => { clearTimeout(t); t = window.setTimeout(run, 100); });
-    addEventListener('load', run);
+  // the street of marks fills in the order the funnel happened: everyone passes, some notice, a few walk in, one or
+  // two order. Without scripts or with reduced motion it simply shows the finished count.
+  const street = document.querySelector<HTMLElement>('[data-street]');
+  if (street && document.documentElement.classList.contains('js-motion')) {
+    street.classList.add('is-waiting');
+    new IntersectionObserver((entries, io) => {
+      if (entries.some(e => e.isIntersecting)) { street.classList.remove('is-waiting'); io.disconnect(); }
+    }, { threshold: 0.6 }).observe(street.querySelector(".street__marks")!);
   }
-  import('../../scripts/case-motion');
 </script>
 
 <style>
   :global(body) { background: var(--paper); }
-  .swad-canvas :global(.swad-link:hover) { color: var(--accent) !important; }
-  /* tags and counts grow with their text, which has a minimum size on small windows */
-  .swad-canvas :global([data-name^="Tag"]) { width: max-content !important; height: auto !important; padding: calc(4 * var(--u)) calc(12 * var(--u)); }
-  .swad-canvas :global([data-name^="Tag"] p) { position: static !important; }
-  .swad-canvas :global([data-name="Count"]) { width: 100% !important; }
-  /* the same nav as the other case studies */
-  /* "Met" sits on a black tag: Figma has it dark on dark */
-  .swad-canvas :global([data-name="Tag Met"] p) { color: #fcfbf8 !important; }
-  /* the grid narrows some text by a line: let it run rather than clip (images keep their crop) */
-  @media (min-width: 901px) { .swad-canvas :global([data-name]:not([data-name^="Image:"]):not([data-name^="Image band"]):not([data-name^="Hero"])) { overflow: visible !important; } }
-  .swad-canvas :global(.swad-photo) { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
 
-  /* phones: the absolute layout falls into reading order (the converter sorts layers top to bottom); type keeps a
-     readable scale by giving this page a larger design pixel */
+  /* ---- the page: one column of sections on the 12-column grid ---- */
+  .swad.canvas {
+    --accent: #681609;
+    --m: calc(104 * var(--u));
+    --gut: calc(64 * var(--u));
+    --fs-body: max(14px, calc(16 * var(--u)));
+    --fs-small: max(12px, calc(14 * var(--u)));
+    --fs-mono: max(11px, calc(13 * var(--u)));
+    --fs-lead: max(15px, calc(20 * var(--u)));
+    --fs-h3: max(20px, calc(31 * var(--u)));
+    --fs-h2: max(30px, calc(49 * var(--u)));
+    --fs-fig: max(32px, calc(61 * var(--u)));
+    --s: calc(24 * var(--u));     /* gaps: small, medium, large, extra large */
+    --md: calc(64 * var(--u));
+    --l: calc(96 * var(--u));
+    --xl: calc(140 * var(--u));
+    --hair: color-mix(in srgb, var(--ink) 22%, transparent);
+    display: block; padding: 0; color: var(--ink);
+  }
+  .g { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gut); align-items: start; }
+  .gap-s { margin-top: var(--s); }
+  .gap-m { margin-top: var(--md); }
+  .gap-l { margin-top: var(--l); }
+  .gap-xl { margin-top: var(--xl); }
+
+  /* ---- type ---- */
+  .mono { font-family: var(--mono); font-size: var(--fs-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .body { font-size: var(--fs-body); line-height: 1.6; }
+  .body p + p, .lead p + p { margin-top: 1em; }
+  .small { font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
+  .lead { font-size: var(--fs-lead); line-height: 1.5; }
+  .statement, .sub, .figure, .colossal, .pull, h3, h4 { font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; }
+  .statement { font-size: var(--fs-h3); line-height: 1.25; }
+  .statement em, .band__line em { color: var(--accent); }
+  .sub { font-size: max(18px, calc(25 * var(--u))); line-height: 1.25; }
+  h3 { font-size: max(17px, calc(22 * var(--u))); line-height: 1.3; }
+  .figure { font-size: var(--fs-fig); line-height: 1.1; color: var(--accent); font-variant-numeric: lining-nums; }
+  sup { font-size: .6em; line-height: 0; color: var(--accent); }
+
+  /* ---- sections ---- */
+  .sec { padding: var(--xl) var(--m) 0; }
+  .sec:last-of-type { padding-bottom: calc(40 * var(--u)); }
+  .sec__head { display: flex; flex-direction: column; gap: calc(14 * var(--u)); padding-top: calc(22 * var(--u)); border-top: 1px solid var(--ink); margin-bottom: var(--l); }
+  .sec__head h2 { font-family: var(--serif); font-weight: 300; font-style: italic; font-variation-settings: "SOFT" 0, "WONK" 1; font-size: var(--fs-h2); line-height: 1.15; color: var(--accent); }
+
+  /* ---- hero ---- */
+  .hero { display: grid; grid-template-columns: calc(852 * var(--u)) minmax(0, 1fr); }
+  .hero__photo { height: min(calc(1117 * var(--u)), 100svh); min-height: calc(760 * var(--u)); overflow: hidden; background: #1a1a1a; }
+  .hero__photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 62%; }
+  .hero__text { align-self: center; padding: calc(var(--nav-h) + 24 * var(--u)) var(--m) calc(40 * var(--u)) var(--gut); }
+  .hero__title { margin-top: calc(20 * var(--u)); font-family: var(--serif); font-weight: 300; font-style: italic; font-variation-settings: "SOFT" 0, "WONK" 1;
+    font-size: max(30px, calc(52 * var(--u))); line-height: 1.15; text-wrap: balance; }
+  .hero__title span { color: var(--accent); }
+  .hero__lede { margin-top: calc(32 * var(--u)); font-size: max(14px, calc(18 * var(--u))); line-height: 1.55; }
+  .hero__facts { display: grid; grid-template-columns: 1fr 1fr; gap: calc(28 * var(--u)) var(--gut); margin-top: calc(48 * var(--u)); padding-top: calc(28 * var(--u)); border-top: 1px solid var(--hair); }
+  .hero__facts dt { font-family: var(--mono); font-size: var(--fs-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .hero__facts dd { margin: calc(6 * var(--u)) 0 0; font-size: var(--fs-small); line-height: 1.5; }
+
+  /* ---- the ledger: label, leader dots, before, after ---- */
+  .ledger__head, .ledger__row { display: grid; grid-template-columns: minmax(0, auto) minmax(calc(40 * var(--u)), 1fr) calc(230 * var(--u)) calc(330 * var(--u)); align-items: baseline; column-gap: calc(20 * var(--u)); }
+  .ledger__head { padding-bottom: calc(14 * var(--u)); border-bottom: 1px solid var(--ink); }
+  .ledger__head span:first-child { grid-column: 1 / span 2; }
+  .ledger__head span:not(:first-child), .ledger__before, .ledger__after { text-align: right; }
+  .ledger__row { padding: calc(22 * var(--u)) 0 calc(18 * var(--u)); border-bottom: 1px solid var(--hair); }
+  .ledger__label { font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; font-size: max(17px, calc(25 * var(--u))); }
+  .ledger__dots { align-self: end; height: 0; margin-bottom: .4em; border-bottom: 2px dotted color-mix(in srgb, var(--ink) 35%, transparent); }
+  .ledger__before { font-size: var(--fs-lead); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .ledger__after { font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; font-size: var(--fs-fig); line-height: 1; color: var(--accent); }
+  .ledger__foot { display: flex; justify-content: space-between; gap: var(--gut); margin-top: calc(18 * var(--u)); }
+  .ledger__since { text-align: right; color: var(--ink); }
+  .ledger__since .mono { margin-right: 1em; color: var(--accent); }
+
+  /* ---- figures: the image, and a caption that starts with its number ---- */
+  .fig__img { overflow: hidden; background: color-mix(in srgb, var(--ink) 6%, var(--paper)); }
+  .fig__img img { width: 100%; height: 100%; object-fit: cover; }
+  .fig figcaption { margin-top: calc(14 * var(--u)); font-size: var(--fs-small); line-height: 1.5; color: var(--muted); max-width: 46ch; }
+  .fig figcaption .mono { display: block; margin-bottom: .4em; color: var(--accent); }
+  .fig figcaption small { display: block; margin-top: .5em; font-family: var(--mono); font-size: var(--fs-mono); letter-spacing: .04em; opacity: .8; }
+  .fig.g figcaption { align-self: end; margin-top: 0; padding-bottom: calc(2 * var(--u)); }
+
+  /* ---- 02: facts ---- */
+  .facts { list-style: none; margin: 0; padding: 0; }
+  .facts li { display: grid; grid-template-columns: calc(52 * var(--u)) 1fr; column-gap: calc(12 * var(--u)); padding: calc(28 * var(--u)) 0 calc(32 * var(--u)); border-top: 1px solid var(--hair); }
+  .facts li:first-child { border-top-color: var(--ink); }
+  .facts li > .mono { grid-row: 1 / span 2; padding-top: .45em; }
+  .facts li .body { margin-top: calc(10 * var(--u)); max-width: 54ch; }
+  .facts .facts__sum { display: block; padding-left: calc(64 * var(--u)); border-top-color: var(--ink); }
+
+  /* ---- tallies: a number over a hairline ---- */
+  .tally > div { padding-top: calc(18 * var(--u)); border-top: 1px solid var(--ink); }
+  .tally .small { margin-top: calc(8 * var(--u)); max-width: 28ch; }
+
+  /* ---- 03: the street of marks ---- */
+  .street { padding: calc(28 * var(--u)) 0 0; border-top: 1px solid var(--ink); }
+  .street__marks { --cols: 50; display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: calc(10 * var(--u)) 0; margin-top: calc(28 * var(--u)); }
+  .street__marks i, .swatch { display: block; width: calc(13 * var(--u)); height: calc(13 * var(--u)); min-width: 5px; min-height: 5px; border-radius: 50%;
+    background: color-mix(in srgb, var(--ink) 13%, transparent); transition: background-color .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); }
+  .street__marks .noticed, .swatch.noticed { background: color-mix(in srgb, var(--ink) 42%, transparent); }
+  .street__marks .entered, .swatch.entered { background: var(--ink); }
+  .street__marks .ordered, .swatch.ordered { background: var(--accent); transform: scale(1.5); }
+  .street__marks .noticed { transition-delay: .5s; }
+  .street__marks .entered { transition-delay: 1.2s; }
+  .street__marks .ordered { transition-delay: 1.9s; }
+  .street.is-waiting .street__marks i { background: color-mix(in srgb, var(--ink) 13%, transparent); transform: none; transition: none; }
+  .street__key { margin-top: calc(36 * var(--u)); }
+  .street__key .figure { display: flex; align-items: center; gap: calc(14 * var(--u)); color: var(--ink); }
+  .swatch { display: inline-block; flex: none; transform: none !important; }
+  .street__label { margin-top: calc(6 * var(--u)); font-size: var(--fs-lead); }
+
+  /* ---- 03: what people said, in proportion ---- */
+  .said__bar { display: flex; gap: 3px; margin-bottom: calc(28 * var(--u)); }
+  .said__bar span { padding: calc(7 * var(--u)) calc(10 * var(--u)); font-family: var(--mono); font-size: var(--fs-mono); color: var(--paper); background: var(--ink); }
+  .said__bar span:nth-child(2) { background: color-mix(in srgb, var(--ink) 72%, var(--paper)); }
+  .said__bar span:nth-child(3) { background: color-mix(in srgb, var(--ink) 48%, var(--paper)); }
+  .said__bar span:nth-child(4) { background: color-mix(in srgb, var(--ink) 30%, var(--paper)); color: var(--ink); }
+  .said__n { font-size: var(--fs-small); color: var(--muted); }
+  .said__n b { font-family: var(--serif); font-weight: 300; font-size: var(--fs-fig); line-height: 1.1; color: var(--ink); margin-right: .15em; }
+  .said__quote { margin: calc(10 * var(--u)) 0 calc(8 * var(--u)); font-family: var(--serif); font-style: italic; font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; font-size: max(17px, calc(22 * var(--u))); line-height: 1.3; }
+
+  /* ---- pull quotes ---- */
+  .pull { margin: 0; padding-left: calc(32 * var(--u)); border-left: 2px solid var(--accent); font-style: italic; font-size: var(--fs-h3); line-height: 1.3; }
+  .pull--in { margin: calc(36 * var(--u)) 0; font-size: max(19px, calc(27 * var(--u))); }
+
+  /* ---- the dark page ---- */
+  .band { margin-top: var(--xl); padding: var(--xl) var(--m); background: #17120e; color: var(--paper);
+    box-shadow: 0 0 0 100vmax #17120e; clip-path: inset(0 -100vmax); }
+  .band .mono, .band figcaption { color: color-mix(in srgb, var(--paper) 62%, transparent); }
+  .band .fig figcaption .mono { color: #e0907c; }
+  .band__in { align-items: center; }
+  .band__line { margin-top: calc(28 * var(--u)); font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; font-size: var(--fs-h2); line-height: 1.18; text-wrap: balance; }
+  .band__line em { color: #e0907c; }
+  .band__body { margin-top: calc(36 * var(--u)); max-width: 56ch; color: color-mix(in srgb, var(--paper) 82%, transparent); }
+  .band .fig__img { background: #241c16; }
+
+  /* ---- 04: targets ---- */
+  .colossal { font-size: max(84px, calc(200 * var(--u))); line-height: .95; letter-spacing: -.02em; color: var(--accent); margin: calc(16 * var(--u)) 0 calc(20 * var(--u)); }
+  .targets__star { padding-top: calc(22 * var(--u)); border-top: 2px solid var(--accent); }
+  .targets__star .mono { color: var(--accent); }
+  .targets__star .body { margin-top: calc(8 * var(--u)); max-width: 34ch; }
+  .targets__side { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--gut); }
+  .targets__side > div { padding: calc(22 * var(--u)) 0 calc(40 * var(--u)); border-top: 1px solid var(--ink); }
+  .targets__side h3 { margin-top: calc(10 * var(--u)); }
+  .targets__side .body { margin-top: calc(6 * var(--u)); color: var(--muted); }
+  .targets__rail { grid-column: 1 / -1; padding-bottom: calc(14 * var(--u)); }
+
+  /* ---- 05: the options, three struck out ---- */
+  .options__row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gut); align-items: start; padding: calc(30 * var(--u)) 0 calc(34 * var(--u)); border-top: 1px solid var(--hair); }
+  .options__row:first-child { border-top-color: var(--ink); }
+  .options__verdict { grid-column: 1 / span 2; padding-top: .5em; }
+  .options__title { grid-column: 3 / span 4; font-size: max(19px, calc(27 * var(--u))); line-height: 1.25; text-decoration: line-through; text-decoration-thickness: 1px; text-decoration-color: var(--accent); color: var(--muted); }
+  .options__fix { grid-column: 7 / span 2; }
+  .options__fix .mono { display: block; margin-bottom: .5em; }
+  .options__why { grid-column: 9 / span 4; }
+  .options__row.is-bet { border-top: 2px solid var(--accent); border-bottom: 1px solid var(--ink); }
+  .is-bet .options__verdict { color: var(--accent); }
+  .is-bet .options__title { text-decoration: none; color: var(--accent); font-style: italic; }
+  .options__row:not(.is-bet) .options__why { color: var(--muted); }
+  .is-part .options__title { text-decoration: none; }
+
+  /* ---- 05: the menu, as the printed sheet it is ---- */
+  .sheet__paper { rotate: 1.4deg; box-shadow: var(--shadow-big); background: #f8f5e8; }
+  .sheet__paper img { width: 100%; }
+  .sheet figcaption { margin-top: calc(34 * var(--u)); }
+
+  /* ---- 05: the order of work ---- */
+  .steps { list-style: none; margin-bottom: 0; padding: 0; }
+  .steps li { display: grid; grid-template-columns: 4fr 2.4fr 1.8fr 3.8fr; column-gap: var(--gut); align-items: start; padding: calc(24 * var(--u)) 0; border-top: 1px solid var(--hair); }
+  .steps .steps__head { padding: 0 0 calc(14 * var(--u)); border-top: 0; }
+  .steps li:nth-child(2) { border-top-color: var(--ink); }
+  .steps__fix { display: grid; grid-template-columns: calc(40 * var(--u)) 1fr; font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; font-size: max(16px, calc(21 * var(--u))); line-height: 1.3; }
+  .steps__fix .mono { padding-top: .35em; color: var(--accent); }
+  .steps__effort { display: flex; flex-direction: column; gap: calc(8 * var(--u)); padding-top: .35em; }
+  .steps li:last-child { border-bottom: 1px solid var(--ink); }
+
+  /* pips: effort out of four, heat out of five */
+  .pips { display: inline-flex; gap: calc(5 * var(--u)); }
+  .pips i { width: max(4px, calc(6 * var(--u))); height: max(12px, calc(18 * var(--u))); border: 1px solid var(--ink); }
+  .pips i.on { background: var(--ink); }
+  .heat__pips i { border-color: var(--accent); }
+  .heat__pips i.on { background: var(--accent); }
+
+  /* ---- 06: mild to hot ---- */
+  .heat__ends { display: flex; align-items: center; gap: calc(16 * var(--u)); }
+  .heat__ends span:last-child { color: var(--accent); }
+  .heat__line { flex: 1; height: 1px; background: linear-gradient(to right, var(--hair), var(--accent)); }
+  .heat ol { list-style: none; margin: calc(20 * var(--u)) 0 0; padding: 0; }
+  .heat li { display: grid; grid-template-columns: calc(84 * var(--u)) 1fr 1.25fr; column-gap: calc(24 * var(--u)); align-items: baseline; padding: calc(22 * var(--u)) 0; border-top: 1px solid var(--hair); }
+  .heat li:last-child { border-bottom: 1px solid var(--hair); }
+  .heat h4 { margin: 0; font-size: max(19px, calc(27 * var(--u))); line-height: 1.2; }
+  .heat__blend { grid-column: 2; grid-row: 2; margin-top: .4em; }
+  .heat .body { grid-column: 3; grid-row: 1 / span 2; color: var(--muted); }
+  .heat__pips { grid-row: 1 / span 2; align-self: center; }
+
+  /* ---- 06: the kitchen ---- */
+  .points { margin: calc(40 * var(--u)) 0 0; }
+  .points > div { display: grid; grid-template-columns: 1fr 2fr; column-gap: var(--gut); padding: calc(24 * var(--u)) 0; border-top: 1px solid var(--hair); }
+  .points > div:first-child { border-top-color: var(--ink); }
+  .points dt { font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; font-size: max(17px, calc(22 * var(--u))); line-height: 1.3; }
+  .points dd { margin: 0; }
+
+  /* ---- 07: the scoreboard ---- */
+  .score__head, .score__row { display: grid; grid-template-columns: 3.2fr 1.6fr 2.4fr 1.6fr 3.2fr; column-gap: var(--gut); align-items: baseline; }
+  .score__head { padding-bottom: calc(14 * var(--u)); border-bottom: 1px solid var(--ink); }
+  .score__row { padding: calc(24 * var(--u)) 0 calc(20 * var(--u)); border-bottom: 1px solid var(--hair); }
+  .score__metric { font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; font-size: max(17px, calc(25 * var(--u))); line-height: 1.25; }
+  .score__metric .mono { display: block; margin-bottom: .3em; color: var(--accent); }
+  .score__target { font-size: var(--fs-lead); color: var(--muted); }
+  .score__tag { display: none; }
+  .score__verdict { color: var(--ink); }
+  .is-missed .score__result { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1px; text-decoration-color: var(--accent); }
+  .is-missed .score__verdict { color: var(--accent); }
+
+  /* ---- 07: the rupee ladder ---- */
+  .money { padding-top: calc(22 * var(--u)); border-top: 1px solid var(--ink); }
+  .ladder { position: relative; margin-top: calc(24 * var(--u)); padding-bottom: calc(34 * var(--u)); }
+  .ladder__row + .ladder__row { margin-top: calc(22 * var(--u)); }
+  .ladder__name { display: flex; justify-content: space-between; font-size: var(--fs-small); color: var(--muted); }
+  .ladder__name b { font-family: var(--serif); font-weight: 300; font-size: var(--fs-lead); color: var(--ink); }
+  .ladder__track { position: relative; height: calc(14 * var(--u)); min-height: 10px; margin-top: calc(8 * var(--u)); border-bottom: 1px solid var(--hair); }
+  .ladder__track span { position: absolute; bottom: -1px; height: 100%; min-width: 3px; background: var(--ink); }
+  .is-now .ladder__track span { background: var(--accent); }
+  .is-now .ladder__name b { color: var(--accent); }
+  .ladder__axis { position: absolute; left: 0; right: 0; bottom: 0; height: calc(22 * var(--u)); }
+  .ladder__axis span { position: absolute; bottom: 0; translate: -50% 0; letter-spacing: 0; }
+  .ladder__axis span:first-child { translate: 0 0; }
+  .money__next { margin-top: calc(44 * var(--u)); padding-top: calc(22 * var(--u)); border-top: 1px solid var(--hair); }
+  .money__aov { display: flex; align-items: baseline; gap: calc(18 * var(--u)); margin: calc(12 * var(--u)) 0 calc(6 * var(--u)); font-family: var(--serif); font-weight: 300; }
+  .money__aov span { font-size: var(--fs-h3); color: var(--muted); }
+  .money__aov i { font-style: normal; color: var(--muted); }
+  .money__aov b { font-weight: 300; font-size: var(--fs-fig); line-height: 1; color: var(--accent); }
+
+  /* ---- 07: notes ---- */
+  .notes > div { padding-top: calc(20 * var(--u)); border-top: 1px solid var(--ink); }
+  .notes .mono { margin-bottom: calc(14 * var(--u)); color: var(--accent); }
+
+  /* ---- 08: lessons ---- */
+  .lessons { list-style: none; margin: 0; padding: 0; }
+  .lessons li { display: grid; grid-template-columns: calc(64 * var(--u)) minmax(0, 4fr) minmax(0, 5fr); column-gap: var(--gut); align-items: start; padding: calc(30 * var(--u)) 0 calc(34 * var(--u)); border-top: 1px solid var(--hair); }
+  .lessons li:first-child { border-top-color: var(--ink); }
+  .lessons li > .mono { padding-top: .55em; }
+  .lessons h3 { font-size: max(19px, calc(27 * var(--u))); line-height: 1.25; }
+  .lessons--taught li { grid-template-columns: minmax(0, 4fr) minmax(0, 5fr); }
+  .lessons--taught h3 { font-style: italic; color: var(--accent); }
+
+  /* ---- mid-size windows: text holds a readable size, so the widest tables give their notes more room ---- */
+  @media (min-width: 901px) and (max-width: 1200px) {
+    .ledger__head, .ledger__row { grid-template-columns: minmax(0, auto) minmax(16px, 1fr) 130px 190px; }
+    .options__title { grid-column: 3 / span 3; }
+    .options__fix { grid-column: 6 / span 3; }
+  }
+
+  /* ---- phones: one column, in reading order ---- */
   @media (max-width: 900px) {
-    .swad-canvas { --u: 0.55px; height: auto !important; padding: 0 20px 48px; display: block; }
-    /* the Figma sizes mapped onto the case studies' shared phone scale (styles/case.css): title and figures,
-       section headings, sub-headings and quotes */
-    .swad-canvas :global([style*="font-size: calc(61 * var(--u))"]) { font-size: 40px !important; }
-    .swad-canvas :global([style*="font-size: calc(49 * var(--u))"]) { font-size: 34px !important; }
-    .swad-canvas :global([style*="font-size: calc(31 * var(--u))"]) { font-size: 24px !important; }
-    .swad-canvas :global(*) { position: static !important; left: auto !important; top: auto !important; transform: none !important;
-      width: auto !important; max-width: 100%; white-space: normal !important; }
-    .swad-canvas :global(div:not(:has(*))) { height: auto; min-height: 1px; }
-    .swad-canvas :global(p) { height: auto !important; margin-top: 12px; }
-    .swad-canvas :global([data-name^="Image"]), .swad-canvas :global([data-name*="placeholder"]) { height: 240px !important; margin: 24px -20px 0; }
-    .swad-canvas :global(img) { display: inline-block; width: auto !important; }
-    .swad-canvas :global([data-name^="Image"] p) { padding: 0 20px; }
-    /* photos run edge to edge; the hero starts at the top of the page */
-    .swad-canvas :global([data-name^="Image:"]), .swad-canvas :global([data-name*="placeholder"]) { max-width: none; }
-    .swad-canvas :global([data-name^="Hero"]) { margin-top: 0 !important; height: 300px !important; }
-    .swad-canvas :global(.swad-photo) { display: block; width: 100% !important; height: 100%; object-fit: cover; }
-    .swad-canvas :global([data-name^="Image"]:has(> .swad-photo)), .swad-canvas :global([data-name*="placeholder"]) { overflow: hidden; }
-    .swad-canvas :global([data-name^="Image"]:has(> .swad-photo) > :not(.swad-photo)) { display: none; }
+    .swad.canvas { width: 100%; --u: 0.6px; --m: 20px; --gut: 20px; --s: 16px; --md: 32px; --l: 48px; --xl: 72px;
+      --fs-body: 15px; --fs-small: 13px; --fs-mono: 11px; --fs-lead: 17px; --fs-h3: 24px; --fs-h2: 34px; --fs-fig: 40px; }
+    .g { grid-template-columns: minmax(0, 1fr); row-gap: 24px; }
+    .g > * { grid-column: 1 / -1 !important; }
+    .sec__head { gap: 10px; padding-top: 16px; }
+    .sub { font-size: 22px; }
+    h3 { font-size: 19px; }
+
+    .hero { grid-template-columns: 1fr; }
+    .hero__photo { height: 78vw; min-height: 0; }
+    .hero__text { padding: 28px 20px 0; }
+    .hero__title { font-size: 34px; margin-top: 14px; }
+    .hero__lede { margin-top: 22px; font-size: 16px; }
+    .hero__facts { gap: 20px; margin-top: 28px; padding-top: 22px; }
+
+    .ledger__head { display: none; }
+    .ledger__row { grid-template-columns: 1fr auto; row-gap: 4px; padding: 16px 0; }
+    .ledger__row:first-of-type { border-top: 1px solid var(--ink); }
+    .ledger__label { grid-column: 1 / -1; font-size: 17px; }
+    .ledger__dots { display: none; }
+    .ledger__before { text-align: left; align-self: end; font-size: 15px; }
+    .ledger__before::after { content: ' →'; }
+    .ledger__foot { flex-direction: column; gap: 10px; }
+    .ledger__since { text-align: left; }
+    .ledger__since .mono { display: block; }
+
+    .fig.g figcaption { order: 2; }
+    .facts li { grid-template-columns: 36px 1fr; padding: 22px 0; }
+    .facts .facts__sum { padding-left: 0; }
+    .tally { row-gap: 20px; }
+    .tally > div { padding-top: 14px; }
+
+    .street__marks { --cols: 25; gap: 6px 0; margin-top: 18px; }
+    .street__marks i { width: 7px; height: 7px; }
+    .street__key { grid-template-columns: 1fr 1fr; gap: 24px 20px; margin-top: 24px; }
+    .street__key > * { grid-column: auto !important; }
+    .swatch { width: 9px; height: 9px; }
+
+    .said .g { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
+    .said .g > * { grid-column: auto !important; }
+    .said__quote { font-size: 18px; }
+    .pull { padding-left: 18px; font-size: 22px; }
+    .pull--in { margin: 26px 0; font-size: 20px; }
+
+    .band { padding: 72px 20px; }
+    .band__line { font-size: 30px; margin-top: 18px; }
+    .band__body { margin-top: 22px; }
+
+    .colossal { font-size: 104px; margin: 10px 0 12px; }
+    .targets__side { grid-template-columns: 1fr 1fr; gap: 0 20px; }
+    .targets__side > div { padding: 16px 0 26px; }
+    .targets__side .figure { font-size: 32px; }
+
+    .options__row { display: block; padding: 22px 0 24px; }
+    .options__title { margin: 8px 0 14px; font-size: 22px; }
+    .options__fix { margin-bottom: 10px; }
+
+    .tradeoff { row-gap: 40px; }
+    .sheet__paper { margin: 0 12px; }
+
+    .steps .steps__head { display: none; }
+    .steps li { display: block; padding: 20px 0; }
+    .steps li:nth-child(2) { border-top-color: var(--ink); }
+    .steps li > * + * { margin-top: 10px; }
+    .steps__fix { grid-template-columns: 28px 1fr; font-size: 19px; }
+    .steps li > .body, .steps__effort { padding-left: 28px; }
+    .steps__effort { flex-direction: row; align-items: center; gap: 12px; }
+
+    .heat li { grid-template-columns: 54px 1fr; column-gap: 14px; padding: 16px 0; }
+    .heat h4 { font-size: 21px; }
+    .heat .body { grid-column: 2; grid-row: 3; margin-top: 6px; }
+    .heat__pips { grid-row: 1 / span 3; align-self: start; padding-top: 6px; }
+    .pips { gap: 3px; }
+
+    .points { margin-top: 26px; }
+    .points > div { display: block; padding: 18px 0; }
+    .points dd { margin-top: 8px; }
+
+    .score__head { display: none; }
+    .score__row { grid-template-columns: 1fr auto; row-gap: 6px; column-gap: 16px; padding: 18px 0; }
+    .score__row:first-of-type { border-top: 1px solid var(--ink); }
+    .score__metric { grid-column: 1 / -1; font-size: 19px; }
+    .score__result { grid-column: 1; grid-row: 2; }
+    .score__verdict { grid-column: 2; grid-row: 2; align-self: center; }
+    .score__target { grid-column: 1 / -1; font-size: 14px; }
+    .score__tag { display: inline; margin-right: .8em; }
+    .score__row .small { grid-column: 1 / -1; }
+
+    .money { padding-top: 16px; }
+    .ladder { padding-bottom: 28px; }
+    .ladder__axis { height: 18px; }
+    .notes { row-gap: 36px; }
+
+    .lessons li { display: block; padding: 22px 0 24px; }
+    .lessons li > .mono { display: block; padding: 0 0 8px; }
+    .lessons h3 { font-size: 21px; margin-bottom: 10px; }
   }
 </style>
