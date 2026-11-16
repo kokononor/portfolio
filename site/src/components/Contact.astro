@@ -2,6 +2,9 @@
 // Section 4 — sampark (contact). Figma: "sampark" + "CONTACT" labels, Frame 77 (the letter card) and its texts,
 // lines 33–39 and 42, Frame 22 (send), Frame 89 (links). The section starts at design y 5567; the card at y 196 of it.
 const EMAIL = 'suyashshrivastavabed@gmail.com';
+// Web3Forms access key (web3forms.com). It is public by design, since the browser sends it, but it lives in
+// site/.env (gitignored) and in Vercel's env vars rather than in the code. Without it, the letter falls back to Gmail.
+const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
 ---
 <section class="contact fit" id="contact" style="--fit-h: 1266" aria-labelledby="contact-title">
   <h2 class="contact__word t-display" id="contact-title" data-drift="4">sampark</h2>
@@ -28,9 +31,17 @@ const EMAIL = 'suyashshrivastavabed@gmail.com';
       <input class="field field--else t-serif" id="f-else" name="else" placeholder="something else" />
       <p class="l-text l-dot2 t-serif">.</p>
 
+      <p class="l-text l-reply t-serif">Reply to me at</p>
+      <label class="sr-only" for="f-email">Your email, so I can write back (optional)</label>
+      <input class="field field--email t-serif" id="f-email" name="email" type="email" inputmode="email" placeholder="your email (optional)" autocomplete="email" spellcheck="false" />
+      <p class="l-text l-dot3 t-serif">.</p>
+
       <p class="l-text l-more t-serif">Here’s a little more:</p>
       <label class="sr-only" for="f-more">Your message</label>
       <textarea class="field field--more t-serif" id="f-more" name="more" rows="1" placeholder="Say it in your own words"></textarea>
+
+      <!-- honeypot: hidden from people, filled in by bots; Web3Forms also drops any letter that has it checked -->
+      <input class="l-trap" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
       <button class="l-send" type="submit" aria-describedby="letter-shy">SEND</button>
       <p class="l-shy" id="letter-shy" role="status" aria-live="polite" hidden></p>
@@ -52,13 +63,15 @@ const EMAIL = 'suyashshrivastavabed@gmail.com';
   </div>
 </section>
 
-<script define:vars={{ EMAIL }}>
-  // the letter: composes an email to Suyash in Gmail, in the visitor's browser
+<script define:vars={{ EMAIL, FORM_KEY }}>
+  // the letter: sent to Suyash's inbox through Web3Forms (or, with no key set, composed in Gmail)
   const form = document.getElementById('letter');
   const send = form.querySelector('.l-send');
   const shy = document.getElementById('letter-shy');
   const nameField = form.elements.namedItem('name');
+  const more = document.getElementById('f-more');
   let brave = false;                                   // the button is shy only the first time
+  let sending = false;
   // every message the form has (the shy note, errors, sending) appears in the same paper slip beside the button
   const say = (text, kind = '') => {
     if (!text) { form.classList.remove('is-pop'); return; }
@@ -68,7 +81,7 @@ const EMAIL = 'suyashshrivastavabed@gmail.com';
     requestAnimationFrame(() => form.classList.add('is-pop'));
   };
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     // first click: the button flinches aside and asks to be clicked again
     if (!brave) {
@@ -77,6 +90,7 @@ const EMAIL = 'suyashshrivastavabed@gmail.com';
       say('Sorry I am shy, please click again to submit');
       return;
     }
+    if (sending) return;
     form.classList.add('is-sure');
     const f = form.elements;
     const name = nameField.value.trim();
@@ -86,20 +100,73 @@ const EMAIL = 'suyashshrivastavabed@gmail.com';
       nameField.focus();
       return;
     }
+    const emailField = f.namedItem('email');
+    const email = emailField.value.trim();
+    if (email && !emailField.checkValidity()) {
+      emailField.setAttribute('aria-invalid', 'true');
+      say('That email doesn’t look quite right.', 'error');
+      emailField.focus();
+      return;
+    }
     const org = f.namedItem('org').value.trim();
     const about = f.namedItem('about').value.trim() || f.namedItem('else').value.trim() || 'hello';
-    const body = `Dear Suyash,\n\nI'm ${name}${org ? ', from ' + org : ''}.\nWriting about ${about}.\n\n${f.namedItem('more').value.trim()}`;
-    // the letter opens as a new email in Gmail, in a new browser tab, addressed and filled in
-    const gmail = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(EMAIL)}&su=${encodeURIComponent('A letter from ' + name)}&body=${encodeURIComponent(body)}`;
-    window.open(gmail, '_blank', 'noopener');
-    say('Your letter is open in Gmail, in a new tab', 'done');
+    const body = `Dear Suyash,\n\nI'm ${name}${org ? ', from ' + org : ''}.\nWriting about ${about}.${email ? '\nReply to me at ' + email + '.' : ''}\n\n${f.namedItem('more').value.trim()}`;
+    const subject = 'A letter from ' + name;
+    // a bot ticked the hidden box: act as if it went, send nothing
+    if (f.namedItem('botcheck').checked) { say('Your letter is on its way. Thank you!', 'done'); return; }
+
+    // no key configured: the letter opens as a new email in Gmail, in a new browser tab, addressed and filled in
+    if (!FORM_KEY) {
+      const gmail = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(EMAIL)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(gmail, '_blank', 'noopener');
+      say('Your letter is open in Gmail, in a new tab', 'done');
+      return;
+    }
+
+    sending = true;
+    send.disabled = true;
+    form.setAttribute('aria-busy', 'true');
+    say('Sending your letter…');
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: FORM_KEY,
+          subject,
+          from_name: 'Portfolio letter',
+          name,
+          ...(email && { email }),             // Web3Forms makes this the reply-to, so "Reply" answers the visitor
+          company: org || '—',
+          about,
+          message: body,
+          botcheck: false,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) throw new Error(data.message || data.body?.message || `HTTP ${res.status}`);
+      form.reset();
+      more.style.height = '';
+      say('Your letter is on its way. Thank you!', 'done');
+    } catch (err) {
+      console.warn('[letter] not sent:', err);
+      say("It didn't go through. Please try again, or email me instead.", 'error');
+    } finally {
+      sending = false;
+      send.disabled = false;
+      form.removeAttribute('aria-busy');
+    }
+  });
+  // fixing the email clears its error
+  const emailInput = form.elements.namedItem('email');
+  emailInput.addEventListener('input', () => {
+    if (emailInput.getAttribute('aria-invalid') && (!emailInput.value.trim() || emailInput.checkValidity())) { emailInput.removeAttribute('aria-invalid'); say(''); }
   });
   // fixing the name clears its error
   nameField.addEventListener('input', () => {
     if (nameField.value.trim() && nameField.getAttribute('aria-invalid')) { nameField.removeAttribute('aria-invalid'); say(''); }
   });
   // the message grows with the words
-  const more = document.getElementById('f-more');
   more.addEventListener('input', () => { more.style.height = 'auto'; more.style.height = more.scrollHeight + 'px'; });
 </script>
 
@@ -128,7 +195,11 @@ const EMAIL = 'suyashshrivastavabed@gmail.com';
   .l-dot1 { left: calc(917 * var(--u)); top: calc(311 * var(--u)); }
   .l-about { left: calc(74 * var(--u)); top: calc(379 * var(--u)); }
   .l-dot2 { left: calc(524 * var(--u)); top: calc(461 * var(--u)); }
-  .l-more { left: calc(74 * var(--u)); top: calc(577 * var(--u)); }
+  /* the reply row was added after the Figma frame: one line below "something else", so the message and send
+     sit 60 design px lower than in the design */
+  .l-reply { left: calc(74 * var(--u)); top: calc(533 * var(--u)); }
+  .l-dot3 { left: calc(917 * var(--u)); top: calc(541 * var(--u)); }
+  .l-more { left: calc(74 * var(--u)); top: calc(637 * var(--u)); }
 
   /* the fields: italic placeholders on a hairline (Lines 33–37) */
   .field { font-style: italic; color: var(--ink); background: none; border: 0; border-bottom: 0.5px solid var(--ink); border-radius: 0;
@@ -139,11 +210,15 @@ const EMAIL = 'suyashshrivastavabed@gmail.com';
   .field--org { left: calc(583 * var(--u)); top: calc(304 * var(--u)); width: calc(317 * var(--u)); padding-left: calc(1 * var(--u)); }
   .field--about { left: calc(332 * var(--u)); top: calc(383 * var(--u)); width: calc(580 * var(--u)); padding-left: calc(11 * var(--u)); }
   .field--else { left: calc(74 * var(--u)); top: calc(458 * var(--u)); width: calc(436 * var(--u)); }
-  .field--more { left: calc(74 * var(--u)); top: calc(652 * var(--u)); width: calc(838 * var(--u)); height: auto; min-height: calc(49 * var(--u));
+  .field--email { left: calc(341 * var(--u)); top: calc(537 * var(--u)); width: calc(571 * var(--u)); }
+  .field--more { left: calc(74 * var(--u)); top: calc(712 * var(--u)); width: calc(838 * var(--u)); height: auto; min-height: calc(49 * var(--u));
     resize: none; overflow: hidden; }
 
+  .l-trap { display: none !important; }
+  .l-send:disabled { cursor: progress; opacity: .6; }
+
   /* Frame 22: send */
-  .l-send { left: calc(74 * var(--u)); top: calc(777 * var(--u)); width: max(104px, calc(144 * var(--u))); height: max(36px, calc(50 * var(--u)));
+  .l-send { left: calc(74 * var(--u)); top: calc(827 * var(--u)); width: max(104px, calc(144 * var(--u))); height: max(36px, calc(50 * var(--u)));
     background: var(--ink); color: var(--paper); border: 0; cursor: pointer; font-size: max(14px, calc(20 * var(--u))); font-weight: 400;
     transition: transform .3s ease, box-shadow .3s ease; }
   .l-send:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(15, 14, 12, .2); }
@@ -153,7 +228,7 @@ const EMAIL = 'suyashshrivastavabed@gmail.com';
   .is-shy.is-sure .l-send { rotate: 0deg; }
 
   /* the shy note: a small paper slip beside the button, in the site's serif italic, with the site's soft shadow */
-  .l-shy { left: calc(270 * var(--u)); top: calc(777 * var(--u)); white-space: nowrap; margin: 0;
+  .l-shy { left: calc(270 * var(--u)); top: calc(827 * var(--u)); white-space: nowrap; margin: 0;
     padding: calc(12 * var(--u)) calc(18 * var(--u)); background: var(--paper); border-radius: 4px;
     font-family: var(--serif); font-variation-settings: 'SOFT' 0, 'WONK' 1; font-style: italic; font-weight: 300;
     font-size: max(15px, calc(22 * var(--u))); line-height: 1.3; color: var(--ink);
@@ -219,7 +294,7 @@ const EMAIL = 'suyashshrivastavabed@gmail.com';
   .l-email { white-space: nowrap; font-size: calc(25 * var(--u)); }
   @media (max-width: 900px) {
     /* phones: each blank gets its own line, with no stray commas or full stops between them */
-    .l-dot1, .l-dot2 { display: none; }
+    .l-dot1, .l-dot2, .l-dot3 { display: none; }
     .field { flex: 1 1 100%; }
     .l-from { font-size: 0 !important; }
     .l-from::after { content: 'from'; font-size: 26px; }

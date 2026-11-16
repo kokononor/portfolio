@@ -8,3 +8,8 @@ Thumbs.db
 
 # the record player's song is shipped with the site
 !site/public/audio/*.mp3
+
+# local secrets (the Web3Forms key goes in site/.env)
+.env
+.env.*
+!.env.example
