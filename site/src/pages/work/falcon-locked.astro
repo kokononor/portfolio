@@ -1,0 +1,130 @@
+---
+// The door to the Falcon case study. Vercel sends every request for /work/falcon here unless the visitor carries the
+// access cookie (vercel.json, "redirects"): the case study itself is never served without it. This page turns the
+// password into that cookie's value (PBKDF2, so the password is not written anywhere) and tries the door again;
+// a wrong password simply lands back here.
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { Image } from 'astro:assets';
+import viLogo from '../../assets/falcon/vi-logo.png';
+---
+<Base title="Falcon · Protected case study · Suyash" description="The Falcon case study is password protected." noindex>
+  <Nav solid />
+  <main class="lock">
+    <div class="lock__card" data-reveal>
+      <Image class="lock__logo" src={viLogo} alt="Vodafone Idea" widths={[104]} sizes="52px" />
+      <h1 class="lock__title t-serif">Making millions of network events explain a <em>single outage.</em></h1>
+      <div class="lock__foot">
+        <p class="lock__meta"><span>Falcon · Vodafone Idea</span><span>Product Design Intern · Jun–Jul 2026</span></p>
+        <p class="lock__summary">Engineers investigating live outages couldn't tell what data was loaded, what was missing, or how evidence across five systems connected together.</p>
+      </div>
+    </div>
+
+    <div class="lock__door" data-reveal>
+      <p class="lock__label">Protected case study</p>
+      <p class="lock__line t-serif">This one opens with a password.</p>
+      <form class="lock__form" data-lock novalidate>
+        <label class="sr-only" for="lock-pw">Password</label>
+        <input id="lock-pw" name="password" type="password" placeholder="Password" autocomplete="off" autocapitalize="none" spellcheck="false" required />
+        <button type="submit">Open <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="lock__error" data-lock-error role="alert" hidden>That password didn’t open it. Try again.</p>
+      <p class="lock__ask">Don’t have it? <a href="/#contact">Ask me for it</a>, and I’ll send it over.</p>
+      <dl class="lock__facts">
+        <div><dt>Outcome</dt><dd>Evidence for an outage correlated in under 10 seconds, down from a minute</dd></div>
+        <div><dt>Users</dt><dd>NOC engineers, network engineers, incident managers, IP leadership</dd></div>
+      </dl>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-lock]');
+  const error = document.querySelector<HTMLElement>('[data-lock-error]');
+  const input = form?.querySelector<HTMLInputElement>('input');
+  const TRIED = 'falcon-tried';
+
+  // back here after trying a password: it was wrong
+  try {
+    if (sessionStorage.getItem(TRIED)) {
+      sessionStorage.removeItem(TRIED);
+      document.cookie = 'falcon_access=; Path=/; Max-Age=0';
+      if (error) error.hidden = false;
+      input?.focus();
+    }
+  } catch { /* storage is unavailable: the page still works, it just can't say the password was wrong */ }
+
+  const hex = (buf: ArrayBuffer) => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  const text = (s: string) => new TextEncoder().encode(s);
+
+  form?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const password = (input?.value || '').trim().toLowerCase();
+    if (!password) { input?.focus(); return; }
+    form.classList.add('is-busy');
+    const key = await crypto.subtle.importKey('raw', text(password), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: text('notfiguredyet.com/work/falcon'), iterations: 150000, hash: 'SHA-256' }, key, 256);
+    // thirty days, then the door asks again
+    document.cookie = `falcon_access=${hex(bits)}; Path=/; Max-Age=2592000; SameSite=Lax; Secure`;
+    try { sessionStorage.setItem(TRIED, '1'); } catch { /* see above */ }
+    location.assign('/work/falcon');
+  });
+</script>
+
+<style>
+  :global(body) { background: var(--paper); }
+
+  /* the Falcon hero's red, with its cream title card; the door stands where the engineers' picture is */
+  .lock { position: relative; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 643fr) minmax(0, 593fr); align-items: center; column-gap: calc(210 * var(--u));
+    padding: calc(var(--nav-h) + 56 * var(--u)) max(20px, calc((var(--vw, 100vw) - 1520 * var(--u)) / 2)) calc(72 * var(--u));
+    background: linear-gradient(-54.29deg, #b51b03 6.147%, #b51b03 67.06%, #681609 102.86%); color: var(--paper); }
+
+  .lock__card { display: flex; flex-direction: column; min-height: min(calc(853 * var(--u)), calc(100svh - var(--nav-h) - 128 * var(--u))); padding: calc(35 * var(--u)) calc(52 * var(--u)) calc(40 * var(--u));
+    background: var(--page); color: var(--ink); border-radius: var(--radius); box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25); }
+  .lock__card :global(.lock__logo) { width: calc(52 * var(--u)); min-width: 40px; height: auto; }
+  .lock__title { margin-top: calc(44 * var(--u)); max-width: 9.5em; font-size: max(36px, calc(61 * var(--u))); line-height: 1.15; font-style: italic; }
+  .lock__title em { color: var(--accent); }
+  .lock__foot { margin-top: auto; padding-top: calc(48 * var(--u)); display: flex; flex-direction: column; gap: calc(10 * var(--u)); }
+  .lock__meta { display: flex; flex-wrap: wrap; gap: 0 calc(52 * var(--u)); font-size: max(12px, calc(16 * var(--u))); color: var(--muted); }
+  .lock__summary { max-width: 31em; font-size: max(15px, calc(20 * var(--u))); line-height: 1.5; }
+
+  .lock__label { font-family: var(--mono); font-size: max(11px, calc(13 * var(--u))); letter-spacing: .08em; text-transform: uppercase; opacity: .8; }
+  .lock__line { margin-top: calc(18 * var(--u)); font-size: max(28px, calc(49 * var(--u))); line-height: 1.15; font-style: italic; }
+
+  /* one line to write on, and a word to press: no box around either */
+  .lock__form { display: flex; align-items: flex-end; gap: calc(28 * var(--u)); margin-top: calc(56 * var(--u)); border-bottom: 1px solid var(--paper); transition: opacity .3s ease; }
+  .lock__form.is-busy { opacity: .5; pointer-events: none; }
+  .lock__form input { flex: 1; min-width: 0; padding: 0 0 calc(14 * var(--u)); border: 0; border-radius: 0; background: none; outline: none;
+    font-family: var(--mono); font-size: max(16px, calc(20 * var(--u))); letter-spacing: .12em; color: var(--paper); }
+  .lock__form input::placeholder { color: var(--paper); opacity: .55; letter-spacing: .04em; }
+  .lock__form button { padding: 0 0 calc(12 * var(--u)); border: 0; background: none; cursor: pointer;
+    font-family: var(--serif); font-style: italic; font-weight: 300; font-size: max(20px, calc(27 * var(--u))); color: var(--paper); }
+  .lock__form button span { display: inline-block; transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
+  .lock__form button:hover span, .lock__form button:focus-visible span { transform: translateX(6px); }
+  .lock__form:focus-within { border-bottom-width: 2px; margin-bottom: -1px; }
+  .lock__form :focus-visible { outline: 2px solid var(--paper); outline-offset: 4px; }
+
+  .lock__error { margin-top: calc(14 * var(--u)); font-family: var(--mono); font-size: max(12px, calc(14 * var(--u))); }
+  .lock__ask { margin-top: calc(22 * var(--u)); font-size: max(14px, calc(16 * var(--u))); opacity: .9; }
+  .lock__ask a { text-decoration: underline; text-underline-offset: .2em; text-decoration-thickness: from-font; }
+  .lock__ask a:hover { opacity: .75; }
+
+  .lock__facts { display: grid; grid-template-columns: 1fr 1fr; column-gap: calc(58 * var(--u)); margin: calc(88 * var(--u)) 0 0; padding: calc(34 * var(--u)) 0; border-top: 1px solid var(--paper); border-bottom: 1px solid var(--paper); }
+  .lock__facts dt { font-size: max(12px, calc(16 * var(--u))); }
+  .lock__facts dd { margin: calc(3 * var(--u)) 0 0; font-size: max(14px, calc(20 * var(--u))); line-height: 1.5; }
+
+  @media (max-width: 900px) {
+    .lock { grid-template-columns: 1fr; row-gap: 40px; align-items: start; padding: calc(var(--nav-h) + 16px) 20px 48px; }
+    .lock__card { min-height: 0; padding: 24px; }
+    .lock__title { margin-top: 20px; font-size: 40px; }
+    .lock__foot { padding-top: 28px; gap: 8px; }
+    .lock__meta { gap: 4px 16px; }
+    .lock__line { margin-top: 12px; }
+    .lock__form { margin-top: 32px; gap: 16px; }
+    .lock__form input { padding-bottom: 12px; }
+    .lock__form button { padding-bottom: 10px; }
+    .lock__facts { grid-template-columns: 1fr; row-gap: 16px; margin-top: 44px; padding: 22px 0; }
+  }
+</style>
