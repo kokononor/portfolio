@@ -98,7 +98,7 @@ const taught = [
 
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
-<Base title="Swad: How a Momo Café That Couldn't Make Rent Found Its Regulars · Suyash" description="A quiet-lane café in Ranchi went from losing ₹10,000 a month to ₹20,000 in profit in six months.">
+<Base title="Swad: How a momo café that couldn’t make rent found its regulars · Suyash" description="A quiet-lane café in Ranchi went from losing ₹10,000 a month to ₹20,000 in profit in six months.">
   <Nav solid />
   <main class="canvas swad">
 
@@ -107,7 +107,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <div class="hero__photo" data-wipe="left"><img src={photo('hero')} alt="The Swad counter seen through its open shopfront, the menu on the wall behind it" width="852" height="1117" /></div>
       <div class="hero__text">
         <p class="mono" data-slide="right">Swad · Momo café · Ranchi · 2026</p>
-        <h1 class="hero__title" data-slide="right"><span>Swad:</span> How a Momo Café That Couldn’t Make Rent Found Its Regulars</h1>
+        <h1 class="hero__title" data-slide="right"><span>Swad:</span> How a momo café that couldn’t make rent found its regulars</h1>
         <div class="lead hero__lede" data-slide="right" data-delay="0.08">
           <p>In December 2025, Swad served one or two customers a day and lost ₹10,000 a month. It sits on a quiet residential lane in Ranchi, where nobody wanders past by accident. By June 2026, a month after its relaunch, it was serving twenty a day, most of them people who had ordered before, and clearing ₹20,000 a month.</p>
           <p>The street didn’t change. What changed was what Swad promised its customers, and whether it kept that promise every day.</p>
@@ -549,7 +549,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
       </div>
     </section>
   </main>
-  <NextProject href="/work/diviniti" label="DIVINITI" title="Redefining Design" />
+  <NextProject href="/work/diviniti" label="DIVINITI" title="A year that took my design from pixels to platforms" />
   <Footer />
 </Base>
 
@@ -568,11 +568,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
 </script>
 
 <style>
-  :global(body) { background: var(--paper); }
+
 
   /* ---- the page: one column of sections on the 12-column grid ---- */
   .swad.canvas {
-    --accent: #681609;
+
     --m: calc(104 * var(--u));
     --gut: calc(64 * var(--u));
     --fs-body: max(14px, calc(16 * var(--u)));
@@ -617,7 +617,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   /* ---- hero ---- */
   .hero { display: grid; grid-template-columns: calc(852 * var(--u)) minmax(0, 1fr); }
-  .hero__photo { height: min(calc(1117 * var(--u)), 100svh); min-height: calc(760 * var(--u)); overflow: hidden; background: #1a1a1a; }
+  .hero__photo { height: min(calc(1117 * var(--u)), 100svh); min-height: calc(760 * var(--u)); overflow: hidden; background: var(--night); }
   .hero__photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 62%; }
   .hero__text { align-self: center; padding: calc(var(--nav-h) + 24 * var(--u)) var(--m) calc(40 * var(--u)) var(--gut); }
   .hero__title { margin-top: calc(20 * var(--u)); font-family: var(--serif); font-weight: 300; font-style: italic; font-variation-settings: "SOFT" 0, "WONK" 1;
@@ -694,15 +694,15 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .pull--in { margin: calc(36 * var(--u)) 0; font-size: max(19px, calc(27 * var(--u))); }
 
   /* ---- the dark page ---- */
-  .band { margin-top: var(--xl); padding: var(--xl) var(--m); background: #17120e; color: var(--paper);
-    box-shadow: 0 0 0 100vmax #17120e; clip-path: inset(0 -100vmax); }
+  .band { margin-top: var(--xl); padding: var(--xl) var(--m); background: var(--night); color: var(--paper);
+    box-shadow: 0 0 0 100vmax var(--night); clip-path: inset(0 -100vmax); }
   .band .mono, .band figcaption { color: color-mix(in srgb, var(--paper) 62%, transparent); }
-  .band .fig figcaption .mono { color: #e0907c; }
+  .band .fig figcaption .mono { color: var(--accent-on-dark); }
   .band__in { align-items: center; }
   .band__line { margin-top: calc(28 * var(--u)); font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; font-size: var(--fs-h2); line-height: 1.18; text-wrap: balance; }
-  .band__line em { color: #e0907c; }
+  .band__line em { color: var(--accent-on-dark); }
   .band__body { margin-top: calc(36 * var(--u)); max-width: 56ch; color: color-mix(in srgb, var(--paper) 82%, transparent); }
-  .band .fig__img { background: #241c16; }
+  .band .fig__img { background: color-mix(in srgb, var(--paper) 8%, var(--night)); }
 
   /* ---- 04: targets ---- */
   .colossal { font-size: max(84px, calc(200 * var(--u))); line-height: .95; letter-spacing: -.02em; color: var(--accent); margin: calc(16 * var(--u)) 0 calc(20 * var(--u)); }

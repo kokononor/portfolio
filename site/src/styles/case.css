@@ -12,12 +12,23 @@
 /* type, as named in Figma */
 .c-h2 { font-family: var(--serif); font-weight: 300; font-style: italic; font-variation-settings: "SOFT" 0, "WONK" 1;
   font-size: calc(49 * var(--u)); line-height: 1.2; color: var(--accent); }                     /* Heading/H2 49 Italic */
+/* The case-study kit, shared by all three studies and taken from Swad's: a section opens with a hairline, its number
+   in mono, then the italic red heading. On these canvas pages the number and rule sit in the space above the heading
+   (absolutely), so adding them never moves anything placed below. */
+.c-h2[data-n]::before { content: attr(data-n); position: absolute; left: 0; bottom: calc(100% + 14 * var(--u));
+  width: 100%; padding-top: calc(22 * var(--u)); border-top: 1px solid var(--ink);
+  font-family: var(--mono); font-style: normal; font-size: max(11px, calc(13 * var(--u))); letter-spacing: .08em;
+  text-transform: uppercase; color: var(--muted); }
+.c-h2[data-n]:not(.at) { position: relative; }
 .c-h3 { font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1;
-  font-size: calc(31 * var(--u)); line-height: 1.25; }                                            /* H3 31 */
-.c-body { font-size: max(13px, calc(16 * var(--u))); line-height: 1.5; }                          /* Body/Regular 16 */
-.c-body p + p { margin-top: 1.5em; }
+  font-size: max(18px, calc(25 * var(--u))); line-height: 1.25; }                                 /* = Swad's sub-heading */
+.c-body { font-size: max(14px, calc(16 * var(--u))); line-height: 1.6; }                          /* = Swad's body */
+.c-body p + p { margin-top: 1em; }
 .c-body ul { margin: 0; padding-left: calc(24 * var(--u)); }
-.c-quote { font-size: max(15px, calc(20 * var(--u))); line-height: 1.5; font-style: italic; color: var(--muted); }  /* Body/Quote 20 */
+/* a pull quote: serif italic on an accent rule, as in Swad */
+.c-quote { padding-left: calc(24 * var(--u)); border-left: 2px solid var(--accent);
+  font-family: var(--serif); font-weight: 300; font-variation-settings: "SOFT" 0, "WONK" 1; font-style: italic;
+  font-size: max(17px, calc(25 * var(--u))); line-height: 1.35; color: var(--ink); }
 .c-lead { font-size: max(15px, calc(20 * var(--u))); line-height: 1.5; }                          /* Body/Lead 20 */
 .c-label { font-size: max(12px, calc(16 * var(--u))); }
 
@@ -61,8 +72,11 @@
   .bleed { position: relative; left: auto; top: auto; width: calc(100% + 40px); margin: 40px -20px 0; height: auto; }
   /* the phone type scale, shared by all three case studies (swad.astro maps its Figma sizes onto it) */
   .c-h2 { font-size: 34px; margin-top: 56px; }
-  .c-h3 { font-size: 24px; }
+  .c-h2[data-n] { margin-top: 96px; }                       /* room for its number and rule above it */
+  .c-h2[data-n]::before { width: 100%; padding-top: 16px; bottom: calc(100% + 10px); font-size: 11px; }
+  .c-h3 { font-size: 21px; }
   .c-lead, .c-quote { font-size: 17px; }
+  .c-quote { padding-left: 16px; }
   .c-body { font-size: 15px; }
   .c-img { aspect-ratio: 4 / 5; }
   .c-vrule { display: none; }

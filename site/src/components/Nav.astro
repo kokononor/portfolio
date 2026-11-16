@@ -45,16 +45,16 @@ const links = [['work', 'Work'], ['about', 'About'], ['contact', 'Connect']];
   nav.nav { --ux: min(1px, calc(var(--vw, 100vw) / 1728));
     position: fixed; top: 0; left: 0; right: 0; z-index: 50;
     /* the canvas sits at max(0, (100% − 1728)/2) and can run under the scrollbar, so the right edge is measured from its left */
-    padding: calc(24 * var(--u)) calc(100% - max(0px, (100% - 1728 * var(--ux)) / 2) - 1624 * var(--ux))
-      calc(18 * var(--u)) calc(max(0px, (100% - 1728 * var(--ux)) / 2) + 104 * var(--ux));
+    padding: calc(24 * var(--nav-u)) calc(100% - max(0px, (100% - 1728 * var(--ux)) / 2) - 1624 * var(--ux))
+      calc(18 * var(--nav-u)) calc(max(0px, (100% - 1728 * var(--ux)) / 2) + 104 * var(--ux));
     display: flex; align-items: center; justify-content: space-between; color: var(--ink);
     border-bottom: 0.5px solid transparent;
     transition: background-color .4s ease, border-color .4s ease, backdrop-filter .4s ease, padding .4s ease; }
   nav.nav.is-stuck { background-color: color-mix(in oklab, var(--page) 82%, transparent);
     -webkit-backdrop-filter: blur(12px) saturate(1.1); backdrop-filter: blur(12px) saturate(1.1);
-    border-bottom-color: rgba(15, 14, 12, 0.12); padding-top: calc(16 * var(--u)); padding-bottom: calc(14 * var(--u)); }
+    border-bottom-color: rgba(15, 14, 12, 0.12); padding-top: calc(16 * var(--nav-u)); padding-bottom: calc(14 * var(--nav-u)); }
   .nav__brand { font-size: max(16px, calc(25 * var(--nav-u))); font-weight: 500; }
-  .nav__links { display: flex; gap: calc(63 * var(--u)); font-size: max(12px, calc(16 * var(--u))); font-weight: 300; }
+  .nav__links { display: flex; gap: calc(63 * var(--nav-u)); font-size: max(12px, calc(16 * var(--nav-u))); font-weight: 300; letter-spacing: .02em; }
   .nav__links a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .4s ease; }
   .nav__links a:hover { background-size: 100% 1px; }
   /* the section being read keeps its underline (scripts/nav.ts) */

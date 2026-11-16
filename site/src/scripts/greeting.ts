@@ -52,8 +52,8 @@ if (title) {
     if (reduce) return gsap.fromTo(l.layer, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.2, ease: 'power1.inOut', delay });
     const tl = gsap.timeline({ delay });
     // a hairline blot appears…
-    tl.fromTo(l.chars, { '--w': 100, '--s': 100, opacity: 0, filter: 'blur(10px)' },
-      { '--w': 620, '--s': 60, opacity: 1, filter: 'blur(0px)', duration: 0.55, ease: 'power2.out', stagger: 0.075 });
+    tl.fromTo(l.chars, { '--w': 200, '--s': 60, opacity: 0 },
+      { '--w': 360, '--s': 20, opacity: 1, duration: 0.55, ease: 'power2.out', stagger: 0.075 });
     // …and the ink settles into the crisp cut
     tl.to(l.chars, { '--w': REST.w, '--s': REST.s, duration: 1.1, ease: 'expo.out', stagger: 0.075 }, 0.45);
     return tl;
@@ -61,7 +61,7 @@ if (title) {
   const hide = (l: Layer) => {
     if (reduce) return gsap.to(l.layer, { autoAlpha: 0, duration: 1.2, ease: 'power1.inOut' });
     return gsap.to(l.chars, {
-      '--w': 100, '--s': 100, opacity: 0, filter: 'blur(6px)', duration: 0.7, ease: 'power2.in', stagger: 0.04,
+      '--w': 200, '--s': 60, opacity: 0, duration: 0.7, ease: 'power2.in', stagger: 0.04,
       onComplete: () => { gsap.set(l.layer, { autoAlpha: 0 }); },
     });
   };

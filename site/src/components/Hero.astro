@@ -140,10 +140,12 @@ import viLogo from '../assets/falcon/vi-logo.png';
     .player-note { align-items: flex-start; text-align: left; margin-top: 0; white-space: normal; }
     .hero__portrait { order: 6; width: min(386px, 100%); margin-top: 48px; }
     .hero__photo { height: auto; aspect-ratio: 386 / 540; }
-    .hero__signature { left: 73.8%; top: 87%; width: 49.7%; height: 21.3%;
+    /* on phones the photo is the full width, so the signature stays inside it instead of running off the page and
+       over the caption */
+    .hero__signature { left: 48%; top: 78%; width: 49.7%; height: 21.3%;
       -webkit-mask-size: 106% 118%; mask-size: 106% 118%; -webkit-mask-position: -9% -5%; mask-position: -9% -5%; }
     .hero__caption { margin-top: 18px; }
-    .hero__tags { position: static; margin-top: 18px; }
+    .hero__tags { position: static; margin-top: 18px; gap: 14px; }
     .hero__tags span:last-child { width: auto; }
   }
   /* tablets: the player and the portrait share a row, so neither leaves half the width empty */

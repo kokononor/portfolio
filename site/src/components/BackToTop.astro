@@ -12,9 +12,13 @@ import arrowDown from '../assets/home/arrow-down.svg?url';
   btn.hidden = false;
   const THRESHOLD = 0.7;
   let shown = false;
+  // phones have no margin to park it in, so there it only shows while you scroll back up (when you're looking for it)
+  const phone = matchMedia('(max-width: 900px)');
+  let lastY = scrollY, goingUp = false;
   const update = () => {
     const max = document.documentElement.scrollHeight - innerHeight;
-    const show = max > 0 && scrollY / max >= THRESHOLD;
+    if (Math.abs(scrollY - lastY) > 4) { goingUp = scrollY < lastY; lastY = scrollY; }
+    const show = max > 0 && scrollY / max >= THRESHOLD && (!phone.matches || goingUp);
     if (show !== shown) { shown = show; btn.classList.toggle('is-shown', show); btn.tabIndex = show ? 0 : -1; }
     // when the footer scrolls into view, rest just above it instead of covering its links
     const footer = document.querySelector('footer');
@@ -35,8 +39,9 @@ import arrowDown from '../assets/home/arrow-down.svg?url';
 <style>
   .to-top {
     position: fixed; z-index: 50;
-    right: max(20px, calc(105 * var(--u))); bottom: calc(max(20px, calc(48 * var(--u))) + var(--lift, 0px));
-    width: max(44px, calc(50 * var(--u))); height: max(44px, calc(50 * var(--u)));
+    /* desktops: it parks in the page's right margin (outside the 104px text column), so it never covers words */
+    right: max(12px, calc((var(--vw, 100vw) - 1728 * var(--u)) / 2 + 22 * var(--u))); bottom: calc(max(20px, calc(48 * var(--u))) + var(--lift, 0px));
+    width: max(40px, calc(56 * var(--u))); height: max(40px, calc(56 * var(--u)));
     display: grid; place-items: center; border: 0; padding: 0; cursor: pointer;
     background: var(--grad-resume); color: var(--paper);
     box-shadow: -8px 8px 18px rgba(30, 12, 6, 0.18);

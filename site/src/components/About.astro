@@ -26,10 +26,11 @@ const IMAGES = [
 ];
 ---
 <section class="about fit" id="about" style="--fit-h: 1144" aria-labelledby="about-title">
+  <h2 class="about__word t-display" id="about-title">parichay</h2>
   <hr class="about__divider" />
 
   <div class="about__head">
-    <h2 class="about__label" id="about-title">ABOUT ME</h2>
+    <p class="about__label">ABOUT ME</p>
     <div class="tabs" role="tablist" aria-label="About me">
       <button role="tab" id="tab-edu" aria-controls="panel-edu" aria-selected="true">EDUCATION</button>
       <button role="tab" id="tab-exp" aria-controls="panel-exp" aria-selected="false" tabindex="-1">EXPERIENCE</button>
@@ -107,6 +108,12 @@ const IMAGES = [
   .about { position: relative; height: calc(1144 * var(--u)); }
   .about > *, .panel > * { position: absolute; }
 
+  /* the section's word, like "kaam" and "sampark": red display type whose baseline rests on the divider, its
+     descenders hanging over it. It sits on the left, so the three words step across the page. */
+  .about { margin-top: calc(150 * var(--u)); }
+  .about__word { left: calc(104 * var(--u)); top: calc(82 * var(--u) - 0.872em); margin: 0; z-index: 2;
+    font-size: calc(200 * var(--u)); line-height: 1; color: var(--accent); white-space: nowrap; }
+
   /* Line 32: the divider across the page */
   /* the divider sits 48 above the head row (it was 130, with nothing in between), the space above it is the gap after the last project */
   .about__divider { left: calc(104 * var(--u)); top: calc(82 * var(--u)); width: calc(1520 * var(--u)); margin: 0; height: 0; border: 0; border-top: 1px solid var(--ink); }
@@ -162,7 +169,7 @@ const IMAGES = [
   /* the timeline: right-aligned on x 1546, ticks (Lines 28, 30) between the entries */
   .about__panels { inset: 0; }
   .panel { position: absolute; inset: 0; }
-  .entry { right: calc(182 * var(--u)); width: calc(472 * var(--u)); text-align: right; transition: opacity .6s ease; }
+  .entry { right: calc(182 * var(--u)); width: calc(560 * var(--u)); text-align: right; text-wrap: balance; transition: opacity .6s ease; }
   .entry h3 { font-size: max(22px, calc(39 * var(--u))); line-height: 1.25; }
   .entry p { margin-top: calc(6.75 * var(--u)); font-size: max(14px, calc(20 * var(--u))); line-height: 1.5; }
   .entry small { display: block; margin-top: calc(6.5 * var(--u)); font-size: max(12px, calc(16 * var(--u))); color: var(--muted); }
@@ -173,7 +180,8 @@ const IMAGES = [
   .entry--note p { margin-top: 0; }
   /* with the timeline running, entries not yet reached wait in a lighter ink */
   .about.is-playing .entry:not(.is-reached) { opacity: 0.6; }   /* still readable (about 5:1), just quieter */
-  .tick { right: calc(182 * var(--u)); width: 0; height: calc(126 * var(--u)); border-left: 0.5px solid var(--ink); }
+  /* the connectors between entries: quiet hairlines, so they read as the timeline's thread, not as marks */
+  .tick { right: calc(182 * var(--u)); width: 0; height: calc(126 * var(--u)); border-left: 1px solid var(--hair); }
   .tick--1 { top: calc(483.5 * var(--u)); }
   .tick--2 { top: calc(769.5 * var(--u)); }
   /* Experience: four entries a step of 172 apart, with short ticks between */
@@ -199,7 +207,8 @@ const IMAGES = [
   .about__panels, .about__controls { margin-right: calc(104 * var(--dx)); }
 
   @media (max-width: 900px) {
-    .about { height: auto; padding: 72px 20px 0; display: flex; flex-direction: column; gap: 32px; }
+    .about { height: auto; margin-top: 0; padding: 72px 20px 0; display: flex; flex-direction: column; gap: 32px; }
+    .about__word { order: -1; font-size: 96px; margin: 0 0 -40px; }
     .about > *, .panel > * { position: static; width: auto !important; }
     .panel { position: static; }   /* the entries flow inside the section instead of spilling into Contact */
     /* the photo credit sits inside the image, on a soft shade, so it can't run into the timeline below */
@@ -219,5 +228,11 @@ const IMAGES = [
     .about__controls { justify-content: flex-end; margin-bottom: 8px; }
   }
 
-  @media (max-width: 900px) { .tabs button { min-height: 44px; } }
+  /* phones: the label, then the three tabs in one row under it, so they read as tabs and none hides under the nav */
+  @media (max-width: 900px) {
+    .tabs button { min-height: 44px; }
+    .about__head { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .tabs { flex-direction: row; align-items: baseline; width: auto; gap: 20px; }
+    .tabs button { text-align: left; }
+  }
 </style>

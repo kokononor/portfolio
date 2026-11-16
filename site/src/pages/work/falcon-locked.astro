@@ -74,12 +74,12 @@ import viLogo from '../../assets/falcon/vi-logo.png';
 </script>
 
 <style>
-  :global(body) { background: var(--paper); }
+
 
   /* the Falcon hero's red, with its cream title card; the door stands where the engineers' picture is */
   .lock { position: relative; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 643fr) minmax(0, 593fr); align-items: center; column-gap: calc(210 * var(--u));
     padding: calc(var(--nav-h) + 56 * var(--u)) max(20px, calc((var(--vw, 100vw) - 1520 * var(--u)) / 2)) calc(72 * var(--u));
-    background: linear-gradient(-54.29deg, #b51b03 6.147%, #b51b03 67.06%, #681609 102.86%); color: var(--paper); }
+    background: linear-gradient(-54.29deg, var(--accent) 6.147%, var(--accent) 67.06%, var(--accent-deep) 102.86%); color: var(--paper); }
 
   .lock__card { display: flex; flex-direction: column; min-height: min(calc(853 * var(--u)), calc(100svh - var(--nav-h) - 128 * var(--u))); padding: calc(35 * var(--u)) calc(52 * var(--u)) calc(40 * var(--u));
     background: var(--page); color: var(--ink); border-radius: var(--radius); box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25); }

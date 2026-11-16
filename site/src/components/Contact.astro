@@ -25,8 +25,9 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
 
       <p class="l-text l-about t-serif">Writing about</p>
       <label class="sr-only" for="f-about">Topic</label>
-      <input class="field field--about t-serif" id="f-about" name="about" placeholder="a role, a project, a collaboration." />
+      <input class="field field--about t-serif" id="f-about" name="about" placeholder="a role, a project, a collaboration" />
 
+      <p class="l-text l-or t-serif">or</p>
       <label class="sr-only" for="f-else">Something else</label>
       <input class="field field--else t-serif" id="f-else" name="else" placeholder="something else" />
       <p class="l-text l-dot2 t-serif">.</p>
@@ -51,11 +52,10 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
 
     <aside class="letter__aside">
       <p class="l-label l-label--aside">PREFER EMAIL?</p>
-      <a class="l-email t-serif" href={`https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}`} target="_blank" rel="noopener">{EMAIL}</a>
-      <span class="l-line" aria-hidden="true"></span>
+      <a class="l-email t-serif" href={`https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}`} target="_blank" rel="noopener">{EMAIL.split("@")[0]}<span class="l-email__at">@{EMAIL.split("@")[1]}</span></a>
       <nav class="l-links" aria-label="Elsewhere">
         <a href="/resume.pdf" download="Suyash-Resume.pdf">Download Resume</a>
-        <a href="https://www.linkedin.com/in/suyashhsayus/" target="_blank" rel="noopener">Linkedin</a>
+        <a href="https://www.linkedin.com/in/suyashhsayus/" target="_blank" rel="noopener">LinkedIn</a>
         <a href="https://www.instagram.com/notfiguredyet/" target="_blank" rel="noopener">Instagram</a>
         <a href="https://www.behance.net/suyashhsayus" target="_blank" rel="noopener">Behance</a>
       </nav>
@@ -191,14 +191,16 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
   .l-hello, .l-text, .field { font-size: calc(39 * var(--u)); line-height: 1.25; }
   .l-hello { left: calc(74 * var(--u)); top: calc(229 * var(--u)); font-style: italic; }
   .l-im { left: calc(74 * var(--u)); top: calc(304 * var(--u)); }
+  /* every written line ends on one edge (x 905), and its full stop sits right after it, at x 909 */
   .l-from { left: calc(463 * var(--u)); top: calc(303 * var(--u)); }
-  .l-dot1 { left: calc(917 * var(--u)); top: calc(311 * var(--u)); }
+  .l-dot1 { left: calc(909 * var(--u)); top: calc(311 * var(--u)); }
   .l-about { left: calc(74 * var(--u)); top: calc(379 * var(--u)); }
-  .l-dot2 { left: calc(524 * var(--u)); top: calc(461 * var(--u)); }
+  .l-or { left: calc(74 * var(--u)); top: calc(454 * var(--u)); font-style: italic; }
+  .l-dot2 { left: calc(909 * var(--u)); top: calc(461 * var(--u)); }
   /* the reply row was added after the Figma frame: one line below "something else", so the message and send
      sit 60 design px lower than in the design */
   .l-reply { left: calc(74 * var(--u)); top: calc(533 * var(--u)); }
-  .l-dot3 { left: calc(917 * var(--u)); top: calc(541 * var(--u)); }
+  .l-dot3 { left: calc(909 * var(--u)); top: calc(541 * var(--u)); }
   .l-more { left: calc(74 * var(--u)); top: calc(637 * var(--u)); }
 
   /* the fields: italic placeholders on a hairline (Lines 33–37) */
@@ -206,12 +208,14 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
     padding: 0; height: calc(45 * var(--u)); outline: none; transition: border-color .3s ease; }
   .field::placeholder { color: var(--placeholder); opacity: 1; }
   .field:focus { border-bottom-color: var(--accent); }
-  .field--name { left: calc(146 * var(--u)); top: calc(304 * var(--u)); width: calc(300 * var(--u)); padding-left: calc(43 * var(--u)); }
-  .field--org { left: calc(583 * var(--u)); top: calc(304 * var(--u)); width: calc(317 * var(--u)); padding-left: calc(1 * var(--u)); }
-  .field--about { left: calc(332 * var(--u)); top: calc(383 * var(--u)); width: calc(580 * var(--u)); padding-left: calc(11 * var(--u)); }
-  .field--else { left: calc(74 * var(--u)); top: calc(458 * var(--u)); width: calc(436 * var(--u)); }
-  .field--email { left: calc(341 * var(--u)); top: calc(537 * var(--u)); width: calc(571 * var(--u)); }
-  .field--more { left: calc(74 * var(--u)); top: calc(712 * var(--u)); width: calc(838 * var(--u)); height: auto; min-height: calc(49 * var(--u));
+  /* every field starts a word-space after its words, with the same small inset for its placeholder */
+  .field { padding-left: calc(10 * var(--u)); }
+  .field--name { left: calc(140 * var(--u)); top: calc(304 * var(--u)); width: calc(306 * var(--u)); }
+  .field--org { left: calc(573 * var(--u)); top: calc(304 * var(--u)); width: calc(332 * var(--u)); }
+  .field--about { left: calc(326 * var(--u)); top: calc(383 * var(--u)); width: calc(579 * var(--u)); }
+  .field--else { left: calc(120 * var(--u)); top: calc(458 * var(--u)); width: calc(785 * var(--u)); }
+  .field--email { left: calc(335 * var(--u)); top: calc(537 * var(--u)); width: calc(570 * var(--u)); }
+  .field--more { left: calc(74 * var(--u)); top: calc(712 * var(--u)); width: calc(831 * var(--u)); height: auto; min-height: calc(49 * var(--u)); padding-left: 0;
     resize: none; overflow: hidden; }
 
   .l-trap { display: none !important; }
@@ -250,14 +254,14 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
   }
 
   /* Line 39, the aside, Line 42, Frame 89 */
-  .l-divider { position: absolute; left: calc(997 * var(--u)); top: calc(141 * var(--u)); height: calc(701 * var(--u)); border-left: 0.5px solid var(--ink); }
-  .l-label--aside { left: calc(1068 * var(--u)); top: calc(166.5 * var(--u)); width: calc(379 * var(--u)); }
-  .l-email { left: calc(1068 * var(--u)); top: calc(233.5 * var(--u)); width: calc(379 * var(--u)); font-size: calc(39 * var(--u)); line-height: 1.25;
+  /* the aside runs exactly as tall as the letter: its label on the letter's label line, its links ending on the
+     send button's foot, and the divider between them spans the same height */
+  .l-divider { position: absolute; left: calc(997 * var(--u)); top: calc(156 * var(--u)); height: calc(721 * var(--u)); border-left: 0.5px solid var(--ink); }
+  .l-label--aside { left: calc(1068 * var(--u)); top: calc(156 * var(--u)); width: calc(379 * var(--u)); }
+  .l-email { left: calc(1068 * var(--u)); top: calc(229 * var(--u)); width: calc(379 * var(--u)); font-size: calc(39 * var(--u)); line-height: 1.25;
     overflow-wrap: anywhere; transition: color .3s ease; }
   .l-email:hover { color: var(--accent); }
-  /* a light rule, so it reads as a divider, not an input line */
-  .l-line { left: calc(1069 * var(--u)); top: calc(451 * var(--u)); width: calc(362 * var(--u)); border-top: 0.5px solid rgba(15, 14, 12, 0.18); }
-  .l-links { left: calc(1068 * var(--u)); top: calc(582 * var(--u)); width: calc(363 * var(--u)); display: flex; flex-direction: column; }
+  .l-links { left: calc(1068 * var(--u)); top: auto; bottom: calc(63 * var(--u)); width: calc(363 * var(--u)); display: flex; flex-direction: column; }
   .l-links a { font-size: max(14px, calc(20 * var(--u))); line-height: 1.5; transition: color .3s ease; }
   .l-links a + a { margin-top: calc(26 * var(--u)); padding-top: calc(26 * var(--u)); border-top: 0.5px solid var(--ink); }
   .l-links a:hover { color: var(--accent); }
@@ -286,19 +290,21 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
     .l-divider { display: none; }
     .letter__aside { margin-top: 40px; padding-top: 32px; border-top: 0.5px solid var(--ink); flex-direction: column; align-items: stretch; }
     .l-email { width: auto; font-size: 26px; }
-    .l-line { display: none; }
+
     .l-links { width: auto; margin-top: 16px; }
   }
 
   /* the address stays on one line on desktop */
-  .l-email { white-space: nowrap; font-size: calc(25 * var(--u)); }
+  .l-email { white-space: nowrap; font-size: calc(25 * var(--u)); width: calc(470 * var(--u)); }
+  .l-email__at { display: inline-block; }   /* on phones the address breaks only before the @ */
   @media (max-width: 900px) {
     /* phones: each blank gets its own line, with no stray commas or full stops between them */
     .l-dot1, .l-dot2, .l-dot3 { display: none; }
     .field { flex: 1 1 100%; }
     .l-from { font-size: 0 !important; }
     .l-from::after { content: 'from'; font-size: 26px; }
-    .l-email { white-space: normal; overflow-wrap: anywhere; font-size: 22px; }
+    .l-email { width: auto; white-space: normal; overflow-wrap: normal; font-size: 22px; }   /* breaks only before the @ */
+    .field { font-size: 21px; }   /* the longest placeholder fits a phone line */
     .l-links a { display: block; padding: 12px 0; }
   }
 </style>

@@ -1,27 +1,62 @@
 ---
-// Not found: the site's own error page, in the same voice and type as the rest of it.
+// Not found: the site's own error page, in the same voice and type as the rest of it, with the nav and a way on to
+// the work, so a wrong link still lands somewhere worth reading.
 import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+
+const work = [
+  { href: '/work/falcon', label: 'Falcon · Vodafone Idea', title: 'Making millions of network events explain a single outage' },
+  { href: '/work/swad', label: 'Swad · Momo café', title: 'How a momo café that couldn’t make rent found its regulars' },
+  { href: '/work/diviniti', label: 'Diviniti · E‑commerce', title: 'A year that took my design from pixels to platforms' },
+];
 ---
 <Base title="Page not found · Suyash" description="This page doesn't exist." noindex>
+  <Nav solid />
   <main class="nf">
-    <p class="nf__label">ERROR 404</p>
-    <h1 class="nf__word t-display">khoya</h1>
-    <p class="nf__lede t-serif">This page wandered off. <em>Let’s get you back.</em></p>
-    <a class="nf__home" href="/">Back to home</a>
+    <div class="nf__lost">
+      <p class="nf__label">ERROR 404</p>
+      <h1 class="nf__word t-display">khoya</h1>
+      <p class="nf__lede t-serif">This page wandered off. <em>Let’s get you back.</em></p>
+      <a class="nf__home" href="/">Back to home</a>
+    </div>
+    <nav class="nf__work" aria-label="The work">
+      <p class="nf__label">OR READ THE WORK</p>
+      <ol>
+        {work.map((w, i) => (
+          <li><a href={w.href}><span class="nf__n">0{i + 1}</span><span class="nf__meta">{w.label}</span><span class="nf__title t-serif">{w.title} <span aria-hidden="true">→</span></span></a></li>
+        ))}
+      </ol>
+    </nav>
   </main>
 </Base>
 
 <style>
-  .nf { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 0 var(--gutter, calc(104 * var(--u)));
-    max-width: calc(1728 * var(--u)); margin: 0 auto; }
-  .nf__label { font-size: max(12px, calc(16 * var(--u))); }
+  .nf { min-height: 100svh; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: calc(64 * var(--u)); align-items: center;
+    padding: calc(var(--nav-h) + 40px) calc(104 * var(--u)) 48px; max-width: calc(1728 * var(--u)); margin: 0 auto; }
+  .nf__label { font-size: max(12px, calc(16 * var(--u))); letter-spacing: .04em; }
   .nf__word { margin-top: calc(8 * var(--u)); font-size: clamp(96px, calc(200 * var(--u)), 200px); line-height: 1; color: var(--accent); }
   .nf__lede { margin-top: calc(20 * var(--u)); font-size: max(20px, calc(31 * var(--u))); font-style: italic; line-height: 1.25; }
   .nf__lede em { font-weight: 400; }
-  .nf__home { align-self: flex-start; margin-top: calc(48 * var(--u)); display: inline-flex; align-items: center; justify-content: center;
+  .nf__home { display: inline-flex; margin-top: calc(48 * var(--u)); align-items: center; justify-content: center;
     min-width: max(104px, calc(144 * var(--u))); height: max(36px, calc(50 * var(--u))); padding: 0 calc(20 * var(--u));
     background: var(--grad-resume); color: var(--paper); font-size: max(14px, calc(20 * var(--u))); font-weight: 400;
     transition: transform .3s ease, box-shadow .3s ease; }
   .nf__home:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(45, 10, 5, .25); }
-  @media (max-width: 900px) { .nf { padding: 0 20px; } }
+
+  /* the work, as a short contents list on the hairlines the case studies use */
+  .nf__work ol { list-style: none; margin: calc(18 * var(--u)) 0 0; padding: 0; }
+  .nf__work li { border-top: 1px solid var(--hair); }
+  .nf__work li:first-child { border-top-color: var(--ink); }
+  .nf__work li:last-child { border-bottom: 1px solid var(--hair); }
+  .nf__work a { display: grid; grid-template-columns: calc(48 * var(--u)) 1fr; row-gap: 6px; padding: calc(22 * var(--u)) 0 calc(26 * var(--u)); }
+  .nf__n { grid-row: 1 / span 2; padding-top: .2em; font-family: var(--mono); font-size: max(11px, calc(13 * var(--u))); color: var(--accent); }
+  .nf__meta { font-family: var(--mono); font-size: max(11px, calc(13 * var(--u))); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .nf__title { font-size: max(18px, calc(25 * var(--u))); line-height: 1.25; transition: color .3s ease; }
+  .nf__work a:hover .nf__title { color: var(--accent); }
+
+  @media (max-width: 900px) {
+    .nf { grid-template-columns: 1fr; row-gap: 64px; align-content: center; padding: calc(var(--nav-h) + 48px) 20px 48px; }
+    .nf__n { padding-top: 0; }
+    .nf__work a { grid-template-columns: 32px 1fr; padding: 18px 0; }
+  }
 </style>

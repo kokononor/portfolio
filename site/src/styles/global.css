@@ -11,9 +11,13 @@
   --paper: #fcfbf8;            /* text/paper */
   --muted: #626262;            /* text/muted */
   --placeholder: #7d7871;      /* text/placeholder */
-  --accent: #b51b03;           /* accent/falcon */
-  --page: #f8f7f0;             /* frame fill */
+  --accent: #b51b03;           /* the one accent, on every page */
+  --accent-deep: #681609;      /* only as the dark end of a red gradient, never on its own */
+  --accent-on-dark: #e0907c;   /* the accent where it sits on a dark band */
+  --night: #17120e;            /* dark bands and hero grounds */
+  --page: #f8f7f0;             /* the page, on every page */
   --white: #ffffff;
+  --hair: rgba(15, 14, 12, 0.22);   /* light rules between rows */
 
   /* effects */
   --shadow-big: -20px 20px 26px rgba(0, 0, 0, 0.08);   /* "big box blur" */
@@ -25,7 +29,7 @@
   --grad-letter: linear-gradient(59.26deg, #f8f7f0 0.329%, #ffffff 99.299%);
   --grad-footer: linear-gradient(64.39deg, #0f0e0c 16.082%, #0f0e0c 47.994%, #2d0a05 79.906%);
   --grad-footer-panel: linear-gradient(44.08deg, #fcfbf8 0%, #ffffff 95.132%);
-  --grad-swad: linear-gradient(to bottom, #353535, #1a1a1a);
+  --grad-swad: linear-gradient(to bottom, #353535, var(--night));
   --grad-story: linear-gradient(to right, rgba(15, 13, 10, 0.75), rgba(15, 13, 10, 0) 55%);
 
   /* type families */
