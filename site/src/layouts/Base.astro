@@ -38,7 +38,25 @@ const shareImage = new URL('/og.png', Astro.site);
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={shareImage} />
+    <!-- instant page turns: when a visitor hovers or starts to press a link to another page of the site, the browser
+         fetches that page ahead of the click (speculation rules; browsers without them ignore this). Fetch only, not
+         a full pre-render, so nothing on the next page runs or plays before it is actually opened. -->
+    <script type="speculationrules" is:inline set:html={JSON.stringify({
+      prefetch: [{ where: { and: [{ href_matches: '/*' }, { not: { href_matches: '/*.pdf' } }, { not: { selector_matches: '[download], [target=_blank]' } }] }, eagerness: 'moderate' }],
+    })} />
     <script is:inline>
+      // the edition's ink: the colour bar in the footer reprints the site in another spot colour for the visit
+      window.__inks = [
+        { name: 'Sindoor' },
+        { name: 'Indigo', a: '#27348b', d: '#141b4d', l: '#9aa6e8' },
+        { name: 'Peacock', a: '#0a6652', d: '#053a2f', l: '#7fcdb9' },
+        { name: 'Turmeric', a: '#9a5a00', d: '#5a3300', l: '#e6b565' },
+      ];
+      window.__ink = i => {
+        const k = window.__inks[i] || {}, st = document.documentElement.style;
+        [['--accent', k.a], ['--accent-deep', k.d], ['--accent-on-dark', k.l]].forEach(([p, v]) => (v ? st.setProperty(p, v) : st.removeProperty(p)));
+      };
+      try { window.__ink(+(sessionStorage.getItem('ink') || 0)); } catch (e) {}
       // motion is opt-in: only when scripts run and the visitor has not asked for reduced motion
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('js-motion');
       // the page's width without the scrollbar (100vw includes it on Windows), so layouts never run under it (--vw)
@@ -58,6 +76,9 @@ const shareImage = new URL('/og.png', Astro.site);
     <script>
       import '../scripts/motion';
       import '../scripts/lighting';
+      import '../scripts/halftone';
+      import '../scripts/dogear';
+      import '../scripts/music';
     </script>
   </body>
 </html>

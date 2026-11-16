@@ -26,14 +26,45 @@
         <li><a href="/#contact">Connect</a></li>
       </ul>
     </div>
-    <svg class="footer__dots" viewBox="0 0 96 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="12" fill="var(--accent)" />
-      <circle cx="36" cy="12" r="12" fill="var(--accent-deep)" />
-      <circle cx="60" cy="12" r="12" fill="var(--muted)" />
-      <circle cx="84" cy="12" r="12" fill="var(--ink)" />
-    </svg>
+    <!-- the colour bar works: a press reprints this edition in the next ink (see the script below) -->
+    <button class="footer__dots" type="button" data-reink aria-label="Reprint this edition in another ink" title="Reprint in another ink">
+      <svg viewBox="0 0 96 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="12" fill="var(--accent)" />
+        <circle cx="36" cy="12" r="12" fill="var(--accent-deep)" />
+        <circle cx="60" cy="12" r="12" fill="var(--muted)" />
+        <circle cx="84" cy="12" r="12" fill="var(--ink)" />
+      </svg>
+      <span class="footer__ink" aria-live="polite"></span>
+    </button>
   </div>
 </footer>
+
+<script>
+  // Reprinting: each press of the colour bar inks the whole edition in the next spot colour, wiping out from the bar.
+  // The choice lasts for the visit (layouts/Base.astro applies it before each page paints).
+  const inks = (window as any).__inks as { name: string }[];
+  const bar = document.querySelector<HTMLButtonElement>('[data-reink]');
+  const note = bar?.querySelector<HTMLElement>('.footer__ink');
+  const ORDINAL = ['First', 'Second', 'Third', 'Fourth'];
+  const say = (i: number) => { if (note) note.textContent = i ? `${ORDINAL[i]} printing · ${inks[i].name}` : ''; };
+  let at = +(sessionStorage.getItem('ink') || 0) % inks.length;
+  say(at);
+  bar?.addEventListener('click', () => {
+    at = (at + 1) % inks.length;
+    const apply = () => { (window as any).__ink(at); say(at); };
+    try { sessionStorage.setItem('ink', String(at)); } catch {}
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still || !document.startViewTransition) return apply();
+    const r = bar.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+    const far = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    document.documentElement.classList.add('is-reinking');
+    const t = document.startViewTransition(apply);
+    t.ready.then(() => document.documentElement.animate(
+      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${far}px at ${x}px ${y}px)`] },
+      { duration: 900, easing: 'cubic-bezier(.3, 0, .1, 1)', pseudoElement: '::view-transition-new(root)' }));
+    t.finished.finally(() => document.documentElement.classList.remove('is-reinking'));
+  });
+</script>
 
 <style>
   .footer { position: relative; height: calc(571 * var(--u)); }
@@ -54,6 +85,10 @@
   .footer__cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: calc(26 * var(--u)); text-transform: uppercase; }
   .footer__cols a { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .4s ease, color .3s ease; }
   .footer__cols a:hover { background-size: 100% 1px; color: var(--accent); }
+  .footer__dots { padding: 0; border: 0; background: none; cursor: pointer; }
+  .footer__dots svg { display: block; width: 100%; height: 100%; transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
+  .footer__dots:hover svg { transform: translateY(-3px); }
+  .footer__ink { position: absolute; right: 0; bottom: calc(100% + 10px); white-space: nowrap; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
   .footer__dots { position: absolute; left: calc(64 * var(--u) + 464 * var(--u) - 96 * var(--u)); bottom: calc(61 * var(--u)); width: calc(96 * var(--u)); height: calc(24 * var(--u)); }
 
   @media (max-width: 900px) {
@@ -63,7 +98,7 @@
     .footer__thanks { font-size: 56px; }
     .footer__panel { position: relative; left: auto; width: 100%; height: auto; padding: 40px 20px 32px; }
     .footer__cols { position: static; width: auto; column-gap: 20px; font-size: 14px; }
-    .footer__dots { position: static; display: block; margin: 40px 0 0 auto; width: 96px; height: 24px; }
+    .footer__dots { position: relative; display: block; margin: 40px 0 0 auto; width: 96px; height: 24px; }
   }
 
   @media (max-width: 900px) { .footer__cols ul { gap: 0; } .footer__cols a { display: inline-block; padding: 12px 0; } }

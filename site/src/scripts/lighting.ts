@@ -7,7 +7,34 @@
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ---------------- the light ----------------
-const REST = { x: 0.86, y: 0.08 };            // where it settles, as a fraction of the viewport
+// Where the light settles (a fraction of the viewport) follows the real sun over Delhi: it rises on the left, stands
+// high at noon and sets on the right, and a low sun throws longer shadows (LEN). After dark it is the desk lamp, at the
+// design's top-right. ?sun=17.5 previews an hour of the day (Delhi time).
+function delhiSun() {
+  const rad = Math.PI / 180, LAT = 28.61 * rad, LON = 77.21;
+  const preview = parseFloat(new URLSearchParams(location.search).get('sun') ?? '');
+  const now = new Date();
+  if (!isNaN(preview)) {                       // that hour today in Delhi (UTC+5:30)
+    const ist = new Date(now.getTime() + 5.5 * 3600e3);
+    now.setTime(Date.UTC(ist.getUTCFullYear(), ist.getUTCMonth(), ist.getUTCDate()) + (preview - 5.5) * 3600e3);
+  }
+  const d = now.getTime() / 86400e3 - 10957.5;                          // days since J2000
+  const g = (357.529 + 0.98560028 * d) * rad;                           // mean anomaly
+  const L = (280.459 + 0.98564736 * d + 1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g)) * rad;   // ecliptic longitude
+  const e = 23.439 * rad;
+  const dec = Math.asin(Math.sin(e) * Math.sin(L)), ra = Math.atan2(Math.cos(e) * Math.sin(L), Math.cos(L));
+  const H = (280.46061837 + 360.98564736629 * d + LON) * rad - ra;      // hour angle
+  const alt = Math.asin(Math.sin(LAT) * Math.sin(dec) + Math.cos(LAT) * Math.cos(dec) * Math.cos(H));
+  const az = Math.atan2(-Math.sin(H), Math.tan(dec) * Math.cos(LAT) - Math.sin(LAT) * Math.cos(H));   // from north, clockwise
+  return { alt: alt / rad, east: Math.sin(az) };                        // east: 1 in the east, -1 in the west
+}
+const sun = delhiSun();
+const day = sun.alt > 0;
+const high = Math.min(Math.max(sun.alt, 0) / 50, 1);                    // 0 on the horizon, 1 from 50° up
+const REST = day ? { x: 0.5 - sun.east * 0.4, y: 0.3 - high * 0.22 } : { x: 0.86, y: 0.08 };
+const LEN = day ? 1.7 - high * 0.7 : 1;                                 // shadow length: long at dawn and dusk
+// phones: tilting the handset moves the light, like turning a sheet of paper under a lamp
+const tilt = { x: 0, y: 0, on: false };
 const light = { x: reduce ? REST.x : 0.55, y: reduce ? REST.y : 0.45, power: reduce ? 1 : 0 };
 const pointer = { x: REST.x, y: REST.y, seen: false };
 addEventListener('pointermove', e => { pointer.x = e.clientX / innerWidth; pointer.y = e.clientY / innerHeight; pointer.seen = true; }, { passive: true });
@@ -152,7 +179,7 @@ function applyToElements() {
     const cx = l.x - scrollX + l.w / 2, cy = l.y - top + l.h / 2;
     const dx = cx - lx, dy = cy - ly, dist = Math.hypot(dx, dy) || 1;
     // shadow: away from the light, scaled so a block exactly down-left of it casts the design's (-20, 20)
-    const sx = (dx / dist) * Math.SQRT2, sy = (dy / dist) * Math.SQRT2;
+    const sx = (dx / dist) * Math.SQRT2 * LEN, sy = (dy / dist) * Math.SQRT2 * LEN;
     const p = Math.exp(-dist / (diag * 0.7)) * light.power;            // 1 at the light, fading across the page
     const s = l.el.style;
     s.setProperty('--sx', sx.toFixed(3));
@@ -173,11 +200,12 @@ function frame(now: number) {
     const e = Math.min(t / 2.2, 1), ease = 1 - Math.pow(1 - e, 3);
     const breathe = { x: Math.sin(t * 0.21) * 0.012, y: Math.cos(t * 0.17) * 0.01 };
     const lean = pointer.seen ? { x: (pointer.x - REST.x) * 0.06, y: (pointer.y - REST.y) * 0.06 } : { x: 0, y: 0 };
-    const tx = REST.x + breathe.x + lean.x, ty = REST.y + breathe.y + lean.y;
-    const k = e < 1 ? ease : 0.04;                                      // after the entrance, follow gently
+    const tx = REST.x + breathe.x + lean.x + tilt.x, ty = REST.y + breathe.y + lean.y + tilt.y;
+    const k = e < 1 ? ease : tilt.on ? 0.12 : 0.04;                                      // after the entrance, follow gently
     light.x += (tx - light.x) * (e < 1 ? 0.06 : k);
     light.y += (ty - light.y) * (e < 1 ? 0.06 : k);
-    light.power = ease * (0.97 + 0.03 * Math.sin(t * 0.5));             // a very slow breath in the brightness
+    light.power = ease * (0.97 + 0.03 * Math.sin(t * 0.5))               // a very slow breath in the brightness
+      + ((window as any).__beat || 0) * 0.1;                             // and, with the record on, a pulse on the beat
   }
   if (now - lastMeasure > 1000) { measure(); lastMeasure = now; }     // catch layout shifts (fonts, images)
   draw?.(t);
@@ -189,6 +217,30 @@ document.addEventListener('visibilitychange', () => {
   if (running) requestAnimationFrame(frame);
 });
 addEventListener('resize', measure);
+
+// ---------------- tilt (phones and tablets) ----------------
+// gamma: left / right roll; beta: front / back pitch, about 45° when a phone is held to read
+if (!reduce && matchMedia('(pointer: coarse)').matches && 'DeviceOrientationEvent' in window) {
+  const clamp = (v: number) => Math.max(-1, Math.min(1, v));
+  const listen = () => addEventListener('deviceorientation', e => {
+    if (e.gamma == null || e.beta == null) return;
+    tilt.on = true;
+    tilt.x = clamp(e.gamma / 35) * 0.45;
+    tilt.y = clamp((e.beta - 45) / 35) * 0.3;
+  });
+  const ask = (DeviceOrientationEvent as any).requestPermission as (() => Promise<string>) | undefined;
+  if (!ask) listen();                                                    // Android: no permission needed
+  else {
+    // iOS only gives motion after a tap, so a small chip offers it once
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'tilt-chip';
+    chip.textContent = 'Tilt to move the light';
+    chip.addEventListener('click', () => { ask().then(r => { if (r === 'granted') listen(); }).catch(() => {}); chip.remove(); });
+    document.body.append(chip);
+    setTimeout(() => chip.remove(), 12000);
+  }
+}
 
 collect();
 document.fonts?.ready.then(measure);

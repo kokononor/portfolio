@@ -13,6 +13,16 @@ const title = document.querySelector<HTMLElement>('[data-greet]');
 
 if (title) {
   const words = (title.dataset.greet || title.textContent || '').split('|').map(w => w.trim()).filter(Boolean);
+  // the visitor's own hello joins the cycle, right after Namaste: taken from their browser's language (nothing is
+  // sent anywhere). Only greetings short enough for the line, in letters the display face has. ?hello=es previews one.
+  const HELLO: Record<string, string> = {
+    es: 'Hola!', de: 'Hallo!', it: 'Ciao!', pt: 'Olá!', nl: 'Hallo!', sv: 'Hej!', da: 'Hej!', nb: 'Hei!', no: 'Hei!', fi: 'Hei!',
+    pl: 'Cześć!', tr: 'Merhaba!', id: 'Halo!', vi: 'Xin chào!', sw: 'Jambo!', tl: 'Kumusta!', ko: 'Annyeong!',
+    zh: 'Ni hao!', ru: 'Privet!', ar: 'Salaam!', ur: 'Salaam!', ta: 'Vanakkam!', mr: 'Namaskar!', gu: 'Kem cho!', bn: 'Nomoskar!',
+  };
+  const tongue = (new URLSearchParams(location.search).get('hello') || navigator.language || '').toLowerCase().split('-')[0];
+  const mine = HELLO[tongue];
+  if (mine && !words.includes(mine)) words.splice(1, 0, mine);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   title.setAttribute('aria-label', words.join(' '));
 
@@ -27,7 +37,7 @@ if (title) {
       cell.className = 'greet__cell';
       const c = document.createElement('span');
       c.className = 'greet__ch';
-      c.textContent = ch;
+      c.textContent = ch === ' ' ? '\u00a0' : ch;      // a plain space would collapse inside its cell
       cell.appendChild(c);
       layer.appendChild(cell);
     }

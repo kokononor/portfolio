@@ -17,6 +17,13 @@ const work = [
       <p class="nf__label">ERROR 404</p>
       <h1 class="nf__word t-display">khoya</h1>
       <p class="nf__lede t-serif">This page wandered off. <em>Let’s get you back.</em></p>
+      <!-- a lost-and-found notice, as in a newspaper's small ads: the address that was asked for, and the nearest real
+           page if one is close (filled in by the script below; without scripts it stays hidden) -->
+      <aside class="nf__notice" hidden>
+        <p class="nf__notice-head">Lost &amp; Found</p>
+        <p class="nf__notice-body t-serif"><strong>LOST:</strong> one page, last seen at <span class="nf__path t-mono"></span>. If found, please return to the editor.</p>
+        <p class="nf__notice-found t-serif" hidden><strong>FOUND:</strong> something very like it, at <a class="nf__guess t-mono" href="/"></a></p>
+      </aside>
       <a class="nf__home" href="/">Back to home</a>
     </div>
     <nav class="nf__work" aria-label="The work">
@@ -30,6 +37,37 @@ const work = [
   </main>
 </Base>
 
+<script>
+  // the small ad: print the address that was asked for, and offer the closest real page when it is only a slip away
+  const ROUTES = ['/work/falcon', '/work/swad', '/work/diviniti', '/resume.pdf', '/'];
+  const asked = decodeURIComponent(location.pathname).replace(/\/+$/, '') || '/';
+  const notice = document.querySelector<HTMLElement>('.nf__notice');
+  if (notice && asked !== '/404') {
+    notice.querySelector('.nf__path')!.textContent = asked.length > 48 ? asked.slice(0, 47) + '…' : asked;
+    notice.hidden = false;
+    // edit distance between two short strings
+    const dist = (a: string, b: string) => {
+      const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+      for (let i = 1; i <= a.length; i++) {
+        let prev = row[0]; row[0] = i;
+        for (let j = 1; j <= b.length; j++) {
+          const keep = row[j];
+          row[j] = Math.min(row[j] + 1, row[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+          prev = keep;
+        }
+      }
+      return row[b.length];
+    };
+    const near = ROUTES.filter(r => r !== '/').map(r => ({ r, d: dist(asked.toLowerCase(), r) })).sort((a, b) => a.d - b.d)[0];
+    if (near && near.d <= Math.max(3, near.r.length * 0.4)) {
+      const guess = notice.querySelector<HTMLAnchorElement>('.nf__guess')!;
+      guess.href = near.r;
+      guess.textContent = near.r;
+      notice.querySelector<HTMLElement>('.nf__notice-found')!.hidden = false;
+    }
+  }
+</script>
+
 <style>
   .nf { min-height: 100svh; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: calc(64 * var(--u)); align-items: center;
     padding: calc(var(--nav-h) + 40px) calc(104 * var(--u)) 48px; max-width: calc(1728 * var(--u)); margin: 0 auto; }
@@ -42,6 +80,18 @@ const work = [
     background: var(--grad-resume); color: var(--paper); font-size: max(14px, calc(20 * var(--u))); font-weight: 400;
     transition: transform .3s ease, box-shadow .3s ease; }
   .nf__home:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(45, 10, 5, .25); }
+
+  /* the lost-and-found notice: a boxed small ad, set tight like a newspaper classified */
+  .nf__notice { margin-top: calc(40 * var(--u)); max-width: 34em; padding: 14px 18px 16px; border: 1px solid var(--ink); border-top-width: 3px; }
+  .nf__notice-head { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--hair); }
+  .nf__notice-body, .nf__notice-found { font-size: max(15px, calc(18 * var(--u))); line-height: 1.45; }
+  .nf__notice-found { margin-top: 8px; }
+  .nf__notice strong { font-family: var(--sans); font-weight: 500; font-size: .78em; letter-spacing: .08em; }
+  .nf__path, .nf__guess { font-size: .82em; overflow-wrap: anywhere; }
+  .nf__path { color: var(--accent); }
+  .nf__guess { text-decoration: underline; text-underline-offset: 3px; }
+  .nf__guess:hover { color: var(--accent); }
+  .nf__notice + .nf__home { margin-top: calc(32 * var(--u)); }
 
   /* the work, as a short contents list on the hairlines the case studies use */
   .nf__work ol { list-style: none; margin: calc(18 * var(--u)) 0 0; padding: 0; }

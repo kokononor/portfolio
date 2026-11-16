@@ -13,6 +13,8 @@ import viLogo from '../assets/falcon/vi-logo.png';
 <header class="hero fit" id="top" style="--fit-h: 1074; --fit-room: 100svh">
   <Nav />
 
+  <!-- the dateline: today's edition (scripts/edition.ts fills in the date, number and Delhi's weather) -->
+  <p class="hero__dateline t-mono" data-edition data-hero-in></p>
   <h1 class="hero__title t-display" data-greet="Namaste!|Hello!|Bonjour!">Namaste!</h1>
   <p class="hero__lede t-serif" data-hero-in>
     <span class="em">Zero to one product designer</span> with one simple rule, <span class="em">the user wins and the business doesn’t lose.</span>
@@ -34,7 +36,7 @@ import viLogo from '../assets/falcon/vi-logo.png';
   </div>
 
   <figure class="hero__portrait" data-hero-in>
-    <div class="hero__photo">
+    <div class="hero__photo" data-halftone>
       <Image src={portrait} alt="Suyash as a child, running down a street in Ranchi" widths={[386, 772, 1158]} sizes="(max-width: 900px) 90vw, 386px" loading="eager" />
       <span class="hero__signature" style={`--mask: url('${signatureMask.src}')`} aria-hidden="true"></span>
     </div>
@@ -47,12 +49,18 @@ import viLogo from '../assets/falcon/vi-logo.png';
 
 <script>
   import '../scripts/greeting';
+  import '../scripts/edition';
 </script>
 
 <style>
   .hero { position: relative; height: calc(1074 * var(--u)); }
   .hero > * { position: absolute; }
 
+
+  /* ---- the dateline: a line of small print above the greeting, like the strip under a newspaper's masthead ---- */
+  .hero__dateline { left: calc(104 * var(--u)); top: calc(196 * var(--u)); margin-left: calc(104 * var(--dx)); display: flex; flex-wrap: wrap; gap: 4px 0;
+    font-size: max(11px, calc(13 * var(--u))); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+  .hero__dateline :global(span + span)::before { content: '·'; margin: 0 .9em; color: var(--muted); }
 
   /* ---- greeting and lede (362:17, 362:18) ---- */
   .hero__title { left: calc(104 * var(--u)); top: calc(245.35 * var(--u)); width: calc(1005 * var(--u));
@@ -62,7 +70,7 @@ import viLogo from '../assets/falcon/vi-logo.png';
   .hero__title { display: grid; }
   .hero__title :global(.greet) { grid-area: 1 / 1; display: block; visibility: hidden; white-space: nowrap; }
   .hero__title :global(.greet__cell) { display: inline-flex; justify-content: center; vertical-align: top; }
-  .hero__title :global(.greet__ch) { --w: 300; --s: 0; font-variation-settings: 'wght' var(--w), 'SOFT' var(--s), 'WONK' 1; }
+  .hero__title :global(.greet__ch) { --w: 300; --s: 0; font-variation-settings: 'wght' calc(var(--w) + var(--beat, 0) * 90), 'SOFT' var(--s), 'WONK' 1; }   /* --beat: the record's bass swells the ink */
   .hero__lede { left: calc(104 * var(--u)); top: calc(567.35 * var(--u)); width: calc(1005 * var(--u));
     font-size: max(20px, calc(31 * var(--u))); font-style: italic; line-height: 1.25; }
   .hero__lede .em { font-weight: 400; line-height: normal; }
@@ -128,6 +136,9 @@ import viLogo from '../assets/falcon/vi-logo.png';
   @media (max-width: 900px) {
     .hero { height: auto; padding: 20px 20px 56px; display: flex; flex-direction: column; }
     .hero > * { position: static; }
+    .hero__dateline { order: 0; margin-top: 72px; white-space: normal; gap: 3px 16px; }
+    .hero__dateline :global(span + span)::before { content: none; }   /* phones: the items wrap, so spacing separates them, not dots */
+    .hero__dateline + .hero__title { margin-top: 10px; }
     .hero__title { order: 1; margin-top: 72px; font-size: clamp(64px, 21vw, 120px); width: auto; }
     .hero__lede { order: 2; margin-top: 20px; width: auto; font-size: 20px; }
     .hero__rule { order: 3; width: 100%; margin: 28px 0; }

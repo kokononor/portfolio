@@ -10,9 +10,11 @@
 import { gsap } from 'gsap';
 
 // Not licensed: shipped by the site owner's choice. Set TRACK_URL to '' to fall back to the generated loop.
-const TRACK_URL = '/audio/heaven-knows-im-miserable-now.mp3';
+export const TRACK_URL = '/audio/heaven-knows-im-miserable-now.mp3';
 const TRACK_NAME = "Heaven Knows I'm Miserable Now by The Smiths";   // read out with the play / pause label
-const VOLUME = 0.6;
+export const VOLUME = 0.6;
+// the record carries on between pages: whether it is playing, and how far into the song (see scripts/music.ts)
+export const ON = 'music-on', AT = 'music-at';
 const RPM_DEG = 200;                        // ~33⅓ rpm, in degrees per second
 const ARM_PLAY = 34;                        // degrees the arm swings to sit over the record
 
@@ -44,6 +46,7 @@ if (btn) {
   const setPlaying = (on: boolean) => {
     if (on === playing) return;
     playing = on;
+    try { sessionStorage.setItem(ON, playing ? '1' : '0'); } catch {}
     btn.setAttribute('aria-pressed', String(playing));
     btn.setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} music: ${TRACK_NAME}`);
     tl?.kill();
@@ -77,7 +80,16 @@ if (btn) {
   };
   const cancelWait = () => GESTURES.forEach(g => removeEventListener(g, onFirstGesture, true));
   // sound is opt-in: the record only plays when the visitor presses it
-  void stoppedBefore; void onFirstGesture;
+  void stoppedBefore;
+  // …but a record they left playing on another page of the site is still playing when they come back: it resumes
+  // from where the song had got to (at once where the browser allows it, otherwise on their first click or key)
+  addEventListener('pagehide', () => { try { if (playing) sessionStorage.setItem(AT, String(sound.time())); } catch {} });
+  let wasOn = false, at = 0;
+  try { wasOn = sessionStorage.getItem(ON) === '1'; at = parseFloat(sessionStorage.getItem(AT) || '0') || 0; } catch {}
+  if (wasOn) {
+    sound.seek(at);
+    sound.prime(false).then(ok => (ok ? setPlaying(true) : GESTURES.forEach(g => addEventListener(g, onFirstGesture, true))));
+  }
 }
 
 // ---------------- your own track ----------------
@@ -86,6 +98,32 @@ function fileSound(url: string) {
   audio.loop = true;
   audio.preload = 'none';                   // the 4 MB file is fetched when playback is asked for, not on every page load
   audio.volume = 0;
+  // The music moves the page: once the song is really sounding, its low end is measured many times a second and
+  // published as --beat (0 to 1) on the page, which the light (scripts/lighting.ts) and the greeting (Hero.astro)
+  // lean on. The song is only routed through the analyser if the browser lets it run, so it can never go silent.
+  let analyser: AnalyserNode | null = null, wired = false, level = 0, shown = -1;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const listen = () => {
+    if (wired || still || !('AudioContext' in window)) return;
+    wired = true;
+    const ctx = new AudioContext();
+    ctx.resume().then(() => {
+      if (ctx.state !== 'running') { ctx.close(); wired = false; return; }
+      const node = ctx.createAnalyser();
+      node.fftSize = 256;
+      node.smoothingTimeConstant = 0.75;
+      ctx.createMediaElementSource(audio).connect(node).connect(ctx.destination);
+      analyser = node;
+      const bins = new Uint8Array(node.frequencyBinCount);
+      gsap.ticker.add(() => {
+        let v = 0;
+        if (!audio.paused) { node.getByteFrequencyData(bins); v = (bins[1] + bins[2] + bins[3] + bins[4]) / 4 / 255; }
+        level += (v * v - level) * 0.25;                       // squared: quiet passages rest, the beat stands out
+        const next = Math.round(level * 50) / 50;
+        if (next !== shown) { shown = next; (window as any).__beat = next; document.documentElement.style.setProperty('--beat', String(next)); }
+      });
+    }).catch(() => { wired = false; });
+  };
   return {
     // begin playback silently (the volume rises when the arm lands); resolves false if the browser refuses
     // Asking to play starts the download, so where the browser says sound is not allowed yet (most first visits) we
@@ -96,7 +134,9 @@ function fileSound(url: string) {
       if (!inGesture && policy && policy !== 'allowed') return Promise.resolve(false);
       return audio.play().then(() => true, () => false);
     },
-    start() { audio.play().catch(() => {}); gsap.to(audio, { volume: VOLUME, duration: 1.2, ease: 'power1.out' }); },
+    time: () => audio.currentTime,
+    seek: (t: number) => { try { audio.currentTime = t; } catch {} },
+    start() { audio.play().then(listen, () => {}); gsap.to(audio, { volume: VOLUME, duration: 1.2, ease: 'power1.out' }); },
     stop() { gsap.to(audio, { volume: 0, duration: 0.6, ease: 'power1.in', onComplete: () => audio.pause() }); },
   };
 }
@@ -157,6 +197,8 @@ function placeholderSound() {
     while (next < ctx!.currentTime + 1.5) { chord(next, CHORDS[bar % CHORDS.length]); next += BAR; bar++; }
   }
   return {
+    time: () => 0,
+    seek: (_t: number) => {},
     async prime(_inGesture = true) {
       if (!ctx) setup();
       await ctx!.resume().catch(() => {});

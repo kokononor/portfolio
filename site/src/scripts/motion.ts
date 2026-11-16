@@ -17,6 +17,16 @@ if (!reduce) {
   gsap.ticker.add(time => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
 
+  // ---- misregistration: on a fast scroll the red plate slips out of register with the black (--mis, in px; see
+  // global.css), and snaps back as the page comes to rest — like a press running too fast ----
+  let mis = 0, shown = 0;
+  gsap.ticker.add(() => {
+    const target = gsap.utils.clamp(-7, 7, (lenis.velocity || 0) * 0.22);
+    mis += (target - mis) * 0.18;
+    const next = Math.abs(mis) < 0.05 ? 0 : Math.round(mis * 10) / 10;
+    if (next !== shown) { shown = next; document.documentElement.style.setProperty('--mis', String(next)); }
+  });
+
   // in-page links glide to their section; Lenis honours the page's scroll-padding-top (--nav-h, global.css), so each
   // stops just below the sticky nav. #top goes to the very top.
   document.addEventListener('click', e => {
