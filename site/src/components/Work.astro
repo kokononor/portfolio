@@ -94,15 +94,15 @@ import diviniti from '../assets/home/diviniti-cover.png';
   /* --pu: the page's design pixel (cards redefine --u for their own height-fitted scale) */
   .work { position: relative; --pu: var(--u); }
 
-  /* one project per viewport: each slide is a screen tall with the card centred in it. The card scales by width or by
-     height, whichever is tighter (its own --u), so it always fits with space on every side */
-  .slide { min-height: calc(100svh - var(--nav-h)); display: grid; place-items: center; padding: 4svh 0; }
+  /* one card per slide, each fitted to the screen (its own --u). Slides hug their cards: a fixed 96 design px between
+     cards, so a card shorter than the screen doesn't leave empty space around it */
+  .slide { display: grid; place-items: center; padding-block: calc(48 * var(--su, var(--pu))); }
   .slide > * { position: relative; }
   /* cards span the page's content width (104 design px margins, like every section); only their height fits the screen */
   .falcon, .swad, .story { width: calc(1520 * var(--pu)) !important; }
 
   /* the first slide carries the labels: "kaam" sits right on the Falcon card's top edge */
-  .slide--first { padding-top: calc(4svh + 150 * var(--su, var(--pu))); }
+  .slide--first { padding-top: calc(48 * var(--su, var(--pu)) + 150 * var(--su, var(--pu))); }
   .slide__stack { position: relative; }
   /* each card fits the screen below the sticky nav, with 4% of the screen above and below it */
   .work { --room: calc(92svh - var(--nav-h)); }
