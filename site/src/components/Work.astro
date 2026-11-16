@@ -172,9 +172,9 @@ import diviniti from '../assets/home/diviniti-cover.png';
   /* ---- Swad (362:102 dark card, 362:103 plate, 362:104 text card) ---- */
   .swad { width: calc(1520 * var(--u)); min-height: calc(986 * var(--u)); display: grid; grid-template-columns: 1fr 1fr; column-gap: 1.72%; }
   .swad__visual, .swad__body { position: relative; border-radius: var(--radius); }
-  .swad__visual { background: var(--ink); box-shadow: var(--shadow-big); }
-  .swad__plate { position: absolute; left: calc(50% - 300 * var(--u)); top: calc(50% - 307.5 * var(--u)); width: calc(600 * var(--u)); height: calc(615 * var(--u));   /* centred in the dark panel */
-    border-radius: var(--radius); background: var(--grad-swad); object-fit: cover; }
+  .swad__visual { background: var(--ink); box-shadow: var(--shadow-big); overflow: hidden; }
+  .swad__plate { position: absolute; inset: 0; width: 100%; height: 100%;   /* the photo fills the whole panel */
+    border-radius: inherit; background: var(--grad-swad); object-fit: cover; }
   .swad__body { background: var(--white); filter: var(--drop-big, drop-shadow(-20px 20px 13px rgba(0, 0, 0, 0.08)));
     padding: calc(92 * var(--u)) calc(101 * var(--u)) calc(86 * var(--u)) calc(129 * var(--u)); }
   .swad__body > * { max-width: max(calc(517 * var(--u)), 82%); }
@@ -216,7 +216,6 @@ import diviniti from '../assets/home/diviniti-cover.png';
     .falcon, .story { min-height: 0; }
     .swad__visual, .swad__body { position: relative; left: auto; width: auto; height: auto; }
     .swad__visual { aspect-ratio: 4 / 3; }
-    .swad__plate { left: 23.75%; top: 15%; width: 52.5%; height: 70%; }
     .swad__body { padding: 32px 20px; }
     .swad__body > * { max-width: none; }
     .story { padding: 40px 20px; min-height: 480px; }
