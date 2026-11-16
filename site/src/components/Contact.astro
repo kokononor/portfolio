@@ -32,8 +32,8 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
       <p class="l-text l-dot2 t-serif">.</p>
 
       <p class="l-text l-reply t-serif">Reply to me at</p>
-      <label class="sr-only" for="f-email">Your email, so I can write back (optional)</label>
-      <input class="field field--email t-serif" id="f-email" name="email" type="email" inputmode="email" placeholder="your email (optional)" autocomplete="email" spellcheck="false" />
+      <label class="sr-only" for="f-email">Your email, so I can write back</label>
+      <input class="field field--email t-serif" id="f-email" name="email" type="email" inputmode="email" placeholder="your email, so I can reply" autocomplete="email" spellcheck="false" required aria-describedby="letter-shy" />
       <p class="l-text l-dot3 t-serif">.</p>
 
       <p class="l-text l-more t-serif">Here’s a little more:</p>
@@ -102,9 +102,9 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
     }
     const emailField = f.namedItem('email');
     const email = emailField.value.trim();
-    if (email && !emailField.checkValidity()) {
+    if (!email || !emailField.checkValidity()) {
       emailField.setAttribute('aria-invalid', 'true');
-      say('That email doesn’t look quite right.', 'error');
+      say(email ? 'That email doesn’t look quite right.' : 'Please add your email, so I can write back.', 'error');
       emailField.focus();
       return;
     }
@@ -160,7 +160,7 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
   // fixing the email clears its error
   const emailInput = form.elements.namedItem('email');
   emailInput.addEventListener('input', () => {
-    if (emailInput.getAttribute('aria-invalid') && (!emailInput.value.trim() || emailInput.checkValidity())) { emailInput.removeAttribute('aria-invalid'); say(''); }
+    if (emailInput.getAttribute('aria-invalid') && emailInput.value.trim() && emailInput.checkValidity()) { emailInput.removeAttribute('aria-invalid'); say(''); }
   });
   // fixing the name clears its error
   nameField.addEventListener('input', () => {

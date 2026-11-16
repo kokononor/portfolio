@@ -9,9 +9,10 @@
 // Until then a placeholder plays: a soft lo-fi chord loop with vinyl crackle, generated in the browser.
 import { gsap } from 'gsap';
 
-// Not licensed: shipped by the site owner's choice. Set TRACK_URL to '' to fall back to the generated loop.
-const TRACK_URL = '/audio/heaven-knows-im-miserable-now.mp3';
-const TRACK_NAME = "Heaven Knows I'm Miserable Now by The Smiths";   // read out with the play / pause label
+// Only a track you own or have a licence for (royalty-free / Creative Commons, credited in the hero note).
+// Empty: the generated lo-fi loop plays. If you set one, update the track name here, in Hero.astro and RecordPlayer.astro.
+const TRACK_URL = '';
+const TRACK_NAME = 'a lo-fi loop';         // read out with the play / pause label
 const VOLUME = 0.6;
 const RPM_DEG = 200;                        // ~33⅓ rpm, in degrees per second
 const ARM_PLAY = 34;                        // degrees the arm swings to sit over the record
