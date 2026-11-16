@@ -11,7 +11,13 @@
       "permanent": false
     },
     {
-      "source": "/work/falcon/:path*",
+      "source": "/work/falcon/",
+      "missing": [{ "type": "cookie", "key": "falcon_access", "value": "010aab8e61529f90783666227ae26a4e11275e48cc2775328f9c0d7dceebd63a" }],
+      "destination": "/work/falcon-locked",
+      "permanent": false
+    },
+    {
+      "source": "/work/falcon/:path(.*)",
       "missing": [{ "type": "cookie", "key": "falcon_access", "value": "010aab8e61529f90783666227ae26a4e11275e48cc2775328f9c0d7dceebd63a" }],
       "destination": "/work/falcon-locked",
       "permanent": false
