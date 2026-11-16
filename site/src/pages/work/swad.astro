@@ -77,12 +77,11 @@ const results = [
   { metric: 'Same taste whoever cooks', kind: 'Guardrail', target: 'Pass', result: 'Pass', verdict: 'Met', note: 'Three staff changes, no change in taste.' },
 ];
 
-// the rupee ladder: where a full plate of momos sits, on one scale (₹40 to ₹180)
-const at = (v: number) => `${((v - 40) / 140) * 100}%`;
+// where a full plate of momos starts: one price per row, every bar measured from zero
 const ladder = [
-  { label: 'Swad, before', value: '₹50–60', from: 50, to: 60 },
-  { label: 'The market', value: '₹80', from: 80, to: 80 },
-  { label: 'Swad, now', value: '₹89–169', from: 89, to: 169, now: true },
+  { label: 'Swad, before', price: 50 },
+  { label: 'The market', price: 80 },
+  { label: 'Swad, now', price: 89, now: true },
 ];
 
 const differently = [
@@ -495,16 +494,17 @@ const pad = (n: number) => String(n).padStart(2, '0');
           </div>
         </div>
         <div class="money" style="grid-column: 8 / span 5;" data-slide="right">
-          <p class="mono">A full plate of momos</p>
-          <div class="ladder" role="img" aria-label="A full plate cost 50 to 60 rupees at Swad before, costs 80 rupees at the market, and costs 89 to 169 rupees at Swad now">
+          <p class="mono">Where a full plate of momos starts</p>
+          <div class="ladder" role="img" aria-label="A full plate started at 50 rupees at Swad before, costs 80 rupees at the market, and starts at 89 rupees at Swad now">
             {ladder.map(l => (
               <div class:list={['ladder__row', { 'is-now': l.now }]}>
-                <p class="ladder__name">{l.label}<b>{l.value}</b></p>
-                <div class="ladder__track"><span style={`left: ${at(l.from)}; width: calc(${at(l.to)} - ${at(l.from)});`}></span></div>
+                <p class="ladder__name">{l.label}</p>
+                <span class="ladder__bar" style={`width: ${l.price * 0.78}%;`}></span>
+                <b>₹{l.price}</b>
               </div>
             ))}
-            <div class="ladder__axis mono" aria-hidden="true">{[40, 80, 120, 160].map(v => <span style={`left: ${at(v)};`}>₹{v}</span>)}</div>
           </div>
+          <p class="small">Swad’s plates now run from ₹89 up to ₹169 for the non-veg Lucknow.</p>
           <p class="mono money__next">Average order value</p>
           <p class="money__aov"><span>₹67.50</span><i aria-hidden="true">→</i><b>₹139</b></p>
           <p class="small">December 2025 to June 2026</p>
@@ -784,17 +784,14 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   /* ---- 07: the rupee ladder ---- */
   .money { padding-top: calc(22 * var(--u)); border-top: 1px solid var(--ink); }
-  .ladder { position: relative; margin-top: calc(24 * var(--u)); padding-bottom: calc(34 * var(--u)); }
-  .ladder__row + .ladder__row { margin-top: calc(22 * var(--u)); }
-  .ladder__name { display: flex; justify-content: space-between; font-size: var(--fs-small); color: var(--muted); }
-  .ladder__name b { font-family: var(--serif); font-weight: 300; font-size: var(--fs-lead); color: var(--ink); }
-  .ladder__track { position: relative; height: calc(14 * var(--u)); min-height: 10px; margin-top: calc(8 * var(--u)); border-bottom: 1px solid var(--hair); }
-  .ladder__track span { position: absolute; bottom: -1px; height: 100%; min-width: 3px; background: var(--ink); }
-  .is-now .ladder__track span { background: var(--accent); }
-  .is-now .ladder__name b { color: var(--accent); }
-  .ladder__axis { position: absolute; left: 0; right: 0; bottom: 0; height: calc(22 * var(--u)); }
-  .ladder__axis span { position: absolute; bottom: 0; translate: -50% 0; letter-spacing: 0; }
-  .ladder__axis span:first-child { translate: 0 0; }
+  .ladder { margin: calc(20 * var(--u)) 0 calc(16 * var(--u)); }
+  .ladder__row { display: flex; align-items: center; flex-wrap: wrap; gap: 0 calc(14 * var(--u)); }
+  .ladder__row + .ladder__row { margin-top: calc(18 * var(--u)); }
+  .ladder__name { flex: 0 0 100%; margin-bottom: calc(6 * var(--u)); font-size: var(--fs-small); color: var(--muted); }
+  .ladder__bar { height: max(12px, calc(18 * var(--u))); background: var(--ink); }
+  .ladder__row b { font-family: var(--serif); font-weight: 300; font-size: max(20px, calc(27 * var(--u))); line-height: 1; }
+  .is-now .ladder__bar { background: var(--accent); }
+  .is-now b { color: var(--accent); }
   .money__next { margin-top: calc(44 * var(--u)); padding-top: calc(22 * var(--u)); border-top: 1px solid var(--hair); }
   .money__aov { display: flex; align-items: baseline; gap: calc(18 * var(--u)); margin: calc(12 * var(--u)) 0 calc(6 * var(--u)); font-family: var(--serif); font-weight: 300; }
   .money__aov span { font-size: var(--fs-h3); color: var(--muted); }
@@ -912,8 +909,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
     .score__row .small { grid-column: 1 / -1; }
 
     .money { padding-top: 16px; }
-    .ladder { padding-bottom: 28px; }
-    .ladder__axis { height: 18px; }
     .notes { row-gap: 36px; }
 
     .lessons li { display: block; padding: 22px 0 24px; }
