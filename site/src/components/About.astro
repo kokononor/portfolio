@@ -1,5 +1,5 @@
 ---
-// Section 3 — about. Figma: Line 32 (divider), Frame 78 (heading + tabs), Rectangle 42 (image box),
+// Section 3 — about. Figma: Frame 78 (heading + tabs), Rectangle 42 (image box),
 // Lines 24/26/27/28/29/30 and the education texts. The section starts at design y 4423.
 //
 // The timeline plays itself when the section is on screen (scripts/about-timeline.ts):
@@ -27,7 +27,6 @@ const IMAGES = [
 ---
 <section class="about fit" id="about" style="--fit-h: 1144" aria-labelledby="about-title">
   <h2 class="about__word t-display" id="about-title">parichay</h2>
-  <hr class="about__divider" />
 
   <div class="about__head">
     <p class="about__label">ABOUT ME</p>
@@ -108,15 +107,13 @@ const IMAGES = [
   .about { position: relative; height: calc(1144 * var(--u)); }
   .about > *, .panel > * { position: absolute; }
 
-  /* the section's word, like "kaam" and "sampark": red display type whose baseline rests on the divider, its
+  /* the section's word, like "kaam" and "sampark": red display type, its baseline where the divider used to run, its
      descenders hanging over it. It sits on the left, so the three words step across the page. */
   .about { margin-top: calc(150 * var(--u)); }
   .about__word { left: calc(104 * var(--u)); top: calc(82 * var(--u) - 0.872em); margin: 0; z-index: 2;
     font-size: calc(200 * var(--u)); line-height: 1; color: var(--accent); white-space: nowrap; }
 
-  /* Line 32: the divider across the page */
-  /* the divider sits 48 above the head row (it was 130, with nothing in between), the space above it is the gap after the last project */
-  .about__divider { left: calc(104 * var(--u)); top: calc(82 * var(--u)); width: calc(1520 * var(--u)); margin: 0; height: 0; border: 0; border-top: 1px solid var(--ink); }
+  /* (Line 32, the divider across the page, was removed: "parichay" stands on its own) */
 
   /* Frame 78: label on the left, tabs on the right, aligned on their bottoms */
   .about__head { left: calc(104 * var(--u)); top: calc(130 * var(--u)); width: calc(1520 * var(--u)); height: calc(101 * var(--u));
@@ -198,9 +195,9 @@ const IMAGES = [
   @keyframes panel-in { from { opacity: 0; } }
 
   /* full width on short, wide screens (see .fit): the image keeps to the left margin, the timeline to the right one,
-     and the divider, head and top rules stretch between */
-  .about__divider, .about__head { width: calc(1520 * var(--u) + 1520 * var(--dx)); }
-  .about__divider, .about__head, .about__media, .rule--top, .rule--top-accent { margin-left: calc(104 * var(--dx)); }
+     and the head and top rules stretch between */
+  .about__head { width: calc(1520 * var(--u) + 1520 * var(--dx)); }
+  .about__head, .about__media, .rule--top, .rule--top-accent { margin-left: calc(104 * var(--dx)); }
   .rule--top { width: calc(672 * var(--u) + 1520 * var(--dx)); }
   .rule--top-accent { width: calc(690 * var(--u) + 1520 * var(--dx)); }
   .rule--side, .rule--side-accent { margin-left: calc(1624 * var(--dx)); }
@@ -217,7 +214,6 @@ const IMAGES = [
     .media__credits:not(:has(.is-on)) { display: none; }
     .media__credit { color: var(--paper); pointer-events: auto; }
     .about__media { margin-bottom: 24px; }
-    .about__divider { width: 100%; }
     .about__head { height: auto; }
     .about__media { position: relative !important; left: auto; aspect-ratio: 729 / 744; height: auto; margin-bottom: 28px; }   /* no desktop offset; room for the credit */
     .rule { display: none; }

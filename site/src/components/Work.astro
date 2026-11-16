@@ -119,7 +119,8 @@ import diviniti from '../assets/home/diviniti-cover.png';
 
   /* ---- the case-study text block, shared by all three cards (517px column) ---- */
   .case__meta { display: flex; align-items: center; gap: calc(5 * var(--u)); font-size: max(12px, calc(16 * var(--u))); color: var(--muted); }
-  .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--muted); margin-left: calc(31 * var(--u)); }
+  /* the dot sits evenly between its words: the same space on both sides */
+  .dot { flex: none; width: 4px; height: 4px; border-radius: 50%; background: var(--muted); margin: 0 max(6px, calc(9 * var(--u))); }
   .dot--light { background: var(--paper); }
   .case__title { margin-top: calc(13 * var(--u)); font-size: max(30px, calc(61 * var(--u))); line-height: 1.15; color: var(--ink); }
   .case__title em { color: var(--accent); }
@@ -195,7 +196,7 @@ import diviniti from '../assets/home/diviniti-cover.png';
     .case__title { font-size: 34px; }
     .case__lede { font-size: 20px; }
     .case__facts { grid-template-columns: 1fr 1fr; width: auto; gap: 20px; }
-    .dot { margin-left: 24px; }
+    .dot { margin: 0 6px; }
     .falcon { flex-direction: column; align-items: stretch; gap: 32px; padding: 20px 20px 32px; }
     /* phones: the red becomes an even mat around the image (the card padding), flush with the card's edges */
     .falcon { overflow: hidden; }
