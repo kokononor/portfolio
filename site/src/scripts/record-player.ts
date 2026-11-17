@@ -84,10 +84,12 @@ if (btn) {
   addEventListener('pagehide', () => { try { if (playing) sessionStorage.setItem(AT, String(sound.time())); } catch {} });
   let at = 0;
   try { at = parseFloat(sessionStorage.getItem(AT) || '0') || 0; } catch {}
-  if (!stoppedBefore()) {
+  // (once the page has loaded: the song's download then doesn't hold up the page's own images and fonts)
+  const afterLoad = (f: () => void) => (document.readyState === 'complete' ? f() : addEventListener('load', f, { once: true }));
+  if (!stoppedBefore()) afterLoad(() => {
     sound.seek(at);
     sound.prime(false).then(ok => (ok ? setPlaying(true) : GESTURES.forEach(g => addEventListener(g, onFirstGesture, true))));
-  }
+  });
 }
 
 // ---------------- your own track ----------------

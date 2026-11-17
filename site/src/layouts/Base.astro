@@ -2,6 +2,9 @@
 import '../styles/global.css';
 import BackToTop from '../components/BackToTop.astro';
 import Welcome from '../components/Welcome.astro';
+// the two faces the first screen is set in, fetched alongside the CSS rather than after it (same files as the @font-face rules)
+import frauncesUrl from '@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2?url';
+import dmSansUrl from '@fontsource-variable/dm-sans/files/dm-sans-latin-opsz-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -23,6 +26,8 @@ const shareImage = new URL('/og.png', Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#f8f7f0" />
+    <link rel="preload" href={frauncesUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={dmSansUrl} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

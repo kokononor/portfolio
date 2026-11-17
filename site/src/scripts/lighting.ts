@@ -149,7 +149,7 @@ if (gl) {
 const SURFACES = '.swad__body, .letter, .footer__panel, .c-why, .hero__card, .note, .tabs';
 const DARK = '.nav__resume, .hero__resume, .swad-resume, .swad__visual, .about__media, .l-send, .footer__band, .red-block, .hero-band';
 const CONTAINERS = 'header, section, article, aside, footer, figure, .at, .swad-canvas > *, .hero > *, .work > *, .about > *, .contact > *';
-type Lit = { el: HTMLElement; x: number; y: number; w: number; h: number };
+type Lit = { el: HTMLElement; x: number; y: number; w: number; h: number; last: string[] };
 let lit: Lit[] = [];
 function collect() {
   const els = new Set<HTMLElement>([
@@ -159,7 +159,7 @@ function collect() {
   ]);
   document.querySelectorAll<HTMLElement>(SURFACES).forEach(e => e.classList.add('lit-surface'));
   document.querySelectorAll<HTMLElement>(DARK).forEach(e => e.classList.add('lit-dark'));
-  lit = [...els].map(el => { el.classList.add('lit'); return { el, x: 0, y: 0, w: 0, h: 0 }; });
+  lit = [...els].map(el => { el.classList.add('lit'); return { el, x: 0, y: 0, w: 0, h: 0, last: ['', '', '', '', ''] }; });
   measure();
 }
 function measure() {
@@ -170,6 +170,7 @@ function measure() {
   }
 }
 
+const PROPS = ['--sx', '--sy', '--p', '--llx', '--lly'];
 function applyToElements() {
   const lx = light.x * innerWidth, ly = light.y * innerHeight;
   const diag = Math.hypot(innerWidth, innerHeight);
@@ -181,20 +182,28 @@ function applyToElements() {
     // shadow: away from the light, scaled so a block exactly down-left of it casts the design's (-20, 20)
     const sx = (dx / dist) * Math.SQRT2 * LEN, sy = (dy / dist) * Math.SQRT2 * LEN;
     const p = Math.exp(-dist / (diag * 0.7)) * light.power;            // 1 at the light, fading across the page
-    const s = l.el.style;
-    s.setProperty('--sx', sx.toFixed(3));
-    s.setProperty('--sy', sy.toFixed(3));
-    s.setProperty('--p', p.toFixed(3));
-    s.setProperty('--llx', `${(lx - (l.x - scrollX)).toFixed(0)}px`);   // the light, in this element's coordinates
-    s.setProperty('--lly', `${(ly - (l.y - top)).toFixed(0)}px`);
+    // rounded to steps below what the eye can see (a 1/20 of the shadow's length, 1% of the glow, 2px of the
+    // light's position), and written only when a step changes: most frames then write nothing at all
+    const next = [
+      (Math.round(sx * 20) / 20).toFixed(2), (Math.round(sy * 20) / 20).toFixed(2), (Math.round(p * 100) / 100).toFixed(2),
+      `${Math.round((lx - (l.x - scrollX)) / 2) * 2}px`, `${Math.round((ly - (l.y - top)) / 2) * 2}px`,   // the light, in this element's coordinates
+    ];
+    for (let i = 0; i < 5; i++) if (next[i] !== l.last[i]) { l.el.style.setProperty(PROPS[i], next[i]); l.last[i] = next[i]; }
   }
 }
 
 // ---------------- the loop ----------------
-let start = performance.now(), lastMeasure = 0, running = true;
+let start = performance.now(), lastMeasure = 0, running = true, odd = false, busyUntil = 0;
+// something is moving the light or the page: draw every frame for a moment
+const busy = () => { busyUntil = performance.now() + 400; };
+addEventListener('scroll', busy, { passive: true });
+addEventListener('pointermove', busy, { passive: true });
 function frame(now: number) {
   if (!running) return;
   const t = (now - start) / 1000;
+  // when the light is only breathing (a cycle of half a minute), every other frame is enough: half the GPU work
+  odd = !odd;
+  if (odd && t > 2.4 && now > busyUntil && !tilt.on && !((window as any).__beat > 0)) { requestAnimationFrame(frame); return; }
   if (!reduce) {
     // entrance: drift up to the corner and brighten over ~2s
     const e = Math.min(t / 2.2, 1), ease = 1 - Math.pow(1 - e, 3);
@@ -207,7 +216,7 @@ function frame(now: number) {
     light.power = ease * (0.97 + 0.03 * Math.sin(t * 0.5))               // a very slow breath in the brightness
       + ((window as any).__beat || 0) * 0.1;                             // and, with the record on, a pulse on the beat
   }
-  if (now - lastMeasure > 1000) { measure(); lastMeasure = now; }     // catch layout shifts (fonts, images)
+  if (now - lastMeasure > 5000) { measure(); lastMeasure = now; }     // a slow safety net; layout changes re-measure at once (below)
   draw?.(t);
   applyToElements();
   requestAnimationFrame(frame);
@@ -217,6 +226,8 @@ document.addEventListener('visibilitychange', () => {
   if (running) requestAnimationFrame(frame);
 });
 addEventListener('resize', measure);
+// the page's height changes when fonts, images or sections settle: measure then, rather than every second
+new ResizeObserver(() => measure()).observe(document.body);
 
 // ---------------- tilt (phones and tablets) ----------------
 // gamma: left / right roll; beta: front / back pitch, about 45° when a phone is held to read
