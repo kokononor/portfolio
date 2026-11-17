@@ -4,6 +4,8 @@
 import { Image } from 'astro:assets';
 import diviniti from '../assets/home/diviniti-cover.png';
 import viLogo from '../assets/falcon/vi-logo.png';
+import swadLogo from '../assets/home/swad-logo.png';
+import divinitiLogo from '../assets/home/diviniti-logo.png';
 ---
 <section class="work" id="work" aria-labelledby="work-title">
 
@@ -44,6 +46,7 @@ import viLogo from '../assets/falcon/vi-logo.png';
   <div class="swad">
     <div class="swad__visual" style="view-transition-name: vt-swad" data-reveal aria-hidden="true"><img class="swad__plate" src="/work/swad/photos/hero.webp" alt="" loading="lazy" /></div>
     <article class="swad__body case" data-reveal>
+      <Image class="card-logo card-logo--swad" src={swadLogo} alt="House of Swad" widths={[120, 240]} sizes="120px" />
       <p class="case__meta">SWAD · MOMO CAFÉ <span class="dot"></span>2026</p>
       <h3 class="case__title t-serif">How a momo café that couldn’t make rent <em>found its regulars.</em></h3>
       <p class="case__lede">A quiet-lane café in Ranchi went from losing ₹10,000 a month to ₹20,000 in profit in six months.</p>
@@ -62,6 +65,7 @@ import viLogo from '../assets/falcon/vi-logo.png';
   <div class="slide">
   <article class="story case case--light" data-reveal>
     <div class="story__bg" style="view-transition-name: vt-diviniti"><Image src={diviniti} alt="" widths={[768, 1280, 1774]} sizes="(max-width: 900px) 100vw, 1520px" data-parallax="6" /></div>
+    <Image class="card-logo card-logo--diviniti" src={divinitiLogo} alt="Diviniti" widths={[120, 240]} sizes="120px" />
     <div class="story__body">
       <p class="case__meta">DIVINITI · E&#8209;COMMERCE <span class="dot dot--light"></span>2025–26</p>
       <h3 class="case__title t-serif">A year that took my design from <em>pixels to platforms.</em></h3>
@@ -165,6 +169,10 @@ import viLogo from '../assets/falcon/vi-logo.png';
       #0f0e0c;   /* the site's ink, written out: the living light warms var(--ink) on lit cards */
     box-shadow: var(--shadow-big); }
   .falcon__film { position: relative; min-width: 0; }
+  /* each client's mark, small, in its card's top-left corner (Diviniti's in paper, over its dark photograph) */
+  :global(.card-logo) { position: absolute; left: calc(36 * var(--u)); top: calc(30 * var(--u)); z-index: 2; height: auto; pointer-events: none; }
+  :global(.card-logo--swad) { width: max(64px, calc(96 * var(--u))); }
+  :global(.card-logo--diviniti) { width: max(70px, calc(104 * var(--u))); filter: brightness(0) invert(1); opacity: .92; }
   /* the client's mark, small, in the card's top-left corner */
   .falcon :global(.falcon__logo) { position: absolute; left: calc(30 * var(--u)); top: calc(26 * var(--u)); z-index: 2; width: max(30px, calc(46 * var(--u))); height: auto; pointer-events: none; }
   .falcon__video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: #0f0e0c;
@@ -224,6 +232,11 @@ import viLogo from '../assets/falcon/vi-logo.png';
     .falcon { grid-template-columns: 1fr; row-gap: 28px; padding: 12px 12px 32px !important; }
     .falcon .falcon__case { padding: 0 8px; }
     .falcon :global(.falcon__logo) { left: 18px; top: 16px; width: 32px; }
+    :global(.card-logo) { left: 18px; top: 16px; }
+    :global(.card-logo--swad) { width: 64px; }
+    :global(.card-logo--diviniti) { width: 70px; }
+    .swad__body { padding-top: 92px !important; }
+    .story { padding-top: 96px !important; }
     .swad { display: flex; flex-direction: column; gap: 20px; min-height: 0; }
     .falcon, .story { min-height: 0; }
     .swad__visual, .swad__body { position: relative; left: auto; width: auto; height: auto; }
