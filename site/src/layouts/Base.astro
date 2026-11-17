@@ -1,13 +1,15 @@
 ---
 import '../styles/global.css';
 import BackToTop from '../components/BackToTop.astro';
+import Welcome from '../components/Welcome.astro';
 
 interface Props {
   title: string;
   description: string;
   noindex?: boolean;   // keeps a page (the 404) out of search results
+  welcome?: boolean;   // the Welcome sheet before the page (components/Welcome.astro): the home page only
 }
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, welcome = false } = Astro.props;
 // every page's address with a trailing slash, so /work/falcon and /work/falcon/ count as one page
 const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : Astro.url.pathname + '/';
 const canonical = new URL(path, Astro.site);
@@ -70,8 +72,27 @@ const shareImage = new URL('/og.png', Astro.site);
       addEventListener('resize', setVw);
       new ResizeObserver(setVw).observe(de);
     </script>
+    <script is:inline define:vars={{ welcome }}>
+      // the Welcome sheet: decided here, before the first paint, so the page never flashes before it. Shown on the
+      // home page when it is the first page of the visit (any page counts as visited), with motion allowed; ?welcome
+      // replays it. Scripts that open the page (the greeting, the hero's entrance) wait for window.__welcomed.
+      (() => {
+        const de = document.documentElement;
+        let seen = false;
+        try { seen = !!sessionStorage.getItem('welcomed'); sessionStorage.setItem('welcomed', '1'); } catch (e) {}
+        const show = welcome && de.classList.contains('js-motion') && (!seen || /[?&]welcome\b/.test(location.search));
+        let done = () => {};
+        window.__welcomed = show ? new Promise(r => (done = r)) : Promise.resolve();
+        window.__welcomeDone = () => done();
+        if (!show) return;
+        de.classList.add('welcome');
+        // whatever happens to the scripts, the sheet never stays up
+        setTimeout(() => { done(); de.classList.remove('welcome'); }, 9000);
+      })();
+    </script>
   </head>
   <body>
+    {welcome && <Welcome />}
     <slot />
     <BackToTop />
     <script>

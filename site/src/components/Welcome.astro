@@ -1,0 +1,120 @@
+---
+// The Welcome sheet: a blank page laid over the site on the first visit of a session. "Welcome." inks in letter by
+// letter (the same ink as the hero's greeting: Fraunces' weight and softness axes), a red rule fills as the page
+// loads, then the word dries out and the sheet lifts away to reveal the hero, whose greeting inks in as it goes.
+// Whether it shows is decided before the first paint in layouts/Base.astro (html.welcome): only on the home page, once
+// per browser session, only with scripts and motion allowed. ?welcome replays it. A click, key, scroll or touch skips
+// ahead to the lift.
+---
+<div class="welcome-sheet" data-welcome aria-hidden="true">
+  <p class="welcome-sheet__word t-display" data-welcome-word>Welcome.</p>
+  <div class="welcome-sheet__foot" data-welcome-foot>
+    <span class="welcome-sheet__rule"><i data-welcome-rule></i></span>
+    <span class="welcome-sheet__count" data-welcome-count>000</span>
+  </div>
+</div>
+
+<script>
+  import { gsap } from 'gsap';
+
+  const w = window as any;
+  const de = document.documentElement;
+  const sheet = document.querySelector<HTMLElement>('[data-welcome]');
+
+  if (sheet && de.classList.contains('welcome')) {
+    const word = sheet.querySelector<HTMLElement>('[data-welcome-word]')!;
+    const foot = sheet.querySelector<HTMLElement>('[data-welcome-foot]')!;
+    const rule = sheet.querySelector<HTMLElement>('[data-welcome-rule]')!;
+    const count = sheet.querySelector<HTMLElement>('[data-welcome-count]')!;
+    const wait = (s: number) => new Promise<void>(r => setTimeout(r, s * 1000));
+
+    // one span per letter; the full stop takes the accent
+    const text = word.textContent || '';
+    word.textContent = '';
+    const chars = [...text].map(ch => {
+      const c = document.createElement('span');
+      c.className = ch === '.' ? 'welcome-sheet__ch welcome-sheet__ch--stop' : 'welcome-sheet__ch';
+      c.textContent = ch;
+      word.appendChild(c);
+      return c;
+    });
+
+    // the progress rule and its counter
+    const prog = { p: 0 };
+    const render = () => {
+      rule.style.transform = `scaleX(${prog.p})`;
+      count.textContent = String(Math.round(prog.p * 100)).padStart(3, '0');
+    };
+
+    // while the sheet is up the page underneath must not scroll; any attempt to scroll, a click or a key skips ahead
+    const SCROLL_KEYS = new Set([' ', 'PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End']);
+    const block = (e: Event) => {
+      if (e instanceof KeyboardEvent && !SCROLL_KEYS.has(e.key) && e.key !== 'Enter' && e.key !== 'Escape') return;
+      e.preventDefault();
+      e.stopPropagation();                         // before Lenis (listening on window) sees the wheel
+      leave();
+    };
+    const opts = { capture: true, passive: false } as const;
+    ['wheel', 'touchmove', 'keydown'].forEach(t => addEventListener(t, block, opts));
+    sheet.addEventListener('pointerdown', () => leave());
+
+    let intro: gsap.core.Timeline | undefined;
+    let left = false;
+
+    const end = () => {
+      ['wheel', 'touchmove', 'keydown'].forEach(t => removeEventListener(t, block, opts));
+      de.classList.remove('welcome');
+      sheet.remove();
+    };
+
+    // the word dries out (as the greeting's old words do), the rule completes, and the sheet lifts off the page
+    function leave() {
+      if (left) return;
+      left = true;
+      intro?.kill();
+      const out = gsap.timeline({ onComplete: end });
+      out.to(prog, { p: 1, duration: 0.35, ease: 'power2.inOut', onUpdate: render })
+        .to(chars, { '--w': 200, '--s': 60, opacity: 0, duration: 0.55, ease: 'power2.in', stagger: 0.03 }, 0.1)
+        .to(foot, { opacity: 0, duration: 0.4, ease: 'power1.in' }, '<')
+        .to(sheet, { yPercent: -100, duration: 0.9, ease: 'expo.inOut' }, '-=0.25')
+        .call(() => w.__welcomeDone?.(), [], '<+=0.3');      // the hero starts to ink in as the sheet clears it
+    }
+
+    // ink the word in once its face has arrived (or after a moment, whatever the network)
+    Promise.race([document.fonts.ready, wait(1.5)]).then(() => {
+      if (left) return;
+      gsap.set(word, { autoAlpha: 1 });
+      intro = gsap.timeline();
+      // a hairline blot appears…
+      intro.fromTo(chars, { '--w': 200, '--s': 60, opacity: 0 },
+        { '--w': 380, '--s': 20, opacity: 1, duration: 0.55, ease: 'power2.out', stagger: 0.075 })
+        // …and the ink settles into the crisp cut
+        .to(chars, { '--w': 300, '--s': 0, duration: 1.1, ease: 'expo.out', stagger: 0.075 }, 0.45)
+        .to(prog, { p: 0.9, duration: 1.6, ease: 'power2.out', onUpdate: render }, 0);
+
+      const loaded = new Promise<void>(r => (document.readyState === 'complete' ? r() : addEventListener('load', () => r(), { once: true })));
+      // leave once the word has settled and the page has loaded, but never keep anyone waiting long for slow images
+      Promise.all([intro.then(), Promise.race([loaded, wait(2.5)])]).then(() => wait(0.2)).then(leave);
+    });
+  }
+</script>
+
+<style>
+  .welcome-sheet { position: fixed; inset: 0; z-index: 100; display: none; flex-direction: column; align-items: center;
+    justify-content: center; gap: clamp(20px, 3vw, 36px); background: var(--page); color: var(--ink); cursor: default;
+    box-shadow: 0 30px 60px rgba(15, 14, 12, 0.12); will-change: transform; }
+  :global(html.welcome) .welcome-sheet { display: flex; }
+  /* the hero waits, unseen, for its entrance as the sheet lifts (scripts/motion.ts) */
+  :global(html.welcome [data-hero-in]) { opacity: 0; }
+
+  .welcome-sheet__word { font-size: clamp(72px, 14vw, 220px); line-height: 1; white-space: nowrap; visibility: hidden; }
+  .welcome-sheet__word :global(.welcome-sheet__ch) { --w: 300; --s: 0; display: inline-block; opacity: 0;
+    font-variation-settings: 'wght' var(--w), 'SOFT' var(--s), 'WONK' 1; }
+  .welcome-sheet__word :global(.welcome-sheet__ch--stop) { color: var(--accent); }
+
+  .welcome-sheet__foot { display: flex; align-items: center; gap: 14px; width: min(360px, 70vw); }
+  .welcome-sheet__rule { position: relative; flex: 1; height: 1px; background: var(--hair); overflow: hidden; }
+  .welcome-sheet__rule i { position: absolute; inset: 0; background: var(--accent); transform: scaleX(0); transform-origin: left; }
+  .welcome-sheet__count { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--muted);
+    font-variant-numeric: tabular-nums; }
+</style>

@@ -42,7 +42,7 @@ if (!reduce) {
   const ease = 'expo.out';
 
   // ---- hero entrance: the rest of the hero settles in (the greeting animates itself, see greeting.ts) ----
-  document.fonts.ready.then(() => {
+  Promise.all([document.fonts.ready, (window as any).__welcomed]).then(() => {    // after the Welcome sheet, if any
     gsap.from('[data-hero-in]', { opacity: 0, y: 24, duration: 1.2, stagger: 0.08, ease, delay: 0.6 });
   });
 

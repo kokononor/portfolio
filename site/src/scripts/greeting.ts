@@ -83,7 +83,8 @@ if (title) {
     show(layers[i], reduce ? 0 : 0.55);          // the new word starts inking as the old one finishes drying
   };
 
-  document.fonts.ready.then(() => {
+  // the first word inks in once its face has arrived and the Welcome sheet (if any) is lifting off
+  Promise.all([document.fonts.ready, (window as any).__welcomed]).then(() => {
     pin();
     hideAll();
     show(layers[0], 0.15);
