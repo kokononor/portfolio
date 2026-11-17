@@ -9,6 +9,7 @@ import { Image } from 'astro:assets';
 import nsut from '../assets/about/nsut-design.jpeg';
 import dps from '../assets/about/dps.jpg';
 import diviniti from '../assets/about/diviniti-desk.jpg';
+import divinitiStore from '../assets/about/diviniti-store.jpg';
 import vodafone from '../assets/about/vodafone-office.jpg';
 import travel from '../assets/about/hobby-travel.jpg';
 import cooking from '../assets/about/hobby-cooking.jpeg';
@@ -21,6 +22,7 @@ const IMAGES = [
   { id: 'nsut', src: nsut, pos: '50% 60%', alt: 'Classmates in festive Indian dress outside the Department of Design building at NSUT, New Delhi' },
   { id: 'dps', src: dps, alt: 'School days at DPS Ranchi: painting a giant open Bhagavad Gita with a peacock feather, two students in uniform beside the finished book on stage, and a gold trophy held up in the auditorium' },
   { id: 'diviniti', src: diviniti, pos: '0% 50%', alt: 'A laptop open in Photoshop on a desk at Diviniti India, with a branded paper bag beside it' },
+  { id: 'diviniti-store', src: divinitiStore, alt: 'The Portrait on Gold by Diviniti store front: gold-framed portraits on red walls either side of glass doors, with red velvet chairs inside' },
   { id: 'swad', url: '/work/swad/photos/hero.webp', alt: 'The Swad counter seen through its open shopfront' },
   { id: 'vodafone', src: vodafone, pos: '65% 50%', alt: 'A presenter at the screen in a meeting room at Vodafone Idea, with laptops open on the table' },
   { id: 'travel', src: travel, pos: '50% 30%', alt: 'Friends in life jackets and helmets floating in a river beside an orange raft, laughing and flashing a peace sign' },
@@ -73,7 +75,7 @@ const IMAGES = [
     </div>
     <!-- from LinkedIn, newest first; five entries, so this panel packs them closer -->
     <div class="panel panel--dense panel--five" role="tabpanel" id="panel-exp" aria-labelledby="tab-exp" hidden>
-      <div class="entry entry--1" data-img="diviniti"><h3 class="t-serif">Diviniti India</h3><p>Founder’s Office, Delhi</p><small>Aug 2026 – Present</small></div>
+      <div class="entry entry--1" data-img="diviniti-store"><h3 class="t-serif">Diviniti India</h3><p>Founder’s Office, Delhi</p><small>Aug 2026 – Present</small></div>
       <span class="tick tick--1" aria-hidden="true"></span>
       <div class="entry entry--2" data-img="swad"><h3 class="t-serif">Swad Café</h3><p>Product Manager</p><small>Jan 2026 – Present</small></div>
       <span class="tick tick--2" aria-hidden="true"></span>
