@@ -18,6 +18,7 @@ import viLogo from '../assets/falcon/vi-logo.png';
   <h1 class="hero__title t-display" data-greet="Namaste!|Hello!|Bonjour!">Namaste!</h1>
   <p class="hero__lede t-serif" data-hero-in>
     <span class="em">Zero to one product designer</span> with one simple rule, <span class="em">the user wins and the business doesn’t lose.</span>
+    <span class="hero__caps"><span>Enterprise UX<i aria-hidden="true">/</i></span><span>Product Strategy<i aria-hidden="true">/</i></span><span>E&#8209;commerce<i aria-hidden="true">/</i></span><span>AI Experiences<i aria-hidden="true">/</i></span><span>Systems Thinking</span></span>
   </p>
   <div class="hero__rule" data-hero-in></div>
 
@@ -89,6 +90,10 @@ import viLogo from '../assets/falcon/vi-logo.png';
   .hero__lede { left: calc(104 * var(--u)); top: calc(567.35 * var(--u)); width: calc(1005 * var(--u));
     font-size: max(20px, calc(31 * var(--u))); font-style: italic; line-height: 1.25; }
   .hero__lede .em { font-weight: 400; line-height: normal; }
+  /* what I work on: one quiet line of small print under the introduction */
+  .hero__caps { display: flex; flex-wrap: wrap; gap: 4px 0; margin-top: calc(8 * var(--u)); font-family: var(--mono); font-style: normal; font-weight: 400;
+    font-size: max(10px, calc(12 * var(--u))); line-height: 1.4; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .hero__caps i { font-style: normal; margin: 0 .9em; color: var(--accent); opacity: .7; }
   .hero__rule { left: calc(104 * var(--u)); top: calc(695.35 * var(--u)); width: calc(1005 * var(--u)); height: 0;
     border-top: 0.5px solid var(--ink); }
 
