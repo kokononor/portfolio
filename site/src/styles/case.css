@@ -79,6 +79,17 @@
   .c-quote { padding-left: 16px; }
   .c-body { font-size: 15px; }
   .c-img { aspect-ratio: 4 / 5; }
+  /* a placed picture keeps the proportions it was drawn at, so wide banners aren't cropped into portraits */
+  .at.c-img[style*="--h"] { aspect-ratio: var(--w) / var(--h); }
+  /* text columns sized in design px (inline max-widths) would shrink to a sliver on phones: they take the full column */
+  .c-body[style*="max-width"] { max-width: none !important; }
+  /* spacing written in design px (inline margins, stack gaps) is only a few px at phone scale: give it phone values */
+  .c-h2[style*="margin-bottom"] { margin-bottom: 12px !important; }
+  .c-h3[style*="margin-bottom"] { margin-bottom: 14px !important; }
+  .c-body[style*="margin-bottom"] { margin-bottom: 16px !important; }
+  .c-quote[style*="margin-top"] { margin-top: 22px !important; }
+  .canvas .stack { gap: calc(var(--gap, 0) * 0.6px) !important; }
   .c-vrule { display: none; }
-  .c-why, .c-why .c-body { width: auto; padding: 24px; }
+  .c-why { width: auto; padding: 24px; gap: 10px; }
+  .c-why .c-body { width: auto; padding: 0; }
 }

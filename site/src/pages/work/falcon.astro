@@ -540,13 +540,16 @@ const half = '(max-width: 900px) 100vw, 852px';
     .hero__card { position: relative; left: auto; top: auto; width: auto; height: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
     .hero__card > * { position: static; width: auto !important; }
     .hero__title { font-size: 40px; }   /* the same as the other case studies' titles */
-    .hero__summary { width: auto; max-width: none; }
+    .hero__summary { width: auto; max-width: none; margin-top: 10px; }
+    .hero__foot { gap: 6px; }
+    .hero__paper { display: inline-block; align-self: flex-start; margin-top: 6px; padding: 8px 0; }
     .hero__meta { flex-wrap: wrap; gap: 4px 16px; white-space: normal; }
     .hero__facts { position: static; width: auto; gap: 20px; }
     .hero__line { width: 100%; }
     .hero__facts dl { flex-direction: column; gap: 16px; }
     .hero__facts dl > div { width: auto; }
     .methods { grid-template-columns: 1fr; gap: 24px; }
+    .methods > div { gap: 8px; }
     .ia-copy { margin-top: 16px; width: auto; }
     .ia-sub { max-width: none; }
     .red-block { display: none; }
