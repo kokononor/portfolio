@@ -15,11 +15,11 @@ import cooking from '../assets/about/hobby-cooking.jpeg';
 import dogs from '../assets/about/hobby-dogs.jpeg';
 import painting from '../assets/about/hobby-painting.jpeg';
 
-// photos for each entry; credits are required by the CC BY-SA licences of the two Wikimedia photos
+// photos for each entry; a photo under a licence that asks for attribution (e.g. Wikimedia's CC BY-SA) gets
+// credit: '…' and href: '…', shown under the picture while it is on
 const IMAGES = [
   { id: 'nsut', src: nsut, pos: '50% 60%', alt: 'Classmates in festive Indian dress outside the Department of Design building at NSUT, New Delhi' },
-  { id: 'dps', src: dps, alt: 'The senior wing building of Delhi Public School, Ranchi',
-    credit: 'Photo: FaizanAhmad21, CC BY-SA 3.0, via Wikimedia Commons', href: 'https://commons.wikimedia.org/wiki/File:Delhi_Public_School,_Ranchi.JPG' },
+  { id: 'dps', src: dps, alt: 'School days at DPS Ranchi: painting a giant open Bhagavad Gita with a peacock feather, two students in uniform beside the finished book on stage, and a gold trophy held up in the auditorium' },
   { id: 'diviniti', src: diviniti, pos: '0% 50%', alt: 'A laptop open in Photoshop on a desk at Diviniti India, with a branded paper bag beside it' },
   { id: 'swad', url: '/work/swad/photos/hero.webp', alt: 'The Swad counter seen through its open shopfront' },
   { id: 'vodafone', src: vodafone, pos: '65% 50%', alt: 'A presenter at the screen in a meeting room at Vodafone Idea, with laptops open on the table' },
@@ -71,8 +71,8 @@ const IMAGES = [
       <span class="tick tick--2" aria-hidden="true"></span>
       <div class="entry entry--note"><small>CERTIFICATIONS</small><p>Can’t remember any good ones, I prefer field learning</p></div>
     </div>
-    <!-- from LinkedIn, newest first; four entries, so this panel packs them closer -->
-    <div class="panel panel--dense" role="tabpanel" id="panel-exp" aria-labelledby="tab-exp" hidden>
+    <!-- from LinkedIn, newest first; five entries, so this panel packs them closer -->
+    <div class="panel panel--dense panel--five" role="tabpanel" id="panel-exp" aria-labelledby="tab-exp" hidden>
       <div class="entry entry--1" data-img="diviniti"><h3 class="t-serif">Diviniti India</h3><p>Founder’s Office, Delhi</p><small>Aug 2026 – Present</small></div>
       <span class="tick tick--1" aria-hidden="true"></span>
       <div class="entry entry--2" data-img="swad"><h3 class="t-serif">Swad Café</h3><p>Product Manager</p><small>Jan 2026 – Present</small></div>
@@ -80,6 +80,8 @@ const IMAGES = [
       <div class="entry entry--3" data-img="vodafone"><h3 class="t-serif">Vodafone Idea</h3><p>Product Design Intern, Hyderabad</p><small>Jun – Jul 2026</small></div>
       <span class="tick tick--3" aria-hidden="true"></span>
       <div class="entry entry--4" data-img="diviniti"><h3 class="t-serif">Diviniti India</h3><p>Product Design Intern</p><small>May 2025 – May 2026</small></div>
+      <span class="tick tick--4" aria-hidden="true"></span>
+      <div class="entry entry--5"><h3 class="t-serif">IIIT Ranchi</h3><p>Product Design Intern</p><small>Summer 2024</small></div>
     </div>
     <!-- four hobbies, so this panel packs them closer too -->
     <div class="panel panel--dense" role="tabpanel" id="panel-hob" aria-labelledby="tab-hob" hidden>
@@ -199,6 +201,18 @@ const IMAGES = [
   .panel--dense .tick--1 { top: calc(443 * var(--u)); }
   .panel--dense .tick--2 { top: calc(615 * var(--u)); }
   .panel--dense .tick--3 { top: calc(787 * var(--u)); }
+  /* five entries (Experience): closer still, so the last one ends before the side rule does (1014) */
+  .panel--five .entry--2 { top: calc(460 * var(--u)); }
+  .panel--five .entry--3 { top: calc(605 * var(--u)); }
+  .panel--five .entry--4 { top: calc(750 * var(--u)); }
+  .panel--five .entry--5 { top: calc(895 * var(--u)); }
+  /* the type has minimum sizes, so on short windows an entry is taller in design px: the +10px keeps each tick in
+     the gap below its entry at every size */
+  .panel--five .tick { height: calc(10 * var(--u)); }
+  .panel--five .tick--1 { top: calc(428 * var(--u) + 10px); }
+  .panel--five .tick--2 { top: calc(573 * var(--u) + 10px); }
+  .panel--five .tick--3 { top: calc(718 * var(--u) + 10px); }
+  .panel--five .tick--4 { top: calc(863 * var(--u) + 10px); }
   .panel[hidden] { display: none; }
   .panel:not([hidden]) { animation: panel-in .8s ease both; }
   @keyframes panel-in { from { opacity: 0; } }
