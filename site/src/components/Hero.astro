@@ -37,7 +37,7 @@ import viLogo from '../assets/falcon/vi-logo.png';
 
   <figure class="hero__portrait" data-hero-in>
     <div class="hero__photo" data-halftone>
-      <Image src={portrait} alt="Suyash as a child, running down a street in Ranchi" widths={[386, 772, 1158]} sizes="(max-width: 900px) 90vw, 386px" loading="eager" />
+      <Image src={portrait} alt="Suyash as a child, running down a street in Ranchi" widths={[433, 866, 1299]} sizes="(max-width: 900px) 90vw, 433px" loading="eager" />
       <span class="hero__signature" style={`--mask: url('${signatureMask.src}')`} aria-hidden="true"></span>
     </div>
     <figcaption class="hero__caption">
@@ -92,7 +92,7 @@ import viLogo from '../assets/falcon/vi-logo.png';
   .fact dd small { display: block; white-space: nowrap; margin-top: calc(4 * var(--u)); font-size: max(12px, calc(16 * var(--u))); font-style: italic; line-height: normal; }
 
   /* ---- record player (362:1382): at the end of the facts row, its right edge on the rule's end ---- */
-  .hero__player { left: calc(912 * var(--u)); top: calc(744 * var(--u)); width: calc(204 * var(--u)); }
+  .hero__player { left: calc(835 * var(--u)); top: calc(744 * var(--u)); width: calc(204 * var(--u)); }   /* sits just after the facts row, not out at the rule's end */
   /* the music label under it: what's on, and whether it's playing */
   .player-note { margin: calc(14 * var(--u)) 0 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; white-space: nowrap; text-align: right; }
   .player-note__state { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: max(12px, calc(13 * var(--u)));
@@ -112,14 +112,15 @@ import viLogo from '../assets/falcon/vi-logo.png';
   @media (prefers-reduced-motion: reduce) { .eq i { animation: none !important; height: 60%; } }
 
   /* ---- portrait, signature, caption (362:33–362:36, 362:1715) ---- */
-  .hero__portrait { left: calc(1238 * var(--u)); top: calc(194 * var(--u)); width: calc(386 * var(--u)); position: absolute; }
+  .hero__portrait { left: calc(1191 * var(--u)); top: calc(194 * var(--u)); width: calc(433 * var(--u));   /* 12% wider than the 386 design; the right edge stays on the margin (1624) */
+    position: absolute; }
   .hero__photo { position: relative; width: 100%; height: calc(540 * var(--u)); }
   .hero__photo :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: bottom; }
   /* the signature: ink through the signature mask, over the bottom-right of the photo */
-  .hero__signature { position: absolute; left: calc(285 * var(--u)); top: calc(470 * var(--u)); width: calc(192 * var(--u)); height: calc(115 * var(--u));
+  .hero__signature { position: absolute; left: calc(332 * var(--u)); top: calc(470 * var(--u)); width: calc(192 * var(--u)); height: calc(115 * var(--u));
     background: var(--ink); -webkit-mask: var(--mask) no-repeat calc(-18 * var(--u)) calc(-6 * var(--u)) / calc(204 * var(--u)) calc(136 * var(--u));
     mask: var(--mask) no-repeat calc(-18 * var(--u)) calc(-6 * var(--u)) / calc(204 * var(--u)) calc(136 * var(--u)); }
-  .hero__caption { margin-top: calc(26 * var(--u)); font-size: max(14px, calc(16 * var(--u))); font-weight: 400; line-height: normal; }
+  .hero__caption { margin-top: calc(26 * var(--u)); font-size: max(14px, calc(16 * var(--u))); font-weight: 400; line-height: 1.55; }
   /* the tags follow the caption (so a longer caption on small screens pushes them down instead of overlapping) */
   .hero__tags { position: static; margin-top: calc(33 * var(--u)); display: flex; gap: calc(8 * var(--u)); font-size: max(12px, calc(16 * var(--u))); font-style: italic; }
   .hero__tags span { white-space: nowrap; }
@@ -130,7 +131,8 @@ import viLogo from '../assets/falcon/vi-logo.png';
   .hero__title, .hero__lede, .hero__rule, .hero__facts { margin-left: calc(104 * var(--dx)); }
   .hero__rule { width: calc(1005 * var(--u) + 1520 * var(--dx)); }
   .hero__lede { width: calc(1005 * var(--u) + 760 * var(--dx)); }   /* on wide, short screens the intro runs a little wider into the middle */
-  .hero__player, .hero__portrait { margin-left: calc(1624 * var(--dx)); }
+  .hero__portrait { margin-left: calc(1624 * var(--dx)); }
+  .hero__player { margin-left: calc(104 * var(--dx)); }   /* the turntable travels with the facts row, not the right margin */
 
   /* ---- phones and small tablets: stacked ---- */
   @media (max-width: 900px) {
