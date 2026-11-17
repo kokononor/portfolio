@@ -188,3 +188,29 @@ html.is-reinking::view-transition-new(root) { animation: none; }
 .music-chip:hover .music-chip__x { opacity: 1; }
 @keyframes chip-eq { from { height: 25%; } to { height: 100%; } }
 @media (prefers-reduced-motion: reduce) { .music-chip__eq i { animation: none !important; height: 60%; } }
+
+/* ---- the cursor (scripts/cursor.ts): a registration mark with the red at its centre, and a floating label ---- */
+html.has-cursor, html.has-cursor * { cursor: none !important; }
+html.has-cursor :is(input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]), textarea, [contenteditable="true"]) { cursor: text !important; }
+.cursor { position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0; transition: opacity .3s ease; }
+.cursor.is-on { opacity: 1; }
+.cursor.is-text { opacity: 0; }
+.cursor > span { position: absolute; left: 0; top: 0; will-change: transform; }
+.cursor__dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: var(--accent); }
+.cursor__mark { width: 40px; height: 40px; margin: -20px 0 0 -20px; }
+.cursor__mark svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke;
+  transform: scale(.8); transition: transform .45s cubic-bezier(.2, .7, .2, 1), stroke .3s ease; }
+.cursor__mark svg path { stroke-opacity: .7; }
+/* over something to click: the mark opens and turns, in the red */
+.cursor.is-link .cursor__mark svg { transform: scale(1.25) rotate(45deg); stroke: var(--accent); }
+.cursor.is-down .cursor__mark svg { transform: scale(.65) rotate(45deg); }
+/* the label: a small ink pill in the mono type, beside and below the pointer */
+.cursor__label { display: flex; align-items: center; gap: 7px; margin: 22px 0 0 18px; padding: 6px 11px 6px 9px; border-radius: 99px;
+  background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(15, 14, 12, .22); }
+.cursor__label i { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.cursor__label b { font-weight: 400; display: inline-block; transform: scale(.4); transform-origin: left center; opacity: 0; transition: transform .35s cubic-bezier(.2, .7, .2, 1), opacity .2s ease; }
+.cursor__label { opacity: 0; transition: opacity .2s ease; }
+.cursor.has-label .cursor__label { opacity: 1; }
+.cursor.has-label .cursor__label b { transform: none; opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .cursor__mark svg, .cursor__label, .cursor__label b { transition: none; } }

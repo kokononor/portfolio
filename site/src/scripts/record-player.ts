@@ -102,6 +102,8 @@ function fileSound(url: string) {
   // published as --beat (0 to 1) on the page, which the light (scripts/lighting.ts) and the greeting (Hero.astro)
   // lean on. The song is only routed through the analyser if the browser lets it run, so it can never go silent.
   let analyser: AnalyserNode | null = null, wired = false, level = 0, shown = -1;
+  // the beat is only read inside the hero: set it there, so each change restyles the hero, not the whole page
+  const beatHost = document.querySelector<HTMLElement>('.hero') ?? document.documentElement;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const listen = () => {
     if (wired || still || !('AudioContext' in window)) return;
@@ -120,7 +122,7 @@ function fileSound(url: string) {
         if (!audio.paused) { node.getByteFrequencyData(bins); v = (bins[1] + bins[2] + bins[3] + bins[4]) / 4 / 255; }
         level += (v * v - level) * 0.25;                       // squared: quiet passages rest, the beat stands out
         const next = Math.round(level * 50) / 50;
-        if (next !== shown) { shown = next; (window as any).__beat = next; document.documentElement.style.setProperty('--beat', String(next)); }
+        if (next !== shown) { shown = next; (window as any).__beat = next; beatHost.style.setProperty('--beat', String(next)); }
       });
     }).catch(() => { wired = false; });
   };

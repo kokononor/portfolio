@@ -54,6 +54,21 @@ import viLogo from '../assets/falcon/vi-logo.png';
 
 <style>
   .hero { position: relative; height: calc(1074 * var(--u)); }
+
+  /* ---- the bass: with the record on, --beat (0 to 1, the song's low end, scripts/record-player.ts) moves what sits
+     around the player. Strongest beside it, fading outwards, so each hit ripples left from the record. Individual
+     scale / translate properties, so the entrance animations (transform) are never overridden. ---- */
+  .hero__facts .fact { translate: 0 calc(var(--beat, 0) * var(--lift) * -1px); transition: translate .12s ease-out; }
+  .hero__facts .fact--based { --lift: 5; }
+  .hero__facts .fact--previous { --lift: 3.5; }
+  .hero__facts .fact--current { --lift: 2.2; }
+  .hero__facts :global(.fact__logo), .hero__facts .fact__pin { scale: calc(1 + var(--beat, 0) * .28); transition: scale .12s ease-out; }
+  /* (the rule's own transforms belong to its entrance animation, so it thickens with a shadow instead) */
+  .hero__rule { border-color: color-mix(in oklab, var(--ink), var(--accent) calc(var(--beat, 0) * 100%));
+    box-shadow: 0 0 0 calc(var(--beat, 0) * .9px) color-mix(in oklab, var(--ink), var(--accent) calc(var(--beat, 0) * 100%));
+    transition: border-color .12s ease-out, box-shadow .12s ease-out; }
+  .hero__player :global(.player) { scale: calc(1 + var(--beat, 0) * .025); transition: scale .1s ease-out; }
+  .player-note__state { color: color-mix(in oklab, currentColor, var(--accent) calc(var(--beat, 0) * 90%)); }
   .hero > * { position: absolute; }
 
 
