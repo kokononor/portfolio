@@ -44,7 +44,17 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
   <!-- Swad: a dark visual card beside a white text card -->
   <div class="slide">
   <div class="swad">
-    <div class="swad__visual" style="view-transition-name: vt-swad" data-reveal aria-hidden="true"><img class="swad__plate" src="/work/swad/photos/hero.webp" alt="" loading="lazy" /><Image class="swad__logo" src={swadLogo} alt="" widths={[320, 640]} sizes="(max-width: 900px) 160px, 260px" /></div>
+    <!-- before / after: the café as it is (with its sign) underneath, the stall as it was revealed from the left up to the
+         divider. A range input over the photo moves it: drag anywhere, or use the arrow keys. -->
+    <div class="swad__visual" style="view-transition-name: vt-swad" data-reveal data-compare>
+      <img class="swad__plate" src="/work/swad/photos/hero.webp" alt="Swad today: a clean counter with menus, pendant lights and the House of Swad sign" loading="lazy" />
+      <Image class="swad__logo" src={swadLogo} alt="" widths={[320, 640]} sizes="(max-width: 900px) 160px, 260px" />
+      <div class="swad__before"><img src="/work/swad/photos/before.webp" alt="Swad before: a night-time stall behind a wire grille, with a chalkboard menu" loading="lazy" /></div>
+      <span class="swad__divider" aria-hidden="true"><i></i></span>
+      <span class="swad__tag swad__tag--before" aria-hidden="true">Before</span>
+      <span class="swad__tag swad__tag--after" aria-hidden="true">After</span>
+      <input class="swad__range" type="range" min="0" max="100" value="50" step="0.5" aria-label="Compare Swad before and after the redesign" />
+    </div>
     <article class="swad__body case" data-reveal>
       <p class="case__meta">SWAD · MOMO CAFÉ <span class="dot"></span>2026</p>
       <h3 class="case__title t-serif">How a momo café that couldn’t make rent <em>found its regulars.</em></h3>
@@ -92,13 +102,33 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
     }, { threshold: 0.25 }).observe(film);
   }
 
+  // Swad's before / after: the range sets where the divider is; it nudges once when it first comes into view
+  document.querySelectorAll<HTMLElement>('[data-compare]').forEach(box => {
+    const range = box.querySelector<HTMLInputElement>('.swad__range')!;
+    const set = (v: number) => box.style.setProperty('--cut', `${v}%`);
+    range.addEventListener('input', () => { box.classList.add('is-used'); set(+range.value); });
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    new IntersectionObserver(([e], io) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      const t0 = performance.now();
+      const nudge = (now: number) => {
+        if (box.classList.contains('is-used')) return;
+        const k = Math.min((now - t0) / 1400, 1);
+        set(50 + Math.sin(k * Math.PI * 2) * 12 * (1 - k));   // out to the right, back past the middle, settle
+        if (k < 1) requestAnimationFrame(nudge);
+      };
+      setTimeout(() => requestAnimationFrame(nudge), 500);
+    }, { threshold: 0.6 }).observe(box);
+  });
+
   // a click anywhere on a project card opens its case study, unless it was on another link or selected some text;
   // ctrl / ⌘ click opens it in a new tab, as a link would
   document.querySelectorAll<HTMLElement>('.falcon, .swad, .story').forEach(card => {
     const link = card.querySelector<HTMLAnchorElement>('.case__more');
     if (!link) return;
     card.addEventListener('click', e => {
-      if ((e.target as Element).closest('a') || getSelection()?.toString()) return;
+      if ((e.target as Element).closest('a, .swad__range') || getSelection()?.toString()) return;   // (dragging the before / after is not a click)
       if (e.metaKey || e.ctrlKey) window.open(link.href, '_blank');
       else link.click();
     });
@@ -196,7 +226,26 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
   /* ---- Swad (362:102 dark card, 362:103 plate, 362:104 text card) ---- */
   .swad { width: calc(1520 * var(--u)); min-height: calc(986 * var(--u)); display: grid; grid-template-columns: 1fr 1fr; column-gap: 1.72%; }
   .swad__visual, .swad__body { position: relative; border-radius: var(--radius); }
-  .swad__visual { background: var(--ink); box-shadow: var(--shadow-big); overflow: hidden; }
+  .swad__visual { background: var(--ink); box-shadow: var(--shadow-big); overflow: hidden; --cut: 50%; }
+  /* before / after */
+  .swad__before { position: absolute; inset: 0; z-index: 2; clip-path: inset(0 calc(100% - var(--cut)) 0 0); }
+  .swad__before img { width: 100%; height: 100%; object-fit: cover; object-position: 55% 50%; display: block; }
+  .swad__divider { position: absolute; top: 0; bottom: 0; left: var(--cut); z-index: 3; width: 0; border-left: 1.5px solid rgba(252, 251, 248, .9); pointer-events: none;
+    box-shadow: 0 0 12px rgba(0, 0, 0, .35); }
+  .swad__divider i { position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; translate: -50% -50%; border-radius: 50%; background: var(--paper);
+    box-shadow: 0 6px 18px rgba(15, 14, 12, .3); transition: scale .25s cubic-bezier(.2, .7, .2, 1); }
+  /* the grip: two small chevrons, pointing apart */
+  .swad__divider i::before, .swad__divider i::after { content: ''; position: absolute; top: 50%; width: 7px; height: 7px; border: solid var(--ink); border-width: 1.5px 1.5px 0 0; }
+  .swad__divider i::before { left: 12px; transform: translateY(-50%) rotate(-135deg); }
+  .swad__divider i::after { right: 12px; transform: translateY(-50%) rotate(45deg); }
+  .swad__visual:hover .swad__divider i, .swad__range:focus-visible ~ .swad__divider i { scale: 1.08; }
+  .swad__tag { position: absolute; bottom: calc(22 * var(--u)); z-index: 3; padding: 5px 10px; border-radius: 99px; background: rgba(15, 14, 12, .62); color: var(--paper);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; pointer-events: none; }
+  .swad__tag--before { left: calc(22 * var(--u)); }
+  .swad__tag--after { right: calc(22 * var(--u)); }
+  .swad__range { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; -webkit-appearance: none; appearance: none; touch-action: pan-y; }
+  .swad__range:focus-visible { opacity: 0; }
+  .swad__visual:has(.swad__range:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
   .swad__plate { position: absolute; inset: 0; width: 100%; height: 100%;   /* the photo fills the whole panel */
     border-radius: inherit; background: var(--grad-swad); object-fit: cover; }
   .swad__body { background: var(--white); filter: var(--drop-big, drop-shadow(-20px 20px 13px rgba(0, 0, 0, 0.08)));

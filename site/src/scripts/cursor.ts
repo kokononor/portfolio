@@ -10,6 +10,7 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // the site's own elements and what a click on them does
 const RULES: [string, string | ((el: Element) => string)][] = [
+  ['.swad__range', 'Drag'],
   ['.story', 'Read story'],
   ['.falcon, .swad, .next', 'Open project'],
   ['.player', el => (el.getAttribute('aria-pressed') === 'true' ? 'Pause' : 'Play')],
