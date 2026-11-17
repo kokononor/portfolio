@@ -9,7 +9,7 @@ import Footer from '../../components/Footer.astro';
 import { Image } from 'astro:assets';
 import viLogo from '../../assets/falcon/vi-logo.png';
 ---
-<Base title="Falcon · Protected case study · Suyash" description="The Falcon case study is password protected." noindex>
+<Base title="Falcon · Under NDA · Suyash" description="The Falcon case study comes under a Vodafone Idea NDA. Only authorised people can see it." noindex>
   <Nav solid />
   <main class="lock">
     <div class="lock__card" data-reveal>
@@ -22,15 +22,15 @@ import viLogo from '../../assets/falcon/vi-logo.png';
     </div>
 
     <div class="lock__door" data-reveal>
-      <p class="lock__label">Protected case study</p>
-      <p class="lock__line t-serif">This one opens with a password.</p>
+      <p class="lock__label">Under NDA</p>
+      <p class="lock__line t-serif">This project comes under a Vodafone Idea NDA. Only authorised people can see it.</p>
       <form class="lock__form" data-lock novalidate>
         <label class="sr-only" for="lock-pw">Password</label>
         <input id="lock-pw" name="password" type="password" placeholder="Password" autocomplete="off" autocapitalize="none" spellcheck="false" required />
         <button type="submit">Open <span aria-hidden="true">→</span></button>
       </form>
       <p class="lock__error" data-lock-error role="alert" hidden>That password didn’t open it. Try again.</p>
-      <p class="lock__ask">Don’t have it? <a href="/#contact">Ask me for it</a>, and I’ll send it over.</p>
+      <p class="lock__ask">Authorised but don’t have the password? <a href="/#contact">Ask me for it</a>.</p>
       <dl class="lock__facts">
         <div><dt>Outcome</dt><dd>Evidence for an outage correlated in under 10 seconds, down from a minute</dd></div>
         <div><dt>Users</dt><dd>NOC engineers, network engineers, incident managers, IP leadership</dd></div>
