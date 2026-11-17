@@ -44,9 +44,8 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
   <!-- Swad: a dark visual card beside a white text card -->
   <div class="slide">
   <div class="swad">
-    <div class="swad__visual" style="view-transition-name: vt-swad" data-reveal aria-hidden="true"><img class="swad__plate" src="/work/swad/photos/hero.webp" alt="" loading="lazy" /></div>
+    <div class="swad__visual" style="view-transition-name: vt-swad" data-reveal aria-hidden="true"><img class="swad__plate" src="/work/swad/photos/hero.webp" alt="" loading="lazy" /><Image class="swad__logo" src={swadLogo} alt="" widths={[320, 640]} sizes="(max-width: 900px) 160px, 260px" /></div>
     <article class="swad__body case" data-reveal>
-      <Image class="card-logo card-logo--swad" src={swadLogo} alt="House of Swad" widths={[120, 240]} sizes="120px" />
       <p class="case__meta">SWAD · MOMO CAFÉ <span class="dot"></span>2026</p>
       <h3 class="case__title t-serif">How a momo café that couldn’t make rent <em>found its regulars.</em></h3>
       <p class="case__lede">A quiet-lane café in Ranchi went from losing ₹10,000 a month to ₹20,000 in profit in six months.</p>
@@ -171,7 +170,9 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
   .falcon__film { position: relative; min-width: 0; }
   /* each client's mark, small, in its card's top-left corner (Diviniti's in paper, over its dark photograph) */
   :global(.card-logo) { position: absolute; left: calc(36 * var(--u)); top: calc(30 * var(--u)); z-index: 2; height: auto; pointer-events: none; }
-  :global(.card-logo--swad) { width: max(64px, calc(96 * var(--u))); }
+  /* Swad's mark sits over the café itself, larger, as on its own covers: centred over the light wall at the top */
+  .swad__visual :global(.swad__logo) { position: absolute; left: 50%; top: 7%; z-index: 1; width: max(140px, calc(250 * var(--u))); height: auto; translate: -50% 0;
+    filter: drop-shadow(0 2px 10px rgba(255, 248, 235, .55)); pointer-events: none; }
   :global(.card-logo--diviniti) { width: max(70px, calc(104 * var(--u))); filter: brightness(0) invert(1); opacity: .92; }
   /* the client's mark, small, in the card's top-left corner */
   .falcon :global(.falcon__logo) { position: absolute; left: calc(30 * var(--u)); top: calc(26 * var(--u)); z-index: 2; width: max(30px, calc(46 * var(--u))); height: auto; pointer-events: none; }
@@ -233,9 +234,8 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
     .falcon .falcon__case { padding: 0 8px; }
     .falcon :global(.falcon__logo) { left: 18px; top: 16px; width: 32px; }
     :global(.card-logo) { left: 18px; top: 16px; }
-    :global(.card-logo--swad) { width: 64px; }
+    .swad__visual :global(.swad__logo) { width: 150px; top: 6%; }
     :global(.card-logo--diviniti) { width: 70px; }
-    .swad__body { padding-top: 92px !important; }
     .story { padding-top: 96px !important; }
     .swad { display: flex; flex-direction: column; gap: 20px; min-height: 0; }
     .falcon, .story { min-height: 0; }
