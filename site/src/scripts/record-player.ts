@@ -79,14 +79,12 @@ if (btn) {
     setPlaying(true);
   };
   const cancelWait = () => GESTURES.forEach(g => removeEventListener(g, onFirstGesture, true));
-  // sound is opt-in: the record only plays when the visitor presses it
-  void stoppedBefore;
-  // …but a record they left playing on another page of the site is still playing when they come back: it resumes
-  // from where the song had got to (at once where the browser allows it, otherwise on their first click or key)
+  // the record plays as the site opens (or on the first click, tap or key press, where the browser holds sound back),
+  // unless the visitor stopped it earlier in this visit; a song left playing on another page resumes where it was
   addEventListener('pagehide', () => { try { if (playing) sessionStorage.setItem(AT, String(sound.time())); } catch {} });
-  let wasOn = false, at = 0;
-  try { wasOn = sessionStorage.getItem(ON) === '1'; at = parseFloat(sessionStorage.getItem(AT) || '0') || 0; } catch {}
-  if (wasOn) {
+  let at = 0;
+  try { at = parseFloat(sessionStorage.getItem(AT) || '0') || 0; } catch {}
+  if (!stoppedBefore()) {
     sound.seek(at);
     sound.prime(false).then(ok => (ok ? setPlaying(true) : GESTURES.forEach(g => addEventListener(g, onFirstGesture, true))));
   }

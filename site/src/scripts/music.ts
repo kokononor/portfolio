@@ -1,6 +1,6 @@
 // The record keeps playing between pages. The player itself lives in the home page's hero (scripts/record-player.ts);
 // on every other page, if the visitor left the record on, the song picks up from where it had got to and a small
-// "now playing" chip appears in the corner so it can be stopped. Nothing plays unless they started it themselves.
+// "now playing" chip appears in the corner so it can be stopped.
 import { TRACK_URL, VOLUME, ON, AT } from './record-player';
 
 const get = (k: string) => { try { return sessionStorage.getItem(k); } catch { return null; } };
