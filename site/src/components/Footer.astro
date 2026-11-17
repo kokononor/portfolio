@@ -91,15 +91,17 @@
   .footer__ink { position: absolute; right: 0; bottom: calc(100% + 10px); white-space: nowrap; font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
   .footer__dots { position: absolute; left: calc(64 * var(--u) + 464 * var(--u) - 96 * var(--u)); bottom: calc(61 * var(--u)); width: calc(96 * var(--u)); height: calc(24 * var(--u)); }
 
+  /* ---- phones: the links (site first, then elsewhere) over the colour bar, then the dark "Thanks for Reading" ---- */
   @media (max-width: 900px) {
-    .footer { height: auto; margin-top: 72px; display: flex; flex-direction: column-reverse; }
-    .footer__band { position: relative; left: auto; width: 100%; padding: 64px 20px; }
+    .footer { height: auto; margin-top: 88px; display: flex; flex-direction: column-reverse; }
+    .footer__band { position: relative; left: auto; width: 100%; padding: 64px 20px 72px; }
     .footer__end { position: static; width: auto; }
-    .footer__thanks { font-size: 56px; }
-    .footer__panel { position: relative; left: auto; width: 100%; height: auto; padding: 40px 20px 32px; }
-    .footer__cols { position: static; width: auto; column-gap: 20px; font-size: 14px; }
-    .footer__dots { position: relative; display: block; margin: 40px 0 0 auto; width: 96px; height: 24px; }
+    .footer__thanks { margin-top: 12px; font-size: clamp(52px, 16vw, 72px); }
+    .footer__panel { position: relative; left: auto; width: 100%; height: auto; padding: 24px 20px 28px; border-top: 1px solid var(--hair); }
+    .footer__cols { position: static; width: auto; column-gap: 20px; font-size: 13px; }
+    .footer__cols ul { gap: 0; }
+    .footer__cols .footer__site { order: -1; }
+    .footer__cols a { display: inline-block; padding: 12px 0; }
+    .footer__dots { position: relative; display: block; left: auto; bottom: auto; margin: 24px 0 0 auto; width: 96px; height: 24px; }
   }
-
-  @media (max-width: 900px) { .footer__cols ul { gap: 0; } .footer__cols a { display: inline-block; padding: 12px 0; } }
 </style>

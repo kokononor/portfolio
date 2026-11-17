@@ -283,7 +283,7 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
   .letter.is-posted .l-postmark { animation: postmark .32s cubic-bezier(.2, 1.3, .4, 1) both; }
   @keyframes postmark { from { opacity: 0; scale: 1.5; rotate: -3deg; } 60% { opacity: .9; } to { opacity: .82; scale: 1; rotate: -9deg; } }
   @media (prefers-reduced-motion: reduce) { .letter.is-posted .l-postmark { animation: none; opacity: .82; } }
-  @media (max-width: 900px) { .letter { position: relative !important; } .l-postmark { left: auto; right: 8px; top: 14px; width: 210px; } }
+  @media (max-width: 900px) { .letter { position: relative !important; left: auto; top: auto; } .l-postmark { left: auto; right: 8px; top: 14px; width: 180px; } }
 
   /* errors: the field underline and placeholder turn red, the message shows in the slip */
   .field[aria-invalid='true'] { border-bottom: 1px solid var(--accent); }
@@ -314,25 +314,30 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
   .contact__word { margin-left: calc(1624 * var(--dx)); }
   .l-divider, .letter__aside { margin-left: calc(1520 * var(--dx)); }
 
+  /* ---- phones: label, word, then the letter full width; each blank on its own line ---- */
   @media (max-width: 900px) {
-    .contact { margin-top: 0; height: auto; padding: 72px 20px 0; display: flex; flex-direction: column; gap: 16px; }
+    .contact { margin-top: 0; height: auto; padding: 96px 20px 0; display: flex; flex-direction: column; }
     .contact > * { position: static; }
-    .contact__word { align-self: flex-end; font-size: 96px; line-height: .9; }
-    .contact__label { order: -1; margin-bottom: -48px; }
-    .letter { width: auto; height: auto; padding: 32px 20px; }
-    .letter__form, .letter__aside { position: static; pointer-events: auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px 10px; }
+    .contact__label { order: -2; margin: 0; font-size: 12px; letter-spacing: .06em; }
+    .contact__word { order: -1; align-self: flex-end; margin: 2px -2px -0.16em 0; font-size: clamp(72px, 23vw, 104px); line-height: 1; }
+    .letter { width: auto; height: auto; padding: 32px 20px 28px; box-shadow: -8px 12px 24px rgba(30, 12, 6, .08); }
+    .letter__form, .letter__aside { position: static; pointer-events: auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
     .letter__form > *, .letter__aside > * { position: static; }
-    .l-label, .l-hello, .l-more, .field--more, .l-send, .l-shy { flex-basis: 100%; }
-    .l-shy { white-space: normal; font-size: 17px; margin-top: 12px; }
+    .l-label { flex-basis: 100%; width: auto; font-size: 12px; letter-spacing: .06em; }
+    .l-hello { flex-basis: 100%; margin: 6px 0 10px; }
+    .l-more, .field--more, .l-send, .l-shy { flex-basis: 100%; }
+    .l-text { margin-top: 14px; }
+    .l-more { margin-top: 18px; }
+    .l-shy { white-space: normal; font-size: 16px; margin-top: 14px; }
     .l-shy::before { left: 24px; top: -6px; transform: rotate(45deg); }
-    .l-hello, .l-text, .field { font-size: 26px; }
-    .field { height: auto; width: auto !important; flex: 1 1 160px; padding-left: 4px !important; }
-    .l-send { flex-basis: auto; width: 144px; height: 50px; margin-top: 16px; }
+    .l-hello, .l-text { font-size: 24px; }
+    .field { height: auto; width: auto !important; padding: 4px 0 6px 2px !important; }
+    .field--more { min-height: 72px; }
+    .l-send { flex-basis: auto; width: 100%; height: 52px; margin-top: 24px; letter-spacing: .08em; }
+    .is-shy .l-send { translate: 10px -4px; }
     .l-divider { display: none; }
-    .letter__aside { margin-top: 40px; padding-top: 32px; border-top: 0.5px solid var(--ink); flex-direction: column; align-items: stretch; }
-    .l-email { width: auto; font-size: 26px; }
-
-    .l-links { width: auto; margin-top: 16px; }
+    .letter__aside { margin-top: 36px; padding-top: 28px; border-top: 0.5px solid var(--ink); flex-direction: column; align-items: stretch; }
+    .l-links { width: auto; margin-top: 12px; }
   }
 
   /* the address stays on one line on desktop */
@@ -343,9 +348,9 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
     .l-dot1, .l-dot2, .l-dot3 { display: none; }
     .field { flex: 1 1 100%; }
     .l-from { font-size: 0 !important; }
-    .l-from::after { content: 'from'; font-size: 26px; }
-    .l-email { width: auto; white-space: normal; overflow-wrap: normal; font-size: 22px; }   /* breaks only before the @ */
-    .field { font-size: 21px; }   /* the longest placeholder fits a phone line */
+    .l-from::after { content: 'from'; font-size: 24px; }
+    .l-email { width: auto; white-space: normal; overflow-wrap: normal; font-size: 22px; margin-top: 6px; }   /* breaks only before the @ */
+    .field { font-size: 20px; }   /* the longest placeholder fits a phone line */
     .l-links a { display: block; padding: 12px 0; }
   }
 </style>

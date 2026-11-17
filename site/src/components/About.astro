@@ -203,32 +203,46 @@ const IMAGES = [
   .rule--side, .rule--side-accent { margin-left: calc(1624 * var(--dx)); }
   .about__panels, .about__controls { margin-right: calc(104 * var(--dx)); }
 
+  /* ---- phones and small tablets: one column, read top to bottom ----
+     label, word, tabs; a shorter photo; then a left-hand timeline whose dots fill red as the timeline reaches them.
+     All three panels share one grid cell, so switching tabs never makes the page below jump. */
   @media (max-width: 900px) {
-    .about { height: auto; margin-top: 0; padding: 72px 20px 0; display: flex; flex-direction: column; gap: 32px; }
-    .about__word { order: -1; font-size: 96px; margin: 0 0 -40px; }
+    .about { height: auto; margin-top: 0; padding: 88px 20px 0; display: flex; flex-direction: column; }
     .about > *, .panel > * { position: static; width: auto !important; }
-    .panel { position: static; }   /* the entries flow inside the section instead of spilling into Contact */
-    /* the photo credit sits inside the image, on a soft shade, so it can't run into the timeline below */
+    .about__head { order: -2; height: auto; margin: 0; display: contents; }
+    .about__label { order: -2; font-size: 12px; letter-spacing: .06em; }
+    .about__word { order: -1; font-size: clamp(72px, 23vw, 104px); line-height: 1; margin: 2px 0 0 -4px; }
+
+    /* the tabs: one row on a hairline, the chosen one underlined in red */
+    .tabs { order: 0; flex-direction: row; align-items: stretch; width: auto; gap: 24px; margin: 20px 0 24px; border-bottom: 1px solid var(--hair); }
+    .tabs button { min-height: 44px; text-align: left; font-size: 13px; letter-spacing: .06em; font-weight: 400; color: var(--muted);
+      border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .3s ease, border-color .3s ease; }
+    .tabs button[aria-selected="true"] { font-size: 13px; font-weight: 500; color: var(--ink); border-bottom-color: var(--accent); }
+
+    .about__media { order: 1; position: relative !important; inset: auto; margin: 0 0 32px; aspect-ratio: 4 / 3; height: auto; }
+    /* the photo credit sits inside the image, on a soft shade */
     .media__credits { top: auto; bottom: 0; left: 0; right: 0; z-index: 1; padding: 28px 12px 10px; border-radius: 0 0 var(--radius) var(--radius);
       background: linear-gradient(to bottom, transparent, rgba(15, 14, 12, 0.6)); pointer-events: none; }
     .media__credits:not(:has(.is-on)) { display: none; }
-    .media__credit { color: var(--paper); pointer-events: auto; }
-    .about__media { margin-bottom: 24px; }
-    .about__head { height: auto; }
-    .about__media { position: relative !important; left: auto; aspect-ratio: 729 / 744; height: auto; margin-bottom: 28px; }   /* no desktop offset; room for the credit */
+    .media__credit { color: var(--paper); pointer-events: auto; font-size: 11px; }
     .rule { display: none; }
-    .about__panels { position: relative !important; border-top: 1px solid var(--ink); border-right: 1px solid var(--ink); padding: 32px 24px 0 0; }
-    .entry h3 { font-size: 28px; }
-    .tick { display: block; height: 72px; margin: 16px 0 16px auto; }
-    .entry--note { margin-top: 24px; }
-    .about__controls { justify-content: flex-end; margin-bottom: 8px; }
-  }
 
-  /* phones: the label, then the three tabs in one row under it, so they read as tabs and none hides under the nav */
-  @media (max-width: 900px) {
-    .tabs button { min-height: 44px; }
-    .about__head { flex-direction: column; align-items: flex-start; gap: 4px; }
-    .tabs { flex-direction: row; align-items: baseline; width: auto; gap: 20px; }
-    .tabs button { text-align: left; }
+    .about__panels { order: 2; position: relative !important; display: grid; }
+    .panel { position: static; grid-area: 1 / 1; display: flex; flex-direction: column; gap: 28px; padding-left: 24px; border-left: 1px solid var(--hair); }
+    .panel[hidden] { display: flex; visibility: hidden; }
+    .entry, .entry--note, .panel--dense .entry { position: relative !important; inset: auto; text-align: left; margin: 0; }
+    .entry::before { content: ''; position: absolute; left: -29px; top: .55em; width: 9px; height: 9px; border-radius: 50%;
+      background: var(--page); border: 1px solid var(--ink); transition: background-color .4s ease, border-color .4s ease; }
+    .entry.is-reached::before, .about.is-static .entry::before { background: var(--accent); border-color: var(--accent); }
+    .entry h3 { font-size: 26px; line-height: 1.2; }
+    .entry p { margin-top: 4px; font-size: 16px; }
+    .entry small { margin-top: 4px; font-size: 13px; }
+    .entry--note { padding-top: 4px; }
+    .entry--note::before { display: none; }
+    .entry--note small { margin-bottom: 4px; letter-spacing: .06em; }
+    .tick { display: none; }
+
+    .about__controls { order: 3; justify-content: flex-start; margin: 32px 0 0; }
+    .ctl { width: 44px; height: 44px; }
   }
 </style>
