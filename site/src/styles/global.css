@@ -189,9 +189,8 @@ html.is-reinking::view-transition-new(root) { animation: none; }
 @keyframes chip-eq { from { height: 25%; } to { height: 100%; } }
 @media (prefers-reduced-motion: reduce) { .music-chip__eq i { animation: none !important; height: 60%; } }
 
-/* ---- the cursor (scripts/cursor.ts): a registration mark with the red at its centre, and a floating label ---- */
-html.has-cursor, html.has-cursor * { cursor: none !important; }
-html.has-cursor :is(input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]), textarea, [contenteditable="true"]) { cursor: text !important; }
+/* ---- the cursor's floating label (scripts/cursor.ts): the system cursor stays; only the label pill is shown ---- */
+.cursor__mark, .cursor__dot { display: none; }
 .cursor { position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0; transition: opacity .3s ease; }
 .cursor.is-on { opacity: 1; }
 .cursor.is-text { opacity: 0; }
