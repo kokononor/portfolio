@@ -102,4 +102,10 @@ const links = [['work', 'Work'], ['about', 'About'], ['contact', 'Connect']];
     .nav__links { display: none; }
     .nav__toggle { display: block; }
   }
+  /* tablets: the page's wider margin */
+  @media (min-width: 601px) and (max-width: 900px) {
+    nav.nav { padding: 16px 40px; }
+    nav.nav.is-stuck { padding: 12px 40px; }
+    div.menu { padding-left: 40px; padding-right: 40px; }
+  }
 </style>

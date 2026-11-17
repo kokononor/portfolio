@@ -29,6 +29,8 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const canvas = document.querySelector<HTMLElement>('.canvas');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// the canvas pages (Falcon, Diviniti) flow as one column up to 1199px; Swad's grid is laid out for desktops from 901px
+const DESKTOP = canvas?.classList.contains('swad') ? '(min-width: 901px)' : '(min-width: 1200px)';
 
 if (canvas && !reduce) {
   const ease = 'expo.out';
@@ -41,14 +43,14 @@ if (canvas && !reduce) {
   // ---- text slides in (all sizes) ----
   $$('[data-slide]').forEach(el => {
     const side = el.dataset.slide === 'right' ? 1 : -1;
-    const desktop = matchMedia('(min-width: 901px)').matches;
+    const desktop = matchMedia(DESKTOP).matches;
     gsap.fromTo(el, desktop ? { opacity: 0, x: side * 48 } : { opacity: 0, y: 32 }, {
       opacity: 1, x: 0, y: 0, duration: 1.1, ease, delay: parseFloat(el.dataset.delay || '0'),
       scrollTrigger: { trigger: el, start: 'top 88%', once: true },
     });
   });
 
-  gsap.matchMedia().add('(min-width: 901px)', () => {
+  gsap.matchMedia().add(DESKTOP, () => {
     const undo: (() => void)[] = [];
     document.documentElement.classList.add('case-motion');
     undo.push(() => document.documentElement.classList.remove('case-motion'));

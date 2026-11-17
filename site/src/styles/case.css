@@ -66,10 +66,10 @@
 .sticky-rail__fill { position: absolute; left: 16px; right: 16px; bottom: 6px; height: 1px; background: var(--accent);
   transform: scaleX(0); transform-origin: left; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
 
-@media (max-width: 900px) {
-  .canvas { width: 100%; height: auto !important; padding: 0 20px; display: flex; flex-direction: column; }
+@media (max-width: 1199px) {
+  .canvas:not(.swad) { --gut: 20px; width: 100%; height: auto !important; padding: 0 var(--gut); display: flex; flex-direction: column; }
   .at { position: relative; left: auto; top: auto; width: auto !important; height: auto !important; margin-top: 28px; }
-  .bleed { position: relative; left: auto; top: auto; width: calc(100% + 40px); margin: 40px -20px 0; height: auto; }
+  .bleed { position: relative; left: auto; top: auto; width: calc(100% + 2 * var(--gut)); margin: 40px calc(-1 * var(--gut)) 0; height: auto; }
   /* the phone type scale, shared by all three case studies (swad.astro maps its Figma sizes onto it) */
   .c-h2 { font-size: 34px; margin-top: 56px; }
   .c-h2[data-n] { margin-top: 96px; }                       /* room for its number and rule above it */
@@ -92,4 +92,20 @@
   .c-vrule { display: none; }
   .c-why { width: auto; padding: 24px; gap: 10px; }
   .c-why .c-body { width: auto; padding: 0; }
+}
+
+/* tablets: the same reading order in a centred column (about 680px), with wider margins; landscape tablets and small
+   laptops keep the desktop margins. Pictures stay within the window's height. */
+@media (min-width: 601px) and (max-width: 1199px) {
+  .canvas:not(.swad) { --gut: 40px; }
+  .canvas:not(.swad) > .at:not(.hero):not(.hero__logo) { width: 100% !important; max-width: 680px; margin-left: auto; margin-right: auto; }
+  .canvas:not(.swad) > .at.c-img[style*="--h"] { max-width: min(680px, calc(78svh * var(--w) / var(--h))); }
+  .c-h2 { font-size: 40px; }
+  .c-h3 { font-size: 23px; }
+  .c-body { font-size: 16px; }
+  .c-lead, .c-quote { font-size: 19px; }
+}
+@media (min-width: 901px) and (max-width: 1199px) {
+  .canvas:not(.swad) { --gut: calc(104 * var(--u)); }
+  .canvas:not(.swad) > .at:not(.hero):not(.hero__logo) { max-width: 720px; }
 }

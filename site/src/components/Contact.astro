@@ -353,4 +353,11 @@ const FORM_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
     .field { font-size: 20px; }   /* the longest placeholder fits a phone line */
     .l-links a { display: block; padding: 12px 0; }
   }
+  /* tablets: the letter on the left, the other ways to reach me beside it */
+  @media (min-width: 601px) and (max-width: 900px) {
+    .contact { padding-left: 40px; padding-right: 40px; }
+    .letter { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); column-gap: 40px; padding: 40px 32px; }
+    .letter__aside { margin-top: 0; padding: 0 0 0 32px; border-top: 0; border-left: 0.5px solid var(--ink); justify-content: flex-start; }
+    .l-email { font-size: 17px; }
+  }
 </style>

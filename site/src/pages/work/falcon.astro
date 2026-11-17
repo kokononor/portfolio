@@ -37,11 +37,11 @@ const half = '(max-width: 900px) 100vw, 852px';
          motion" starts it (scripts/case-motion.ts, data-stage). Without motion it is simply the hero's picture. ===== -->
     <div class="at stage" style="--x: 0; --y: 0; --w: 1728; --h: 1115;" data-stage data-stage-hold="700">
       <div class="stage__art">
-        <Image class="art art--wall" src={studioWall} alt="" widths={[859, 1075, 1718]} sizes="(max-width: 900px) 1px, 100vw" loading="eager" />
+        <Image class="art art--wall" src={studioWall} alt="" widths={[859, 1075, 1718]} sizes="(max-width: 1199px) 1px, 100vw" loading="eager" />
         <span class="art art--shadow"></span>
-        <Image class="art art--setup" src={monitorSetup} alt="" widths={[1023, 1448]} sizes="(max-width: 900px) 1px, 1023px" loading="eager" />
+        <Image class="art art--setup" src={monitorSetup} alt="" widths={[1023, 1448]} sizes="(max-width: 1199px) 1px, 1023px" loading="eager" />
         <div class="stage__screen fs-host" aria-hidden="true" inert><FalconScreen id="falcon-live" /></div>
-        <Image class="art art--engineers" src={heroEngineers} alt="" widths={[1194, 1448]} sizes="(max-width: 900px) 1px, 1194px" loading="eager" data-stage-leave />
+        <Image class="art art--engineers" src={heroEngineers} alt="" widths={[1194, 1448]} sizes="(max-width: 1199px) 1px, 1194px" loading="eager" data-stage-leave />
       </div>
       <button class="stage__play" type="button" data-falcon-play="falcon-live"><span></span>See in motion</button>
     </div>
@@ -370,7 +370,7 @@ const half = '(max-width: 900px) 100vw, 852px';
   /* ---- the hero fits the window: on desktops the hero group (red band, hero, stage) takes its own design pixel, --hu,
      small enough that all 1115 design px show at once, and is centred on the page; everything after it moves up by
      the height saved (--shift), so no gap opens. ---- */
-  @media (min-width: 901px) {
+  @media (min-width: 1200px) {
     .falcon-page { --cu: var(--u); --hu: min(var(--u), calc(100svh / 1115)); --shift: calc(1115 * (var(--cu) - var(--hu))); margin-bottom: calc(-1 * var(--shift)); }
     /* (descendant selectors: once held, the stage sits inside GSAP's pin wrapper) */
     .falcon-page :is(.hero, .stage, .hero-band) { --u: var(--hu); }
@@ -467,7 +467,7 @@ const half = '(max-width: 900px) 100vw, 852px';
   .red-block { background: var(--accent); }
   /* the findings and principles are placed heading-by-body at fixed heights (the morph swaps them in place), so their
      headings keep the size those heights were drawn for */
-  @media (min-width: 901px) { .morph .c-h3 { font-size: calc(31 * var(--u)); } }
+  @media (min-width: 1200px) { .morph .c-h3 { font-size: calc(31 * var(--u)); } }
   .methods { display: grid; grid-template-columns: 1fr 1fr; column-gap: calc(24 * var(--u)); row-gap: calc(40 * var(--u)); }
   .methods > div { display: flex; flex-direction: column; gap: calc(var(--gap) * var(--u)); }
   .ia-sub { max-width: 24ch; }
@@ -531,10 +531,10 @@ const half = '(max-width: 900px) 100vw, 852px';
   :global(html.case-motion) .metrics:not(.is-in) .cut__gone { opacity: 0; }
 
   /* ---- phones ---- */
-  @media (max-width: 900px) {
+  @media (max-width: 1199px) {
     .hero-band { display: none; }
-    .hero { background: linear-gradient(-54.29deg, var(--accent) 6.147%, var(--accent) 67.06%, var(--accent-deep) 102.86%); margin: 0 -20px; width: calc(100% + 40px) !important;
-      padding: calc(var(--nav-h) + 16px) 20px 32px; display: flex; flex-direction: column; gap: 24px; overflow: visible; }
+    .hero { background: linear-gradient(-54.29deg, var(--accent) 6.147%, var(--accent) 67.06%, var(--accent-deep) 102.86%); margin: 0 calc(-1 * var(--gut)); width: calc(100% + 2 * var(--gut)) !important;
+      padding: calc(var(--nav-h) + 16px) var(--gut) 32px; display: flex; flex-direction: column; gap: 24px; overflow: visible; }
     .stage { display: none; }
     .hero__card :global(.hero__logo) { width: 52px !important; height: 48px; object-fit: contain; align-self: flex-start; }
     .hero__card { position: relative; left: auto; top: auto; width: auto; height: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
@@ -563,7 +563,15 @@ const half = '(max-width: 900px) 100vw, 852px';
 
   /* mid-size windows: the text keeps a readable minimum size, so the decision columns use the free space up to the
      image (instead of growing taller than their slot and running into the next decision) */
-  @media (min-width: 901px) and (max-width: 1365px) {
+  /* tablets: the opening card and its facts side by side, and the findings in two columns */
+  @media (min-width: 601px) and (max-width: 1199px) {
+    .hero { display: grid !important; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); column-gap: 40px; align-items: end; padding-bottom: 48px !important; }
+    .hero__card { padding: 32px; }
+    .hero__title { font-size: 48px; }
+    .methods { grid-template-columns: 1fr 1fr; gap: 32px 32px; }
+    .metrics__figs { grid-template-columns: 1fr 1fr; column-gap: 32px; }
+  }
+  @media (min-width: 1200px) and (max-width: 1365px) {
     .dd-col { width: calc(700 * var(--u)) !important; }
     /* the "Why it matters?" cards grow with their text instead of spilling past their paper */
     .c-why { height: auto !important; min-height: calc(282 * var(--u)); }

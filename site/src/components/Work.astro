@@ -216,4 +216,19 @@ import diviniti from '../assets/home/diviniti-cover.png';
   }
 
   @media (max-width: 900px) { .case__more { display: inline-block; padding: 11px 0; } }
+  /* tablets: picture and story side by side on the Falcon and Swad cards, so a card fits the screen */
+  @media (min-width: 601px) and (max-width: 900px) {
+    .work { padding-left: 40px; padding-right: 40px; gap: 28px; }
+    .slide__stack { gap: 28px; }
+    .falcon { flex-direction: row; align-items: center; gap: 48px; padding: 24px 32px 24px 24px; }
+    .falcon__img { flex: none; width: 42%; aspect-ratio: 3 / 4; box-shadow: 0 0 0 24px var(--accent); }
+    .falcon .case { flex: 1; min-width: 0; padding: 16px 0; }
+    .swad { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .swad__visual { aspect-ratio: auto; min-height: 100%; }
+    .swad__body { padding: 40px 32px; }
+    .story { padding: 56px 40px; min-height: 520px; }
+    .story__body { max-width: 62%; }
+    .story::after { background: var(--grad-story); }
+    .case__title { font-size: 36px; }
+  }
 </style>

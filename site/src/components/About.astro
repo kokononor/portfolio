@@ -12,6 +12,8 @@ import diviniti from '../assets/about/diviniti-desk.jpg';
 import vodafone from '../assets/about/vodafone-office.jpg';
 import travel from '../assets/about/hobby-travel.jpg';
 import cooking from '../assets/about/hobby-cooking.png';
+import dogs from '../assets/about/hobby-dogs.jpeg';
+import painting from '../assets/about/hobby-painting.jpeg';
 
 // photos for each entry; credits are required by the CC BY-SA licences of the two Wikimedia photos
 const IMAGES = [
@@ -23,6 +25,8 @@ const IMAGES = [
   { id: 'vodafone', src: vodafone, pos: '65% 50%', alt: 'A presenter at the screen in a meeting room at Vodafone Idea, with laptops open on the table' },
   { id: 'travel', src: travel, pos: '50% 30%', alt: 'Friends in life jackets and helmets floating in a river beside an orange raft, laughing and flashing a peace sign' },
   { id: 'cooking', src: cooking, alt: 'A green apple mojito in a tall glass with mint and lime, on a white plate' },
+  { id: 'dogs', src: dogs, pos: '50% 55%', alt: 'Lying on my back on the grass of a field at dusk, hands behind my head, with three dogs around me' },
+  { id: 'painting', src: painting, pos: '50% 62%', alt: 'Classmates gathered round a desk in a studio as one paints a blue-green piece, paint pots and brushes spread out' },
 ];
 ---
 <section class="about fit" id="about" style="--fit-h: 1144" aria-labelledby="about-title">
@@ -77,10 +81,15 @@ const IMAGES = [
       <span class="tick tick--3" aria-hidden="true"></span>
       <div class="entry entry--4" data-img="diviniti"><h3 class="t-serif">Diviniti India</h3><p>Product Design Intern</p><small>May 2025 – May 2026</small></div>
     </div>
-    <div class="panel" role="tabpanel" id="panel-hob" aria-labelledby="tab-hob" hidden>
+    <!-- four hobbies, so this panel packs them closer too -->
+    <div class="panel panel--dense" role="tabpanel" id="panel-hob" aria-labelledby="tab-hob" hidden>
       <div class="entry entry--1" data-img="travel"><h3 class="t-serif">Travelling</h3></div>
       <span class="tick tick--1" aria-hidden="true"></span>
       <div class="entry entry--2" data-img="cooking"><h3 class="t-serif">Cooking</h3></div>
+      <span class="tick tick--2" aria-hidden="true"></span>
+      <div class="entry entry--3" data-img="dogs"><h3 class="t-serif">Posing with the dogs</h3></div>
+      <span class="tick tick--3" aria-hidden="true"></span>
+      <div class="entry entry--4" data-img="painting"><h3 class="t-serif">Painting</h3></div>
     </div>
   </div>
 
@@ -244,5 +253,14 @@ const IMAGES = [
 
     .about__controls { order: 3; justify-content: flex-start; margin: 32px 0 0; }
     .ctl { width: 44px; height: 44px; }
+  }
+  /* tablets: the photo and the timeline side by side under the heading */
+  @media (min-width: 601px) and (max-width: 900px) {
+    .about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 40px; align-items: start; padding-left: 40px; padding-right: 40px; }
+    .about > *, .about__label, .tabs { grid-column: 1 / -1; }
+    .about > .about__media { grid-column: 1; aspect-ratio: 4 / 5; margin: 0; position: sticky !important; top: calc(var(--nav-h) + 24px); }
+    .about > .about__panels { grid-column: 2; }
+    .about > .about__controls { grid-column: 2; }
+    .tabs { margin-bottom: 32px; }
   }
 </style>

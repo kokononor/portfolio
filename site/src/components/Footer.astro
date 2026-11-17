@@ -104,4 +104,11 @@
     .footer__cols a { display: inline-block; padding: 12px 0; }
     .footer__dots { position: relative; display: block; left: auto; bottom: auto; margin: 24px 0 0 auto; width: 96px; height: 24px; }
   }
+  /* tablets: wider margins; "Thanks for Reading" beside the links instead of under them */
+  @media (min-width: 601px) and (max-width: 900px) {
+    .footer { flex-direction: row-reverse; align-items: stretch; }
+    .footer__band { flex: 1.2; padding: 64px 40px; display: flex; align-items: flex-end; }
+    .footer__panel { flex: 1; padding: 48px 40px 40px; border-top: 0; display: flex; flex-direction: column; justify-content: space-between; }
+    .footer__dots { margin-top: 40px; }
+  }
 </style>
