@@ -146,7 +146,7 @@ if (gl) {
 
 // ---------------- the elements that react ----------------
 // surfaces get a local glow; containers carry the proximity that warms the ink inside them
-const SURFACES = '.falcon, .swad__body, .letter, .footer__panel, .c-why, .hero__card, .note, .tabs';
+const SURFACES = '.swad__body, .letter, .footer__panel, .c-why, .hero__card, .note, .tabs';
 const DARK = '.nav__resume, .hero__resume, .swad-resume, .swad__visual, .about__media, .l-send, .footer__band, .red-block, .hero-band';
 const CONTAINERS = 'header, section, article, aside, footer, figure, .at, .swad-canvas > *, .hero > *, .work > *, .about > *, .contact > *';
 type Lit = { el: HTMLElement; x: number; y: number; w: number; h: number };

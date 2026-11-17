@@ -2,22 +2,23 @@
 // Section 2 — kaam (curated works). Figma: 362:37/38 (labels), 362:39 + 362:42 (Falcon), 362:74 (Redefining Design),
 // 362:102–362:104 (Swad). The section starts at design y 1074; coordinates below are relative to that.
 import { Image } from 'astro:assets';
-import falcon from '../assets/home/falcon.png';
 import diviniti from '../assets/home/diviniti-cover.png';
 ---
 <section class="work" id="work" aria-labelledby="work-title">
 
-  <!-- Falcon: a white card with a red block behind the image -->
+  <!-- Falcon: a night card around the film of the case study (components/FalconFilm.astro, exported as an MP4 by
+       scripts/falcon-film-export.ts). The film loops seamlessly. -->
   <div class="slide slide--first">
   <div class="slide__stack">
   <h2 class="work__word t-display" id="work-title">kaam</h2>
   <p class="work__label">CURATED WORKS</p>
   <article class="falcon" data-reveal>
-    <div class="falcon__img" data-halftone>
-      <Image src={falcon} alt="Two engineers in silhouette at the Falcon network operations dashboard" widths={[618, 1075]} sizes="(max-width: 900px) 90vw, 618px" data-parallax="4" />
+    <div class="falcon__film">
+      <video class="falcon__video" data-falcon-cover src="/media/falcon-film.mp4" poster="/media/falcon-film-poster.jpg" muted loop playsinline preload="metadata"
+        aria-label="Falcon in motion: five disconnected data sources resolve into three root causes, then into the redesigned Falcon dashboard."></video>
     </div>
-    <div class="case falcon__case">
-      <p class="case__meta">FALCON · VI SNOC <span class="dot"></span>2026</p>
+    <div class="case case--light falcon__case">
+      <p class="case__meta">FALCON · VI SNOC <span class="dot dot--light"></span>2026</p>
       <h3 class="case__title t-serif">Making millions of network events explain a <em>single outage.</em></h3>
       <p class="case__lede">A network operations dashboard, redesigned for the moments when every minute of downtime counts.</p>
       <hr class="case__rule" />
@@ -72,6 +73,12 @@ import diviniti from '../assets/home/diviniti-cover.png';
 </section>
 
 <script>
+  // the Falcon film plays only while its card is on screen (and not at all for reduced motion: its poster stays)
+  const film = document.querySelector<HTMLVideoElement>('[data-falcon-cover]');
+  if (film && !matchMedia('(prefers-reduced-motion: reduce)').matches) new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) film.play().catch(() => {}); else film.pause();
+  }, { threshold: 0.25 }).observe(film);
+
   // a click anywhere on a project card opens its case study, unless it was on another link or selected some text;
   // ctrl / ⌘ click opens it in a new tab, as a link would
   document.querySelectorAll<HTMLElement>('.falcon, .swad, .story').forEach(card => {
@@ -138,28 +145,32 @@ import diviniti from '../assets/home/diviniti-cover.png';
   .case__paper img { width: calc(8 * var(--u)); }
   .case__more:hover, .case__paper:hover { color: var(--accent); }
 
-  /* ---- Falcon (362:39 card, 362:42 content) ---- */
-  /* heights are minimums: if text (which keeps a readable size) needs more room, the card grows instead of spilling */
-  .falcon { width: calc(1520 * var(--u)); min-height: calc(956 * var(--u)); padding-block: calc(40 * var(--u)) !important;
-    background: var(--white); border-radius: var(--radius); filter: var(--drop-big, drop-shadow(-20px 20px 13px rgba(0, 0, 0, 0.08)));
-    display: flex; align-items: center; gap: 0; padding: 0 6.645%; }
-  .falcon::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: calc(6.645% + 309 * var(--u));   /* ends at the image's centre: the card's padding plus half the image */
-    background: var(--accent); border-radius: var(--radius); }
-  .falcon__img { position: relative; flex: none; width: calc(618 * var(--u)); height: calc(799 * var(--u));   /* centred on the red block: the same red shows above and below */
-    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-soft); }
-  .falcon__img :global(img) { position: absolute; left: 0; top: -6%; width: 100%; height: 112%; object-fit: cover; }   /* covers the ±4% parallax drift */
-  .falcon .case { position: relative; width: max(calc(517 * var(--u)), 36%); margin: 0 auto; }   /* centred in the space beside the image */
-
-  /* wider screens: a shorter, wider card; the image shrinks to make room (the red block still ends at its centre).
-     The text is one column, laid out like the other two cards, starting the same distance in as Swad's. */
-  @media (min-width: 901px) {
-    .falcon { min-height: calc(760 * var(--u)); }
-    .falcon::before { width: calc(6.645% + 207 * var(--u)); border-radius: var(--radius) 0 0 var(--radius);   /* square where it meets the image */
-      background: linear-gradient(to bottom, color-mix(in srgb, var(--accent), #ff5a3c 28%) 0%, var(--accent) 30%, var(--accent-deep) 100%); }
-    .falcon__img { width: calc(414 * var(--u)); height: calc(600 * var(--u)); }
-    .falcon .falcon__case { flex: none; width: calc(640 * var(--u)); margin: 0 auto; }   /* centred in the space beside the image */
-    .falcon .case__facts { width: calc(483 * var(--u)); }
-  }
+  /* ---- Falcon: a black card, the film on the left with its edges melting into the card, the case on the right ---- */
+  .falcon { width: calc(1520 * var(--u)); padding: calc(52 * var(--u)) !important; border-radius: var(--radius); color: var(--paper); overflow: hidden;
+    display: grid; grid-template-columns: minmax(0, 1fr) calc(500 * var(--u)); column-gap: calc(72 * var(--u)); align-items: center;
+    /* the site's black, with the resume button's red (--grad-resume) glowing in from two corners only */
+    background:
+      radial-gradient(42% 70% at 100% 0%, #2d0a05 0%, rgba(45, 10, 5, .55) 38%, rgba(45, 10, 5, 0) 72%),
+      radial-gradient(38% 65% at 0% 100%, #2d0a05 0%, rgba(45, 10, 5, .5) 36%, rgba(45, 10, 5, 0) 70%),
+      #0f0e0c;   /* the site's ink, written out: the living light warms var(--ink) on lit cards */
+    box-shadow: var(--shadow-big); }
+  .falcon__film { position: relative; min-width: 0; }
+  .falcon__video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: #0f0e0c;
+    /* the film's ground is the card's: its edges fade into it rather than stopping at a frame */
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+    mask-composite: intersect; }
+  .falcon .falcon__case { position: relative; width: auto; margin: 0; }
+  /* on the night card: slightly tighter type, so the case sits level with the film; the accent in the site's red */
+  .falcon .case__meta, .falcon .case__facts dt { color: rgba(252, 251, 248, .6); }
+  .falcon .case__title { font-size: max(30px, calc(54 * var(--u))); }
+  .falcon .falcon__case .case__title em { color: var(--accent); }   /* the site's red, as on the other cards */
+  .falcon .case__lede { font-size: max(17px, calc(25 * var(--u))); color: rgba(252, 251, 248, .86); }
+  .falcon .case__rule { margin: calc(30 * var(--u)) 0; opacity: .28; }
+  .falcon .case__facts { width: 100%; gap: calc(22 * var(--u)); }
+  .falcon .case__links { margin-top: calc(32 * var(--u)); }
+  .falcon:hover .case__more { color: var(--accent) !important; }
 
   /* ---- Swad (362:102 dark card, 362:103 plate, 362:104 text card) ---- */
   .swad { width: calc(1520 * var(--u)); min-height: calc(986 * var(--u)); display: grid; grid-template-columns: 1fr 1fr; column-gap: 1.72%; }
@@ -197,13 +208,9 @@ import diviniti from '../assets/home/diviniti-cover.png';
     .case__lede { font-size: 20px; }
     .case__facts { grid-template-columns: 1fr 1fr; width: auto; gap: 20px; }
     .dot { margin: 0 6px; }
-    .falcon { flex-direction: column; align-items: stretch; gap: 32px; padding: 20px 20px 32px; }
-    /* phones: the red becomes an even mat around the image (the card padding), flush with the card's edges */
-    .falcon { overflow: hidden; }
-    .falcon::before { display: none; }
-    .falcon__img { box-shadow: 0 0 0 20px var(--accent); border-radius: 0; }
-    .falcon__img { width: 100%; height: auto; aspect-ratio: 4 / 3; }   /* shorter cards on phones */
-    .falcon .case { width: auto; }
+    /* phones: the film across the top of the card, the case below it */
+    .falcon { grid-template-columns: 1fr; row-gap: 28px; padding: 12px 12px 32px !important; }
+    .falcon .falcon__case { padding: 0 8px; }
     .swad { display: flex; flex-direction: column; gap: 20px; min-height: 0; }
     .falcon, .story { min-height: 0; }
     .swad__visual, .swad__body { position: relative; left: auto; width: auto; height: auto; }
@@ -220,9 +227,8 @@ import diviniti from '../assets/home/diviniti-cover.png';
   @media (min-width: 601px) and (max-width: 900px) {
     .work { padding-left: 40px; padding-right: 40px; gap: 28px; }
     .slide__stack { gap: 28px; }
-    .falcon { flex-direction: row; align-items: center; gap: 48px; padding: 24px 32px 24px 24px; }
-    .falcon__img { flex: none; width: 42%; aspect-ratio: 3 / 4; box-shadow: 0 0 0 24px var(--accent); }
-    .falcon .case { flex: 1; min-width: 0; padding: 16px 0; }
+    .falcon { padding: 20px 20px 40px !important; row-gap: 32px; }
+    .falcon .falcon__case { padding: 0 12px; max-width: 620px; }
     .swad { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .swad__visual { aspect-ratio: auto; min-height: 100%; }
     .swad__body { padding: 40px 32px; }

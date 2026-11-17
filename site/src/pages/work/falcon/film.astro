@@ -1,0 +1,50 @@
+---
+// Review page for the Falcon motion preview (components/FalconFilm.astro). It sits under /work/falcon/, so the
+// case study's lock (middleware.js) guards it too. The bar under the film scrubs the 300 frames and checks the loop.
+import Base from '../../../layouts/Base.astro';
+import FalconFilm from '../../../components/FalconFilm.astro';
+---
+<Base title="Falcon, in motion · Suyash" description="A 10-second looping preview of the Falcon case study." noindex>
+  <main class="review">
+    <FalconFilm id="falcon-film" />
+    <div class="review__bar">
+      <button type="button" data-r="toggle">Pause</button>
+      <input type="range" min="0" max="300" step="1" value="0" data-r="scrub" aria-label="Frame" />
+      <span data-r="frame">frame 0 / 300</span>
+      <button type="button" data-r="check">Check loop</button>
+      <button type="button" data-r="export">Export MP4</button>
+      <span data-r="out"></span>
+    </div>
+  </main>
+</Base>
+
+<script>
+  import type { Film } from '../../../scripts/falcon-film';
+  import { exportFilm } from '../../../scripts/falcon-film-export';
+  // the MP4: render all 300 frames, then hand the file over (window.__exportFilm for tools; the button downloads it)
+  (window as any).__exportFilm = (o?: Parameters<typeof exportFilm>[1]) => exportFilm((document.getElementById('falcon-film') as any).__film, o);
+  const root = document.getElementById('falcon-film')!;
+  const q = (k: string) => document.querySelector<HTMLElement>(`[data-r="${k}"]`)!;
+  const scrub = q('scrub') as HTMLInputElement, toggle = q('toggle'), frame = q('frame'), out = q('out');
+  const ready = () => (root as any).__film as Film | undefined;
+  let playing = true;
+  const show = () => { const f = ready(); if (!f) return; const n = Math.round(f.t * 30); frame.textContent = `frame ${n} / 300 · ${f.t.toFixed(2)} s`; if (playing) scrub.value = String(n); requestAnimationFrame(show); };
+  requestAnimationFrame(show);
+  toggle.addEventListener('click', () => { const f = ready()!; playing = !playing; playing ? f.play() : f.pause(); toggle.textContent = playing ? 'Pause' : 'Play'; });
+  scrub.addEventListener('input', () => { const f = ready()!; playing = false; f.pause(); toggle.textContent = 'Play'; f.seek(+scrub.value / 30); });
+  q('export').addEventListener('click', async () => {
+    const blob = await (window as any).__exportFilm({ onProgress: (i: number, n: number) => { out.textContent = `Rendering frame ${i} / ${n}`; } });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'falcon-film.mp4'; a.click();
+    out.textContent = `MP4 ready: ${(blob.size / 1e6).toFixed(1)} MB`;
+  });
+  q('check').addEventListener('click', async () => { const bad = await ready()!.check(); out.textContent = bad.length ? `${bad.length} values differ: ${bad.slice(0, 3).join(' · ')}` : 'Frame 300 = frame 0 ✓'; });
+</script>
+
+<style>
+  .review { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: 18px; padding: 32px max(16px, 4vw); background: var(--page); }
+  .review :global(.ff) { max-width: 1600px; margin: 0 auto; box-shadow: var(--shadow-soft); }
+  .review__bar { width: 100%; max-width: 1600px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
+    font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .review__bar input { flex: 1; min-width: 160px; accent-color: var(--accent); }
+  .review__bar button { height: 32px; padding: 0 14px; border: 1px solid var(--hair); border-radius: 16px; background: none; font: inherit; color: var(--ink); cursor: pointer; }
+</style>

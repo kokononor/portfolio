@@ -1,0 +1,82 @@
+---
+// Falcon, in motion: a 10-second looping 3D preview of the case study. "From fragmented data to clarity."
+// The scene (three.js, scripts/falcon-film.ts) draws into the canvas; the type over it is set in the site's own kit
+// (DM Mono kicker, light italic Fraunces, the accent on one word) on a fixed 1920 × 1080 stage scaled to the box.
+// Both run on one master clock, and frame 300 is frame 0 (see check() in the script).
+//
+// The dashboard is the final Falcon screen (Figma "falcon-motion" 1:2) with the site's anonymised sample data; the
+// display is a generic studio display modelled in code; the engineers are the case study's hero silhouettes.
+// The root causes are worded as in the case study and the paper.
+// A night studio: red rim light, glowing screen, paper-coloured type.
+interface Props { id?: string; class?: string }
+const { id = 'falcon-film', class: cls = '' } = Astro.props;
+const causes = ['Trust in system state', 'The cost of correlation', 'No explainable evidence'];
+---
+<div class:list={['ff', 'ff--dark', cls]} id={id} data-falcon-film role="img"
+  aria-label="Falcon in motion: five disconnected data sources float apart, resolve into three root causes (Trust in system state, The cost of correlation, No explainable evidence) and then into the redesigned Falcon dashboard on a display: from fragmented monitoring to structured investigation.">
+  <canvas class="ff__gl" data-ff="gl"></canvas>
+  <div class="ff__stage" data-ff="stage" aria-hidden="true">
+    <!-- Shot 01 -->
+    <div class="ff-at" style="left:120px;top:742px">
+      <p class="ff-kicker"><span class="ln"><span class="ln__i" data-ff="ln" data-in="0.25" data-out="1.85">01 — Before: five sources, five tabs</span></span></p>
+      <h2 class="ff-h">
+        <span class="ln"><span class="ln__i" data-ff="ln" data-in="0.35" data-out="1.9">Fragmented data.</span></span>
+        <span class="ln"><span class="ln__i" data-ff="ln" data-in="0.5" data-out="1.98">Disconnected <em>insights.</em></span></span>
+      </h2>
+    </div>
+
+    <!-- Shot 02: the three root causes, under the three groups -->
+    <p class="ff-at ff-kicker ff-center" style="left:0;width:1920px;top:118px"><span class="ln"><span class="ln__i" data-ff="ln" data-in="2.2" data-out="3.38">02 — 18 issues, three root causes</span></span></p>
+    {causes.map((c, i) => (
+      <div class="ff-at ff-cause" data-ff-cause={i} style={`left:${[175, 680, 1185][i]}px;top:700px`}>
+        <p class="ff-cause__n"><span class="ln"><span class="ln__i" data-ff="ln" data-in={(2.32 + i * 0.12).toFixed(2)} data-out={(3.4 + i * 0.03).toFixed(2)}>0{i + 1}</span></span></p>
+        <h3 class="ff-cause__h"><span class="ln"><span class="ln__i" data-ff="ln" data-in={(2.42 + i * 0.12).toFixed(2)} data-out={(3.42 + i * 0.03).toFixed(2)}>{c}</span></span></h3>
+      </div>
+    ))}
+
+    <!-- Shots 03–04 -->
+    <p class="ff-at ff-kicker ff-center" style="left:0;width:1920px;top:76px"><span class="ln"><span class="ln__i" data-ff="ln" data-in="4.4" data-out="8.7">03 — After: one investigation surface</span></span></p>
+    <h2 class="ff-at ff-h ff-h--sm ff-center" style="left:0;width:1920px;top:114px">
+      <span class="ln"><span class="ln__i" data-ff="ln" data-in="6.9" data-out="8.72">From fragmented monitoring</span></span>
+      <span class="ln"><span class="ln__i" data-ff="ln" data-in="7.05" data-out="8.78">to structured <em>investigation.<span class="ff-under" data-ff="under"></span></em></span></span>
+    </h2>
+
+  </div>
+</div>
+
+<style>
+  .ff { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; }
+  .ff__gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .6s ease; }
+  .ff.is-ready .ff__gl { opacity: 1; }
+  .ff__stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform: scale(var(--ff-s, .5)); transform-origin: 0 0; pointer-events: none;
+    font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  .ff__stage p, .ff__stage h2, .ff__stage h3 { margin: 0; font-weight: inherit; }
+  .ff-at { position: absolute; }
+  .ff-center { text-align: center; }
+  .ln { display: block; overflow: hidden; padding: 0 .14em .1em; margin: 0 -.14em -.1em; }
+  .ln__i { display: inline-block; will-change: transform; transform: translateY(135%); }
+  .ff-kicker { font-family: var(--mono); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .ff-h { margin-top: 18px !important; font-family: var(--serif); font-weight: 300 !important; font-style: italic; font-variation-settings: "SOFT" 0, "WONK" 1;
+    font-size: 92px; line-height: 1.04; letter-spacing: -.012em; }
+  .ff-h em { position: relative; color: var(--accent); }
+  .ff-h--sm { font-size: 60px; line-height: 1.08; }
+  .ff-cause { width: 560px; text-align: center; }
+  .ff-cause__n { font-family: var(--mono); font-size: 15px; letter-spacing: .08em; color: var(--accent); }
+  .ff-cause__h { margin-top: 12px !important; font-family: var(--serif); font-weight: 300 !important; font-style: italic; font-variation-settings: "SOFT" 0, "WONK" 1;
+    font-size: 46px; line-height: 1.08; letter-spacing: -.01em; white-space: nowrap; }
+  .ff-under { position: absolute; left: 0; right: .1em; bottom: .02em; height: 2px; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
+  .ff-chrome { font-family: var(--mono); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+  /* ---- the ground (seen until the scene is ready): a night studio, a deep red horizon glow, paper-coloured type ---- */
+  .ff--dark { color: var(--paper);
+    background: radial-gradient(70% 55% at 50% 118%, color-mix(in oklab, var(--accent) 55%, transparent) 0%, color-mix(in oklab, var(--accent-deep) 45%, transparent) 38%, transparent 72%),
+      radial-gradient(90% 70% at 50% 35%, #221c18 0%, #120f0d 55%, #080706 100%); }
+  .ff--dark .ff-kicker, .ff--dark .ff-chrome { color: rgba(252, 251, 248, .55); }
+  .ff--dark .ff-h em, .ff--dark .ff-cause__n { color: var(--accent-on-dark); }
+  .ff--dark .ff-under { background: var(--accent-on-dark); }
+</style>
+
+<script>
+  import { mountFalconFilms } from '../scripts/falcon-film';
+  mountFalconFilms();
+</script>
