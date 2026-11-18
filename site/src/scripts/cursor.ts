@@ -76,7 +76,8 @@ if (fine) {
     read(); wake();
   }, { passive: true });
   // the page moves under a still pointer (smooth scroll, reveals): look again at what is under it
-  addEventListener('scroll', () => { if (root.classList.contains('is-on')) requestAnimationFrame(read); }, { passive: true });
+  let reading = 0;   // one hit-test per frame, however many scroll events arrive in it
+  addEventListener('scroll', () => { if (!reading && root.classList.contains('is-on')) reading = requestAnimationFrame(() => { reading = 0; read(); }); }, { passive: true });
   document.addEventListener('pointerdown', () => root.classList.add('is-down'));
   document.addEventListener('pointerup', () => { root.classList.remove('is-down'); requestAnimationFrame(read); });   // a click may change the label (Play ↔ Pause)
   document.documentElement.addEventListener('pointerleave', () => root.classList.remove('is-on'));

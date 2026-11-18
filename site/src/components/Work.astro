@@ -259,6 +259,11 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
   /* while it plays, the pause button keeps out of the way until the film is hovered or the button focused */
   .falcon__play.is-playing { opacity: 0; }
   .falcon__film:hover .falcon__play.is-playing, .falcon__play.is-playing:focus-visible { opacity: 1; }
+  /* lite: the same soft edges, painted in the card's black over the film rather than masked out of it (global.css) */
+  :global(html.lite) .falcon__video { -webkit-mask-image: none; mask-image: none; }
+  :global(html.lite) .falcon__film::after { content: ''; position: absolute; inset: -1px; z-index: 1; pointer-events: none;
+    background: linear-gradient(to right, #0f0e0c, rgba(15, 14, 12, 0) 9%, rgba(15, 14, 12, 0) 91%, #0f0e0c),
+      linear-gradient(to bottom, #0f0e0c, rgba(15, 14, 12, 0) 10%, rgba(15, 14, 12, 0) 90%, #0f0e0c); }
   .falcon .falcon__case { position: relative; width: auto; margin: 0; }
   /* on the night card: slightly tighter type, so the case sits level with the film; the accent in the site's red */
   .falcon .case__meta, .falcon .case__facts dt { color: rgba(252, 251, 248, .6); }

@@ -24,6 +24,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
+import { lite } from './perf';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -150,7 +151,7 @@ if (canvas && !reduce) {
         // the engineers step out of frame (and soften) while the hero scrolls away; its facts fade with them
         const a = inn(clamp(y / (G.heroH * 0.85)));
         leave.forEach(el => el.closest('.stage')
-          ? gsap.set(el, { xPercent: 9 * a, scale: 1 + 0.06 * a, opacity: 1 - a, filter: `blur(${8 * a}px)` })
+          ? gsap.set(el, { xPercent: 9 * a, scale: 1 + 0.06 * a, opacity: 1 - a, ...(lite ? {} : { filter: `blur(${8 * a}px)` }) })   // a blur redrawn every scrolled frame: not on lite
           : gsap.set(el, { opacity: 1 - clamp(y / (G.heroH * 0.5)), y: -24 * clamp(y / (G.heroH * 0.5)) }));
         // then the picture opens to the whole window and the camera pushes into the screen
         const t = clamp((y - G.heroH) / Math.max(1, G.zoomAt - G.heroH)), e = io(t);

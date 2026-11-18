@@ -14,7 +14,7 @@ import arrowDown from '../assets/home/arrow-down.svg?url';
   let shown = false;
   // phones have no margin to park it in, so there it only shows while you scroll back up (when you're looking for it)
   const phone = matchMedia('(max-width: 900px)');
-  let lastY = scrollY, goingUp = false;
+  let lastY = scrollY, goingUp = false, lastLift = '';
   const update = () => {
     const max = document.documentElement.scrollHeight - innerHeight;
     if (Math.abs(scrollY - lastY) > 4) { goingUp = scrollY < lastY; lastY = scrollY; }
@@ -23,7 +23,8 @@ import arrowDown from '../assets/home/arrow-down.svg?url';
     // when the footer scrolls into view, rest just above it instead of covering its links
     const footer = document.querySelector('footer');
     const gap = footer ? innerHeight - footer.getBoundingClientRect().top : 0;
-    btn.style.setProperty('--lift', gap > 0 ? `${gap}px` : '0px');
+    const lift = gap > 0 ? `${Math.round(gap)}px` : '0px';
+    if (lift !== lastLift) { lastLift = lift; btn.style.setProperty('--lift', lift); }   // a write only when it changes
   };
   addEventListener('scroll', update, { passive: true });
   addEventListener('resize', update);

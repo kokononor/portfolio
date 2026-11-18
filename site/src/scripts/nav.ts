@@ -44,7 +44,8 @@ if (nav) {
       on ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current');
     });
   };
-  addEventListener('scroll', mark, { passive: true });
+  let marking = 0;   // layout is read once per frame, not in every scroll event
+  addEventListener('scroll', () => { if (!marking) marking = requestAnimationFrame(() => { marking = 0; mark(); }); }, { passive: true });
   addEventListener('resize', mark);
   mark();
 

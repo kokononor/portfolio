@@ -150,6 +150,13 @@ html.lenis, html.lenis body { height: auto; }
   box-shadow: 0 8px 20px rgba(15, 14, 12, .25); animation: tilt-chip-in .6s 1.5s both; }
 @keyframes tilt-chip-in { from { opacity: 0; translate: -50% 12px; } }
 
+/* ---------- lite (scripts/perf.ts) ----------
+   Safari re-blurs frosted glass for every frame the page scrolls under it, and draws a masked video in software, frame
+   by frame. On lite devices the glass becomes a near-solid tint, and the film's soft edges are painted over it
+   (components/Work.astro) instead of masked out of it. */
+html.lite nav.nav.is-stuck { -webkit-backdrop-filter: none; backdrop-filter: none; background-color: color-mix(in oklab, var(--page) 96%, transparent); }
+html.lite :is(.swad__tag, .sticky-rail) { -webkit-backdrop-filter: none; backdrop-filter: none; }
+
 /* ---------- misregistration (scripts/motion.ts) ----------
    The red is its own printing plate. While the page scrolls fast it slips against the black by --mis px, leaving a
    pale second impression, and comes back into register as the scroll settles. */
