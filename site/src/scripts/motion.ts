@@ -3,6 +3,7 @@
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { webkit, lite } from './perf';
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -11,16 +12,18 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 if (!reduce) {
   // ---- smooth scroll ----
-  const lenis = new Lenis({ lerp: 0.1 });            // #links are handled by scripts/nav.ts, which stops below the sticky nav
+  // Safari keeps its own native scroll (smoother there, and off the main thread); Lenis still runs the in-page glides
+  const lenis = new Lenis({ lerp: 0.1, smoothWheel: !webkit });   // #links are handled by scripts/nav.ts, which stops below the sticky nav
   (window as any).__lenis = lenis;                 // shared with the back-to-top button
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(time => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
 
   // ---- misregistration: on a fast scroll the red plate slips out of register with the black (--mis, in px; see
-  // global.css), and snaps back as the page comes to rest — like a press running too fast ----
+  // global.css), and snaps back as the page comes to rest — like a press running too fast. It restyles every frame
+  // of a scroll, so lite devices go without ----
   let mis = 0, shown = 0;
-  gsap.ticker.add(() => {
+  if (!lite) gsap.ticker.add(() => {
     const target = gsap.utils.clamp(-7, 7, (lenis.velocity || 0) * 0.22);
     mis += (target - mis) * 0.18;
     const next = Math.abs(mis) < 0.05 ? 0 : Math.round(mis * 10) / 10;

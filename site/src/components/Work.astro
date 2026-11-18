@@ -18,12 +18,20 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
   <article class="falcon" data-reveal>
     <Image class="falcon__logo" src={viLogo} alt="Vodafone Idea" widths={[64, 128]} sizes="64px" />
     <div class="falcon__film">
-      <!-- phones get the 720p cut; nothing of the film is fetched until the card is about to come into view -->
+      <!-- phones get the 720p cut; nothing of the film is fetched until the card is about to come into view.
+           H.264 (High 4.0 / Main 3.1, the levels every hardware decoder takes) first, VP9 for browsers without H.264
+           (Firefox on Windows N editions); the codecs in each type let a browser skip what it can't decode. -->
       <video class="falcon__video" data-falcon-cover poster="/media/falcon-film-poster.webp" muted loop playsinline preload="none"
         aria-label="Falcon in motion: five disconnected data sources resolve into three root causes, then into the redesigned Falcon dashboard.">
-        <source src="/media/falcon-film-720.mp4" type="video/mp4" media="(max-width: 900px)" />
-        <source src="/media/falcon-film.mp4" type="video/mp4" />
+        <source src="/media/falcon-film-720.mp4" type='video/mp4; codecs="avc1.4D401F"' media="(max-width: 900px)" />
+        <source src="/media/falcon-film-720.webm" type='video/webm; codecs="vp9"' media="(max-width: 900px)" />
+        <source src="/media/falcon-film.mp4" type='video/mp4; codecs="avc1.640028"' />
+        <source src="/media/falcon-film.webm" type='video/webm; codecs="vp9"' />
       </video>
+      <!-- shown when the film may not start by itself: reduced motion asked for, or autoplay blocked by the browser -->
+      <button class="falcon__play" type="button" data-falcon-play hidden aria-label="Play the Falcon film" data-cursor="Play">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-play" d="M8 5.5v13l11-6.5z" /><path class="i-pause" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" /></svg>
+      </button>
     </div>
     <div class="case case--light falcon__case">
       <p class="case__meta">FALCON · VI SNOC <span class="dot dot--light"></span>2026</p>
@@ -92,14 +100,41 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
 </section>
 
 <script>
-  // the Falcon film plays only while its card is on screen (and not at all for reduced motion: its poster stays)
+  // the Falcon film plays only while its card is on screen. With reduced motion asked for (Windows turns this on with
+  // "Animation effects" off) it waits for the play button; if the browser blocks autoplay, the button appears too.
   const film = document.querySelector<HTMLVideoElement>('[data-falcon-cover]');
-  if (film && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const playBtn = document.querySelector<HTMLButtonElement>('[data-falcon-play]');
+  if (film && playBtn) {
+    let wanted = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let inView = false;
+    const sync = () => {
+      const playing = !film.paused;
+      playBtn.classList.toggle('is-playing', playing);
+      playBtn.setAttribute('aria-label', playing ? 'Pause the Falcon film' : 'Play the Falcon film');
+      playBtn.dataset.cursor = playing ? 'Pause' : 'Play';
+    };
+    const play = () => film.play().catch((err: DOMException) => {
+      if (err?.name === 'NotAllowedError') { wanted = false; playBtn.hidden = false; }   // the visitor starts it instead
+    });
+    film.addEventListener('play', sync);
+    film.addEventListener('pause', sync);
+    if (!wanted) playBtn.hidden = false;
+    // no source could be decoded: the poster stays, and a button that can't do anything goes
+    film.querySelectorAll('source').forEach(s => s.addEventListener('error', () => setTimeout(() => {
+      if (film.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) playBtn.hidden = true;
+    })));
+
     // start fetching a screen before the card arrives, so it is already playing when it does
-    new IntersectionObserver(([e], io) => { if (e.isIntersecting) { film.preload = 'auto'; film.load(); io.disconnect(); } }, { rootMargin: '100% 0px' }).observe(film);
+    if (wanted) new IntersectionObserver(([e], io) => { if (e.isIntersecting) { film.preload = 'auto'; film.load(); io.disconnect(); } }, { rootMargin: '100% 0px' }).observe(film);
     new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) film.play().catch(() => {}); else film.pause();
+      inView = e.isIntersecting;
+      if (inView && wanted) play(); else if (!inView) film.pause();
     }, { threshold: 0.25 }).observe(film);
+
+    playBtn.addEventListener('click', () => {
+      if (film.paused) { wanted = true; film.preload = 'auto'; play(); }
+      else { wanted = false; film.pause(); }
+    });
   }
 
   // Swad's before / after: the range sets where the divider is; it nudges once when it first comes into view
@@ -128,7 +163,7 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
     const link = card.querySelector<HTMLAnchorElement>('.case__more');
     if (!link) return;
     card.addEventListener('click', e => {
-      if ((e.target as Element).closest('a, .swad__range') || getSelection()?.toString()) return;   // (dragging the before / after is not a click)
+      if ((e.target as Element).closest('a, button, .swad__range') || getSelection()?.toString()) return;   // (dragging the before / after is not a click)
       if (e.metaKey || e.ctrlKey) window.open(link.href, '_blank');
       else link.click();
     });
@@ -212,6 +247,18 @@ import divinitiLogo from '../assets/home/diviniti-logo.png';
     -webkit-mask-composite: source-in;
     mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent), linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
     mask-composite: intersect; }
+  .falcon__play { position: absolute; left: 50%; top: 50%; z-index: 3; translate: -50% -50%; display: grid; place-items: center;
+    width: 64px; height: 64px; padding: 0; border: 1px solid rgba(248, 247, 240, .35); border-radius: 50%; cursor: pointer;
+    background: rgba(15, 14, 12, .62); color: #f8f7f0; transition: background-color .2s ease, opacity .3s ease; }
+  .falcon__play[hidden] { display: none; }
+  .falcon__play:hover { background: rgba(15, 14, 12, .82); }
+  .falcon__play:focus-visible { outline: 2px solid #f8f7f0; outline-offset: 3px; }
+  .falcon__play svg { width: 26px; height: 26px; fill: currentColor; }
+  .falcon__play .i-pause, .falcon__play.is-playing .i-play { display: none; }
+  .falcon__play.is-playing .i-pause { display: inline; }
+  /* while it plays, the pause button keeps out of the way until the film is hovered or the button focused */
+  .falcon__play.is-playing { opacity: 0; }
+  .falcon__film:hover .falcon__play.is-playing, .falcon__play.is-playing:focus-visible { opacity: 1; }
   .falcon .falcon__case { position: relative; width: auto; margin: 0; }
   /* on the night card: slightly tighter type, so the case sits level with the film; the accent in the site's red */
   .falcon .case__meta, .falcon .case__facts dt { color: rgba(252, 251, 248, .6); }

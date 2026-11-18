@@ -4,7 +4,11 @@
 //  - every lit element gets its own shadow direction (away from the light) and a proximity value (--p)
 //  - ink near the light warms towards dark red; white and dark surfaces get a soft local glow where the light falls
 // Reduced motion: the page is simply lit, with no drift.
+import { lite } from './perf';
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// lite devices (Safari, low-end, data saver; scripts/perf.ts): the light makes its entrance, then holds still. The
+// paper redraws only while the page scrolls (its grain is printed on the page), and the elements' shadows and glows
+// are restyled once the scroll comes to rest, never on every frame of it.
 
 // ---------------- the light ----------------
 // Where the light settles (a fraction of the viewport) follows the real sun over Delhi: it rises on the left, stands
@@ -122,7 +126,7 @@ if (gl) {
     const newsprint = document.querySelector('.page') ? 1 : 0;     // the home page's canvas
     const paper = paperColour();
     const resize = () => {
-      const dpr = Math.min(devicePixelRatio || 1, 1.5);
+      const dpr = Math.min(devicePixelRatio || 1, lite ? 1 : 1.5);
       canvas.width = Math.round(innerWidth * dpr);
       canvas.height = Math.round(innerHeight * dpr);
       gl.viewport(0, 0, canvas.width, canvas.height);
@@ -194,13 +198,22 @@ function applyToElements() {
 
 // ---------------- the loop ----------------
 let start = performance.now(), lastMeasure = 0, running = true, odd = false, busyUntil = 0;
+let sleeping = false, stale = true;
+const wake = () => { if (sleeping && running) { sleeping = false; requestAnimationFrame(frame); } };
 // something is moving the light or the page: draw every frame for a moment
-const busy = () => { busyUntil = performance.now() + 400; };
+const busy = () => { busyUntil = performance.now() + (lite ? 150 : 400); stale = true; wake(); };
 addEventListener('scroll', busy, { passive: true });
-addEventListener('pointermove', busy, { passive: true });
+if (!lite) addEventListener('pointermove', busy, { passive: true });
 function frame(now: number) {
   if (!running) return;
   const t = (now - start) / 1000;
+  if (lite && t > 2.4) {
+    if (now < busyUntil) draw?.(t);                       // scrolling: the paper's grain moves with the page
+    else if (stale) { stale = false; applyToElements(); } // at rest: shadows and glows catch up, once
+    else { sleeping = true; return; }                     // nothing to do: sleep until the next scroll or resize
+    requestAnimationFrame(frame);
+    return;
+  }
   // when the light is only breathing (a cycle of half a minute), every other frame is enough: half the GPU work
   odd = !odd;
   if (odd && t > 2.4 && now > busyUntil && !tilt.on && !((window as any).__beat > 0)) { requestAnimationFrame(frame); return; }
@@ -223,15 +236,15 @@ function frame(now: number) {
 }
 document.addEventListener('visibilitychange', () => {
   running = !document.hidden;
-  if (running) requestAnimationFrame(frame);
+  if (running) { sleeping = false; requestAnimationFrame(frame); }
 });
-addEventListener('resize', measure);
+addEventListener('resize', () => { measure(); busy(); });   // a resize clears the canvas: draw it again
 // the page's height changes when fonts, images or sections settle: measure then, rather than every second
-new ResizeObserver(() => measure()).observe(document.body);
+new ResizeObserver(() => { measure(); stale = true; wake(); }).observe(document.body);
 
 // ---------------- tilt (phones and tablets) ----------------
 // gamma: left / right roll; beta: front / back pitch, about 45° when a phone is held to read
-if (!reduce && matchMedia('(pointer: coarse)').matches && 'DeviceOrientationEvent' in window) {
+if (!reduce && !lite && matchMedia('(pointer: coarse)').matches && 'DeviceOrientationEvent' in window) {
   const clamp = (v: number) => Math.max(-1, Math.min(1, v));
   const listen = () => addEventListener('deviceorientation', e => {
     if (e.gamma == null || e.beta == null) return;
