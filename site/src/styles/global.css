@@ -62,7 +62,15 @@
 }
 
 /* nothing may push the page sideways */
-html { overflow-x: clip; }
+html { overflow-x: hidden; max-width: 100%; }
+@supports (overflow: clip) { html { overflow-x: clip; } }
+/* in-app webviews (Instagram, Facebook) zoom the layout out to fit the widest element, which turns phones into
+   desktop layouts: every wide block is clipped where it sits, so none can widen the page, and the body cannot scroll sideways */
+body { position: relative; width: 100%; max-width: 100%; }
+@media (max-width: 900px) {
+  main, .page, .hero, .work, .slide, .slide__stack, footer { max-width: 100%; overflow-x: hidden; }
+  @supports (overflow: clip) { main, .page, .hero, .work, .slide, .slide__stack, footer { overflow-x: clip; } }
+}
 
 /* jumps to #sections (native, or with reduced motion) stop below the sticky nav */
 html { scroll-padding-top: var(--nav-h); }
