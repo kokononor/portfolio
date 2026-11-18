@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex" />
+<title>Viewport check</title>
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; padding: 16px; font: 14px/1.5 ui-monospace, monospace; background: #f8f7f0; color: #0f0e0c; }
+  h1 { font-size: 16px; margin: 0 0 12px; }
+  table { border-collapse: collapse; width: 100%; }
+  td { border-bottom: 1px solid #ccc; padding: 6px 4px; vertical-align: top; word-break: break-all; }
+  td:first-child { color: #626262; width: 45%; }
+  #probe { position: absolute; visibility: hidden; font-size: 100px; line-height: 1; font-family: monospace; }
+  .mq { display: none; } @media (max-width: 900px) { .mq { display: inline; } }
+</style>
+</head>
+<body>
+<h1>Viewport check: screenshot this page</h1>
+<p>Phone layout CSS active: <b class="mq">YES</b><noscript>(JS off)</noscript></p>
+<table id="t"></table>
+<span id="probe">X</span>
+<script>
+  const de = document.documentElement, vv = window.visualViewport;
+  const probe = document.getElementById('probe').getBoundingClientRect().height;
+  const rows = [
+    ['innerWidth x innerHeight', innerWidth + ' x ' + innerHeight],
+    ['clientWidth', de.clientWidth],
+    ['scrollWidth', de.scrollWidth],
+    ['screen', screen.width + ' x ' + screen.height],
+    ['devicePixelRatio', devicePixelRatio],
+    ['visualViewport', vv ? Math.round(vv.width) + ' x ' + Math.round(vv.height) + ' @ ' + vv.scale : 'none'],
+    ['100px text renders at', probe.toFixed(1) + 'px (text zoom ~' + Math.round(probe) + '%)'],
+    ['max-width:900px', matchMedia('(max-width: 900px)').matches],
+    ['supports svh', CSS.supports('height', '100svh')],
+    ['supports overflow:clip', CSS.supports('overflow', 'clip')],
+    ['supports color-mix', CSS.supports('color', 'color-mix(in oklab, red, blue)')],
+    ['userAgent', navigator.userAgent],
+  ];
+  document.getElementById('t').innerHTML = rows.map(([k, v]) => '<tr><td>' + k + '</td><td>' + v + '</td></tr>').join('');
+</script>
+</body>
+</html>
