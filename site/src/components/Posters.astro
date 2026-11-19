@@ -1,7 +1,8 @@
 ---
 // Section 3: deewaar (wall). The poster work, after the case studies: one row of posters that slides on its own
-// (public/posters, converted from the originals at 720 and 1600 wide), each opening full size in a lightbox. The row
-// is a real scroller, so it can also be swiped or dragged; the set is printed twice so the slide loops without a seam. Behance and Instagram
+// (public/posters, converted from the originals at 720 and 1600 wide), each opening full size in a lightbox. The track
+// is moved with one GPU transform (never by scrolling, which repaints); it can be dragged, swiped or wheeled sideways;
+// the set is printed twice so the slide loops without a seam. Behance and Instagram
 // carry the rest. Cosmic Papercraft is left out on purpose: it prints two organisers' phone numbers.
 const posters = [
   { id: 'devdas', title: 'Devdas', w: 2480, h: 3508 },
@@ -21,7 +22,7 @@ const posters = [
   { id: 'orientation', title: 'Orientation', w: 1080, h: 1080 },
   { id: 'recruitment', title: 'Recruitment', w: 1080, h: 1080 },
 ];
-const src = (id: string, size: 720 | 1600) => `/posters/${id}-${size}.webp`;
+const src = (id: string, size: 400 | 720 | 1600) => `/posters/${id}-${size}.webp`;
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
 <section class="posters" id="posters" aria-labelledby="posters-title">
@@ -35,7 +36,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
         <li aria-hidden={copy ? 'true' : undefined}>
           <button class="poster" type="button" data-poster={i} data-full={src(p.id, 1600)} data-title={p.title} tabindex={copy ? -1 : undefined}
             aria-label={`Open ${p.title} full size`} data-cursor="View" style={`--ar: ${p.w} / ${p.h};`}>
-            <img src={src(p.id, 720)} alt={copy ? '' : `${p.title}, a poster by Suyash`} width="720" height={Math.round(720 * p.h / p.w)} loading="lazy" decoding="async" draggable="false" />
+            <img src={src(p.id, 400)} srcset={`${src(p.id, 400)} 400w, ${src(p.id, 720)} 720w`} sizes="(max-width: 900px) 160px, 260px" alt={copy ? '' : `${p.title}, a poster by Suyash`} width="720" height={Math.round(720 * p.h / p.w)} loading="lazy" decoding="async" draggable="false" />
             <span class="poster__cap"><span>{pad(i + 1)}</span>{p.title}</span>
           </button>
         </li>
@@ -94,32 +95,43 @@ const pad = (n: number) => String(n).padStart(2, '0');
   dialog?.addEventListener('close', () => { (window as any).__lenis?.start(); items[at]?.focus({ preventScroll: true }); });
 
   // ---- the row slides on its own: a steady drift, paused on hover, focus, while the viewer is open, off screen, or
-  // for a moment after the visitor swipes, drags or scrolls it. With reduced motion it only moves when moved. ----
+  // for a moment after the visitor drags, swipes or wheels it. With reduced motion it only moves when moved.
+  // Cost per frame: one transform on the track, plus one on each poster actually on screen. No layout is read in the
+  // loop (sizes are measured once, and again on resize), and nothing runs while the row is off screen. ----
   const rail = document.querySelector<HTMLElement>('[data-rail]');
   if (rail) {
     const track = rail.firstElementChild as HTMLElement;
+    const cells = [...track.children] as HTMLElement[];
     const SPEED = 40;                                            // px a second
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let pos = 0, last = 0, onScreen = false, hover = false, restUntil = 0, ours = false;
-    const half = () => track.scrollWidth / 2;                    // one copy of the set
-    const wrap = () => { const h = half(); if (pos >= h) pos -= h; if (pos < 0) pos += h; };
+    let pos = 0, last = 0, onScreen = false, hover = false, restUntil = 0, running = false;
+    let half = 1, railW = 1, centres: number[] = [], shown = new Set<HTMLElement>();
+    const measure = () => {
+      half = track.scrollWidth / 2 || 1;                         // one copy of the set
+      railW = rail.clientWidth || 1;
+      centres = cells.map(c => c.offsetLeft + c.offsetWidth / 2);
+    };
+    measure();
+    new ResizeObserver(measure).observe(track);
+    const wrap = () => { pos = ((pos % half) + half) % half; };
     const rest = (ms = 2500) => { restUntil = performance.now() + ms; };
+
     // the dynamics: scrolling the page pushes the row (it speeds up, then eases back) and leans the posters into the
     // motion; and the row bows into a shallow arc, the poster in the middle lifted and square, the ones at the ends
     // sunk and turned, so posters rise and settle as they pass through.
-    const cells = [...track.children] as HTMLElement[];
-    let centres: number[] = [];
-    const measure = () => { centres = cells.map(c => c.offsetLeft + c.offsetWidth / 2); };
-    measure();
-    addEventListener('resize', measure);
-    addEventListener('load', measure);
     let lastY = scrollY, boost = 0, lean = 0;
-    const arc = () => {
-      const mid = rail.scrollLeft + rail.clientWidth / 2, reach = rail.clientWidth * 0.62;
-      cells.forEach((c, i) => {
-        const d = Math.max(-1, Math.min(1, (centres[i] - mid) / reach));   // -1 left edge, 0 centre, 1 right edge
-        c.style.transform = `translateY(${(d * d * 24).toFixed(1)}px) rotate(${(d * 3.2).toFixed(2)}deg) scale(${(1 - d * d * 0.07).toFixed(3)}) skewX(${lean.toFixed(2)}deg)`;
-      });
+    const draw = () => {
+      track.style.transform = `translate3d(${(-pos).toFixed(1)}px, 0, 0)`;
+      if (still) return;
+      const mid = pos + railW / 2, reach = railW * 0.62, next = new Set<HTMLElement>();
+      for (let i = 0; i < cells.length; i++) {
+        const off = centres[i] - mid;
+        if (off < -railW || off > railW) continue;              // off screen: left as it was
+        const d = Math.max(-1, Math.min(1, off / reach));
+        cells[i].style.transform = `translateY(${(d * d * 24).toFixed(1)}px) rotate(${(d * 3.2).toFixed(2)}deg) scale(${(1 - d * d * 0.07).toFixed(3)}) skewX(${lean.toFixed(2)}deg)`;
+        next.add(cells[i]);
+      }
+      shown = next;
     };
     const tick = (t: number) => {
       const dt = last ? Math.min(64, t - last) / 1000 : 0;
@@ -128,47 +140,51 @@ const pad = (n: number) => String(n).padStart(2, '0');
       if (!still) {
         boost = Math.min(900, boost * 0.92 + Math.abs(dy) * 6);
         lean += (Math.max(-6, Math.min(6, -dy * 0.25)) - lean) * 0.12;
+        if (Math.abs(lean) < 0.01) lean = 0;
       }
-      if (onScreen && !hover && !dialog?.open && t > restUntil && !still) {
-        pos += (SPEED + boost) * dt; wrap();
-        ours = true; rail.scrollLeft = pos;
-      }
-      if (!still) arc();
-      if (onScreen) requestAnimationFrame(tick); else last = 0;
+      if (!hover && !dialog?.open && t > restUntil && !still && !down) { pos += (SPEED + boost) * dt; wrap(); }
+      draw();
+      if (onScreen && !document.hidden) requestAnimationFrame(tick); else { running = false; last = 0; }
     };
-    // the visitor's own scrolling (swipe, trackpad, keys) takes over, and the loop still wraps
-    rail.addEventListener('scroll', () => {
-      if (ours) { ours = false; return; }
-      pos = rail.scrollLeft; const before = pos; wrap();
-      if (pos !== before) rail.scrollLeft = pos;
-      rest();
-    }, { passive: true });
+    const start = () => { if (!running && onScreen) { running = true; lastY = scrollY; requestAnimationFrame(tick); } };
+
     rail.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hover = true; });
     rail.addEventListener('pointerleave', () => { hover = false; });
-    rail.addEventListener('focusin', () => { hover = true; });
+    rail.addEventListener('focusin', e => {
+      hover = true;
+      // a poster reached by Tab is brought into view
+      const li = (e.target as Element).closest('li') as HTMLElement | null;
+      if (li) { pos = li.offsetLeft + li.offsetWidth / 2 - railW / 2; wrap(); draw(); }
+    });
     rail.addEventListener('focusout', () => { hover = false; });
-    rail.addEventListener('touchstart', () => rest(4000), { passive: true });
-    // dragging with a mouse
+    // sideways wheel and trackpad swipes move the row; vertical ones still scroll the page
+    rail.addEventListener('wheel', e => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault(); pos += e.deltaX; wrap(); rest(); draw();
+    }, { passive: false });
+    // drag with a mouse, or swipe with a finger (vertical swipes still scroll the page: touch-action pan-y)
     let downX = 0, startPos = 0, down = false;
     rail.addEventListener('pointerdown', e => {
-      if (e.pointerType !== 'mouse' || e.button !== 0) return;
-      down = true; dragged = false; downX = e.clientX; startPos = rail.scrollLeft;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      down = true; dragged = false; downX = e.clientX; startPos = pos;
     });
     addEventListener('pointermove', e => {
       if (!down) return;
       const dx = e.clientX - downX;
       if (Math.abs(dx) > 6) { dragged = true; rail.classList.add('is-dragging'); }
-      if (dragged) rail.scrollLeft = startPos - dx;
-    });
-    addEventListener('pointerup', () => {
+      if (dragged) { pos = startPos - dx; wrap(); draw(); }
+    }, { passive: true });
+    const up = () => {
       if (!down) return;
-      down = false; rail.classList.remove('is-dragging');
+      down = false; rail.classList.remove('is-dragging'); rest();
       setTimeout(() => { dragged = false; }, 0);                 // the click that ends a drag opens nothing
-    });
-    new IntersectionObserver(([e]) => {
-      const was = onScreen; onScreen = e.isIntersecting;
-      if (onScreen && !was) requestAnimationFrame(tick);
-    }).observe(rail);
+    };
+    addEventListener('pointerup', up);
+    addEventListener('pointercancel', up);
+
+    new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; start(); }).observe(rail);
+    document.addEventListener('visibilitychange', start);
+    draw();
   }
 </script>
 
@@ -176,20 +192,19 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .posters { position: relative; padding: calc(150 * var(--u)) calc(104 * var(--u)) 0; }
 
   /* the head: only the big red word, as kaam and parichay */
-  .posters__head { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; column-gap: calc(96 * var(--u)); }
-  .posters__word { margin: 0; font-size: calc(200 * var(--u)); line-height: 1; color: var(--accent); white-space: nowrap; }
+  .posters__head { display: flex; justify-content: flex-end; }
+  /* the same size as kaam: the page's one type scale (--su, styles/home.css) */
+  .posters__word { margin: 0 calc(-1 * var(--u)) 0 0; font-size: calc(200 * var(--su, var(--u))); line-height: 1; color: var(--accent); white-space: nowrap; }
 
-  /* the row: full page width, its ends fading into the page; a scroller with its bar hidden */
-  .posters__rail { margin: calc(64 * var(--u)) calc(-104 * var(--u)) 0; padding: calc(28 * var(--u)) 0 max(36px, calc(52 * var(--u))); overflow-x: auto; overflow-y: hidden;
-    scrollbar-width: none; cursor: grab; overscroll-behavior-x: contain;
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); }
-  .posters__rail::-webkit-scrollbar { display: none; }
+  /* the row: full page width, clipped (no fading mask: on a moving layer it would repaint the whole row every frame) */
+  .posters__rail { position: relative; margin: calc(64 * var(--u)) calc(-104 * var(--u)) 0; padding: calc(28 * var(--u)) 0 max(36px, calc(52 * var(--u))); overflow: hidden;
+    cursor: grab; touch-action: pan-y; contain: layout paint; }
   .posters__rail.is-dragging { cursor: grabbing; }
   .posters__rail.is-dragging .poster { pointer-events: none; }
-  .posters__track { display: flex; gap: calc(28 * var(--u)); width: max-content; margin: 0; padding: 0 0 0 calc(28 * var(--u)); list-style: none; }
-  .posters__track li { flex: none; transform-origin: 50% 100%; will-change: transform; }
+  .posters__track { display: flex; gap: calc(28 * var(--u)); width: max-content; margin: 0; padding: 0 0 0 calc(28 * var(--u)); list-style: none; will-change: transform; }
+  .posters__track li { flex: none; transform-origin: 50% 100%; }
   /* hovering one poster dims the rest, so it steps forward */
-  .posters__track .poster { transition: transform .5s cubic-bezier(.2, .7, .2, 1), box-shadow .5s ease, filter .5s ease, opacity .5s ease; }
+  .posters__track .poster { box-shadow: none; transition: transform .5s cubic-bezier(.2, .7, .2, 1), box-shadow .5s ease, filter .5s ease, opacity .5s ease; }
   .posters__track:has(.poster:hover) .poster:not(:hover) { filter: grayscale(.7) brightness(.85); opacity: .7; }
   .posters__track .poster:hover { transform: translateY(-14px) scale(1.04); box-shadow: -24px 34px 50px rgba(0, 0, 0, .22); }
   .posters__track .poster { height: calc(364 * var(--u)); width: auto; aspect-ratio: var(--ar); }
@@ -230,8 +245,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   @media (min-width: 901px) and (max-width: 1199px) { .posters__track .poster { height: 294px; } }
   @media (max-width: 900px) {
     .posters { padding: 88px 20px 0; }
-    .posters__head { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
-    .posters__word { font-size: clamp(72px, 23vw, 104px); margin: 2px 0 0 -4px; }
+    .posters__word { font-size: clamp(72px, 23vw, 104px); margin: 2px -2px 0 0; }
     .posters__rail { margin: 20px -20px 0; padding: 12px 0 34px; }
     .posters__track { gap: 12px; padding-left: 12px; }
     .posters__track .poster { height: 224px; }
