@@ -1,7 +1,7 @@
 // Case studies: a thin bar in the red under the sticky nav that fills as you read. One write per frame at most, and
 // only while scrolling. (CSS scroll-driven animation would need no script, but the build's minifier folds it into an
 // animation shorthand Chrome rejects.)
-const main = document.querySelector('main.canvas');
+const main = document.querySelector('main.canvas, main.quick');
 if (main) {
   const bar = document.createElement('div');
   bar.className = 'read-progress';

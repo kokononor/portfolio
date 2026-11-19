@@ -5,8 +5,10 @@
 // full-screen menu behind the toggle (scripts/nav.ts).
 import arrowDown from '../assets/home/arrow-down.svg?url';
 
-interface Props { solid?: boolean }
-const { solid = false } = Astro.props;
+// `read`: on a case study, the switch between its quick read and its detailed read (both pages carry it)
+interface Read { quick: string; detailed: string; current: 'quick' | 'detailed'; quickMin: number; detailedMin: number }
+interface Props { solid?: boolean; read?: Read }
+const { solid = false, read } = Astro.props;
 // on the home page the links scroll to their sections and follow the reading; elsewhere they go back to them
 const home = !solid;
 const to = (id: string) => (home ? `#${id}` : `/#${id}`);
@@ -17,7 +19,13 @@ const links = [['work', 'Work'], ['about', 'About'], ['contact', 'Connect']];
   <div class="nav__links">
     {links.map(([id, label]) => <a href={to(id)} data-section={home ? id : undefined}>{label.toUpperCase()}</a>)}
   </div>
-  <div class="nav__end">
+  <div class:list={['nav__end', { 'has-read': read }]}>
+    {read && (
+      <div class="readmode" role="group" aria-label="Reading length">
+        <a href={read.quick} aria-current={read.current === 'quick' ? 'page' : undefined}>Quick<span class="readmode__long">&nbsp;read</span> <small>{read.quickMin} min</small></a>
+        <a href={read.detailed} aria-current={read.current === 'detailed' ? 'page' : undefined}>Detailed <small>{read.detailedMin} min</small></a>
+      </div>
+    )}
     <a class="nav__resume" href="/resume.pdf" download="Suyash-Resume.pdf">RESUME <img src={arrowDown} width="12" height="18" alt="" /></a>
     <!-- phones: the links live in a full-screen menu -->
     <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
@@ -66,6 +74,22 @@ const links = [['work', 'Work'], ['about', 'About'], ['contact', 'Connect']];
     transition: transform .3s ease, box-shadow .3s ease; }
   .nav__resume img { width: max(9px, calc(12 * var(--nav-u))); height: auto; }
   .nav__resume:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(45, 10, 5, .25); }
+
+  /* the reading switch on case studies: two halves of one pill, the page you're on filled in ink */
+  .readmode { display: inline-flex; padding: 3px; border: 1px solid rgba(15, 14, 12, 0.22); border-radius: 999px; background: color-mix(in oklab, var(--paper) 70%, transparent); }
+  .readmode a { display: inline-flex; align-items: baseline; gap: 6px; padding: 0 14px; height: max(30px, calc(40 * var(--nav-u))); align-items: center; border-radius: 999px;
+    font-size: max(13px, calc(16 * var(--nav-u))); white-space: nowrap; color: var(--ink); transition: background-color .3s ease, color .3s ease; }
+  .readmode small { font-family: var(--mono); font-size: 11px; letter-spacing: .04em; color: var(--muted); transition: color .3s ease; }
+  .readmode a:hover { background: rgba(15, 14, 12, 0.07); }
+  .readmode a[aria-current] { background: var(--ink); color: var(--paper); }
+  .readmode a[aria-current] small { color: color-mix(in oklab, var(--paper) 70%, transparent); }
+  .readmode__long { display: inline; }
+  @media (max-width: 1365px) { .readmode small { display: none; } }
+  @media (max-width: 600px) {
+    .has-read .nav__resume { display: none; }      /* the resume is still in the menu */
+    .readmode__long { display: none; }
+    .readmode a { padding: 0 12px; height: 32px; }
+  }
 
   /* phones: the menu toggle, two hairlines that cross into an ✕ */
   .nav__toggle { display: none; position: relative; width: 44px; height: 44px; margin-right: -10px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--ink); }

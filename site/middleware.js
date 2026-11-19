@@ -26,7 +26,12 @@ function same(a, b) {
   return diff === 0;
 }
 
+// open to everyone, though it sits under /work/falcon/: the quick read (the detailed read stays locked)
+const PUBLIC = ['/work/falcon/quick'];
+
 export default function middleware(request) {
+  const path = new URL(request.url).pathname.replace(/\/+$/, '');
+  if (PUBLIC.includes(path)) return;
   const expected = (process.env.FALCON_ACCESS || '').trim().toLowerCase();
   const given = readCookie(request.headers.get('cookie'), COOKIE).toLowerCase();
   if (same(given, expected)) return;                       // the right password: carry on to the page

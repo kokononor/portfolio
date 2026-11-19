@@ -1,0 +1,185 @@
+---
+// Diviniti, the quick read: the case study in about three minutes. Every fact comes from diviniti.astro, the detailed read.
+import Base from '../../../layouts/Base.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import NextProject from '../../../components/NextProject.astro';
+import { Image } from 'astro:assets';
+import '../../../styles/quick.css';
+
+import hero from '../../../assets/home/diviniti-cover.png';
+import pixels from '../../../assets/diviniti/pixels.png';
+import portraitOnGold from '../../../assets/diviniti/portrait-on-gold.png';
+import productCard from '../../../assets/diviniti/product-card.png';
+import ar from '../../../assets/diviniti/ar.png';
+import intelligence from '../../../assets/diviniti/intelligence.png';
+
+const read = { quick: '/work/diviniti/quick', detailed: '/work/diviniti', current: 'quick' as const, quickMin: 3, detailedMin: 7 };
+const steps = [
+  { name: 'Pixels', line: 'Perception', made: 'Product images, lit and composed by hand' },
+  { name: 'Screens', line: 'Decisions', made: 'Portrait on Gold: site, checkout, AR preview' },
+  { name: 'Intelligence', line: 'Interactions', made: 'Amy, a chatbot for customer enquiries' },
+  { name: 'Systems', line: 'Organisations', made: 'How orders, manufacturing and support connect' },
+  { name: 'Data', line: 'Information', made: 'Product data, taxonomy and SKU structure' },
+  { name: 'Platforms', line: 'Systems', made: 'One product database behind every channel' },
+];
+const shipped = [
+  { work: 'Hand-built product visuals', what: 'Every wall, light, shadow and reflection placed by hand, in mid-2025 before AI could render products accurately', status: 'Mid-2025' },
+  { work: 'Portrait on Gold website', what: 'Visual direction, UI and UX for a new luxury line', status: 'Live, taking orders' },
+  { work: 'Custom checkout', what: 'Upload a portrait and preview the finished piece before paying', status: 'Live' },
+  { work: 'AR preview', what: 'Place any product in your own room before buying', status: 'Shipped' },
+  { work: 'Chatbot Amy', what: 'Built with Python and the OpenAI API: enquiries, shipping questions, recommendations', status: 'Live' },
+];
+const channels = ['Website', 'Marketplaces', 'Internal tools', 'Customer support', 'AI systems'];
+---
+<Base title="Diviniti, the quick read · Suyash" description="The three-minute version of the Diviniti case study: a year at Diviniti India, from product images to the product data behind the site, marketplaces and AI.">
+  <Nav solid read={read} />
+  <main class="quick">
+
+    <header class="q-hero">
+      <div>
+        <p class="q-mono">Quick read · Diviniti India · 2025 to 2026</p>
+        <h1>A year that took my design from <em>pixels to platforms</em></h1>
+        <p class="q-hero__lede">I joined Diviniti, a spiritual and corporate gifting brand with more than 5,000 products, as a design intern making product images. A year later I was working on the product data that feeds its website, marketplaces and AI. Along the way I shipped a luxury website, a custom checkout, AR previews and a live chatbot.</p>
+      </div>
+      <figure class="q-hero__img" style="aspect-ratio: 4 / 3;"><Image src={hero} alt="A silver and gold Ganesha idol beside a white flower on a dark wooden table" widths={[640, 1100]} sizes="(max-width: 900px) 100vw, 520px" loading="eager" /></figure>
+    </header>
+    <dl class="q-facts">
+      <div><dt>Role</dt><dd>Design intern from May 2025. Founder’s Office since August 2026</dd></div>
+      <div><dt>Disciplines</dt><dd>Product design, visual design, e‑commerce, AI</dd></div>
+      <div><dt>Scale</dt><dd>More than 5,000 SKUs</dd></div>
+      <div><dt>Outcome</dt><dd>A 40% increase in Amazon sales</dd></div>
+    </dl>
+
+    <!-- 01 -->
+    <section class="q-sec" aria-labelledby="q1">
+      <header class="q-head"><span class="q-mono">01</span><h2 id="q1">In short</h2></header>
+      <ul class="q-tldr">
+        <li><span class="q-mono">Where I started</span><p class="q-body">I thought design meant polished visuals. My first months were spent lighting and composing product images by hand.</p></li>
+        <li><span class="q-mono">What I did</span><p class="q-body">Worked outward from images to a full website and checkout, then AI, then the operations and product data underneath the business.</p></li>
+        <li><span class="q-mono">The result</span><p class="q-body">Five pieces of work live or shipped, a 40% rise in Amazon sales, and a role in the Founder’s Office.</p></li>
+      </ul>
+      <div class="q-stats" style="--n: 3;">
+        <div class="q-stat"><p class="q-num">40%</p><p>increase in Amazon sales</p></div>
+        <div class="q-stat"><p class="q-num">5,000+</p><p>SKUs across spiritual and corporate gifting</p></div>
+        <div class="q-stat"><p class="q-num">5</p><p>things shipped, from a website to a chatbot</p></div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="q-sec" aria-labelledby="q2">
+      <header class="q-head"><span class="q-mono">02</span><h2 id="q2">The year in six steps</h2></header>
+      <p class="q-body" style="max-width: 62ch; margin-bottom: 28px;">Each step moved further from what customers see and closer to what holds the business up. That is the real story of the year.</p>
+      <ol class="q-ladder" aria-label="Six steps from the surface to the foundations">
+        {steps.map((s, i) => (
+          <li style={`--i: ${i};`}><span class="q-mono">0{i + 1}</span><b>{s.name}</b><span class="q-ladder__line">Design shapes {s.line.toLowerCase()}</span><span class="q-small">{s.made}</span></li>
+        ))}
+      </ol>
+      <div class="q-ladder__ends q-mono"><span>What people see</span><span>What people never see</span></div>
+    </section>
+
+    <!-- 03 -->
+    <section class="q-sec" aria-labelledby="q3">
+      <header class="q-head"><span class="q-mono">03</span><h2 id="q3">The biggest project: Portrait on Gold</h2></header>
+      <div class="q-split">
+        <div>
+          <p class="q-body">A new luxury line inside a gifting brand. I owned it from visual direction to the website’s UI and UX. It is live and taking orders.</p>
+          <p class="q-mono" style="margin: 32px 0 16px;">Average price of a piece</p>
+          <ul class="q-bars" role="img" aria-label="Diviniti average: 2,000 rupees. Portrait on Gold average: 1 lakh rupees, fifty times more.">
+            <li><span class="q-small">Diviniti</span><span class="q-bars__track"><span class="q-bars__bar" style="--v: 2%;"></span></span><b>₹2,000</b></li>
+            <li class="is-key"><span class="q-small">Portrait on Gold</span><span class="q-bars__track"><span class="q-bars__bar" style="--v: 100%;"></span></span><b>₹1,00,000</b></li>
+          </ul>
+          <p class="q-body" style="margin-top: 24px;">Fifty times the usual price meant a different kind of site. Luxury doesn’t shout or push discounts. It slows down, explains, and earns trust before asking for a ₹1 lakh decision.</p>
+          <p class="q-quote" style="margin-top: 24px;">People weren’t judging pixels. They were judging risk.</p>
+        </div>
+        <figure class="q-fig">
+          <div class="q-fig__img" style="aspect-ratio: 852 / 1000;"><Image src={portraitOnGold} alt="The Portrait on Gold site on a phone: Life, framed in Gold" widths={[560, 746]} sizes="(max-width: 900px) 100vw, 600px" style="object-position: bottom;" /></div>
+          <figcaption><span class="q-mono">Fig. 1</span>The Portrait on Gold site, live.</figcaption>
+        </figure>
+      </div>
+      <div class="q-split q-gap" style="grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr);">
+        <figure class="q-fig">
+          <div class="q-fig__img" style="aspect-ratio: 1044 / 589;"><Image src={productCard} alt="The Classic Grace framed portrait product page, with a portrait preview and price" widths={[800, 1102]} sizes="(max-width: 900px) 100vw, 760px" style="object-position: left top;" /></div>
+          <figcaption><span class="q-mono">Checkout</span>Customers upload their portrait and see the finished piece before paying.</figcaption>
+        </figure>
+        <figure class="q-fig">
+          <div class="q-fig__img" style="aspect-ratio: 428 / 589;"><Image src={ar} alt="Previewing a framed portrait on a wall in augmented reality" widths={[428, 856]} sizes="(max-width: 900px) 100vw, 320px" /></div>
+          <figcaption><span class="q-mono">AR</span>Any product, placed in your own room.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="q-sec" aria-labelledby="q4">
+      <header class="q-head"><span class="q-mono">04</span><h2 id="q4">What I shipped</h2></header>
+      <div class="q-scroll">
+        <table class="q-table">
+          <thead><tr><th scope="col">Work</th><th scope="col">What it does</th><th scope="col">Status</th></tr></thead>
+          <tbody>{shipped.map(s => <tr><td>{s.work}</td><td>{s.what}</td><td><span class:list={['q-tag', { 'q-tag--yes': s.status !== 'Mid-2025' }]}>{s.status}</span></td></tr>)}</tbody>
+        </table>
+      </div>
+      <div class="q-pair q-gap">
+        <figure class="q-fig">
+          <div class="q-fig__img" style="aspect-ratio: 4 / 3;"><Image src={pixels} alt="Golden idols rendered on a dark, lit set" widths={[560, 901]} sizes="(max-width: 900px) 50vw, 540px" style="object-position: bottom;" /></div>
+          <figcaption><span class="q-mono">Pixels</span>Same product, new light. Perception is designed.</figcaption>
+        </figure>
+        <figure class="q-fig">
+          <div class="q-fig__img" style="aspect-ratio: 4 / 3;"><Image src={intelligence} alt="Chatbot Amy answering a customer on a phone" widths={[560, 1065]} sizes="(max-width: 900px) 50vw, 540px" /></div>
+          <figcaption><span class="q-mono">Amy</span>AI for the routine questions, people for the moments that matter.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="q-sec" aria-labelledby="q5">
+      <header class="q-head"><span class="q-mono">05</span><h2 id="q5">Below the surface</h2></header>
+      <div class="q-split">
+        <div class="q-body">
+          <p>As Diviniti prepared for AI-driven commerce, the work moved from screens to information: product structures, taxonomy, SKUs and a single source of truth.</p>
+          <p>None of it looked like design at first. But hard-to-find products, inconsistent details and systems that couldn’t grow all started here. Get the data right once and every channel gets better at the same time.</p>
+        </div>
+        <div class="q-diagram" role="img" aria-label="One product database feeding the website, marketplaces, internal tools, customer support and AI systems">
+          <span class="q-mono">One source of truth, many places it shows up</span>
+          <div class="q-flow">
+            <div class="q-node q-node--key" style="align-self: center;"><span class="q-mono">Source</span>One product database</div>
+            <span class="q-arrow" aria-hidden="true"></span>
+            <div class="q-pile">{channels.map(c => <div class="q-node">{c}</div>)}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section class="q-sec" aria-labelledby="q6">
+      <header class="q-head"><span class="q-mono">06</span><h2 id="q6">What I took away</h2></header>
+      <ul class="q-learn">
+        <li><h3>Design is more than what you see.</h3><p class="q-body">The problems that taught me most lived in checkouts, operations and data, not in visuals.</p></li>
+        <li><h3>Luxury needs its own rules.</h3><p class="q-body">Speed and discounts work for marketplaces. A ₹1 lakh purchase needs patience, detail and trust.</p></li>
+        <li><h3>Build foundations that scale.</h3><p class="q-body">A screen serves one channel. Well-structured product data serves all of them.</p></li>
+      </ul>
+      <p class="q-quote q-gap">Design did not become bigger. My definition of it did.</p>
+    </section>
+
+    <aside class="q-end">
+      <p>Want the whole year, chapter by chapter?</p>
+      <a class="q-end__go" href="/work/diviniti">Read the detailed case study <span aria-hidden="true">→</span></a>
+    </aside>
+  </main>
+  <NextProject href="/work/falcon/quick" label="FALCON · QUICK READ" title="Making millions of network events explain a single outage" />
+  <Footer />
+</Base>
+
+<style>
+  /* the six steps as a staircase: each row starts further in */
+  .q-ladder { margin: 0; padding: 0; list-style: none; }
+  .q-ladder li { display: grid; grid-template-columns: 44px 180px minmax(0, 1fr) minmax(0, 1.2fr); gap: 16px; align-items: baseline;
+    margin-left: calc(var(--i) * 6%); padding: 16px 0 18px; border-top: 1px solid var(--ink); }
+  .q-ladder b { font-family: var(--serif); font-weight: 300; font-style: italic; font-variation-settings: "SOFT" 0, "WONK" 1; font-size: 30px; line-height: 1.1; color: var(--accent); }
+  .q-ladder__line { font-family: var(--serif); font-weight: 300; font-size: 19px; }
+  .q-ladder__ends { display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--ink); margin-left: 30%; }
+  @media (max-width: 900px) {
+    .q-ladder li { grid-template-columns: 36px minmax(0, 1fr); gap: 2px 10px; margin-left: calc(var(--i) * 8px); }
+    .q-ladder li > :nth-child(n+3) { grid-column: 2; }
+    .q-ladder__ends { margin-left: 0; }
+  }
+</style>

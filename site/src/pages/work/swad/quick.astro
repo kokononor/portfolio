@@ -1,0 +1,228 @@
+---
+// Swad, the quick read: the case study in about three minutes. Every figure comes from swad.astro, the detailed read.
+import Base from '../../../layouts/Base.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import NextProject from '../../../components/NextProject.astro';
+import '../../../styles/quick.css';
+
+const photo = (name: string) => `/work/swad/photos/${name}.webp`;
+const read = { quick: '/work/swad/quick', detailed: '/work/swad', current: 'quick' as const, quickMin: 3, detailedMin: 14 };
+
+const ledger = [
+  { label: 'Customers a day', before: '1–2', after: '20' },
+  { label: 'Monthly profit', before: '−₹10,000', after: '+₹20,000' },
+  { label: 'Orders from returning customers*', before: 'about 10%', after: 'about 80%' },
+  { label: 'Average order value', before: '₹67.50', after: '₹139' },
+];
+const funnel = [
+  { n: '300', v: 100, label: 'Walked past', note: 'everyone on the lane' },
+  { n: '180', v: 60, label: 'Noticed it', note: '6 in 10 passers-by' },
+  { n: '20', v: 6.7, label: 'Walked in', note: '11% of those who noticed' },
+  { n: '1–2', v: 0.5, label: 'Ordered', note: '5–10% of walk-ins' },
+];
+const said = [
+  { n: 40, quote: 'Liked the food', note: 'but the taste and portion changed visit to visit' },
+  { n: 30, quote: 'Nothing I wanted', note: 'something quick, or spicier' },
+  { n: 20, quote: 'Not fresh', note: 'stock bought in bulk, used past its best' },
+  { n: 10, quote: 'Never sure it’s open', note: 'no fixed hours' },
+];
+const options = [
+  { title: 'Grow the menu to match the market', verdict: 'No', why: 'More stock going stale and more skill needed in the kitchen. Still one shop against 50.' },
+  { title: 'Discounts and offers', verdict: 'No', why: 'Swad was already cheaper. The problem was trust, not price.' },
+  { title: 'New storefront only', verdict: 'Not alone', why: 'More people would walk in and meet the same counter.' },
+  { title: 'Narrow the menu and make it reliable', verdict: 'The bet', why: 'Build on the dish the area already buys most, and make it the same every time.', chosen: true },
+];
+const styles = [
+  { name: 'Lucknow', taste: 'Creamy, the mildest', heat: 1 },
+  { name: 'Sikkim', taste: 'Fresh coriander', heat: 2 },
+  { name: 'Jharkhandi', taste: 'Mustard and ginger', heat: 3 },
+  { name: 'Delhi', taste: 'Tandoor smoke and butter', heat: 4 },
+  { name: 'Hyderabadi', taste: 'Coconut, cashew, the hottest', heat: 5 },
+];
+const results = [
+  { metric: 'Repeat rate (north star)', target: '50%', result: '≈80%', verdict: 'Beat', tone: 'yes' },
+  { metric: 'Monthly operating profit', target: '₹10,000', result: '₹20,000', verdict: 'Beat, 2×', tone: 'yes' },
+  { metric: 'Walk-in to order', target: '80%', result: '60%', verdict: 'Missed', tone: 'miss' },
+  { metric: 'Food cost per plate', target: '≤20%', result: '14–20%', verdict: 'Met', tone: '' },
+  { metric: 'Same taste whoever cooks', target: 'Pass', result: 'Pass', verdict: 'Met', tone: '' },
+];
+---
+<Base title="Swad, the quick read · Suyash" description="The three-minute version of the Swad case study: a quiet-lane momo café in Ranchi that went from losing ₹10,000 a month to ₹20,000 in profit.">
+  <Nav solid read={read} />
+  <main class="quick">
+
+    <header class="q-hero">
+      <div>
+        <p class="q-mono">Quick read · Swad · Momo café · Ranchi · 2026</p>
+        <h1><em>Swad:</em> How a momo café that couldn’t make rent found its regulars</h1>
+        <p class="q-hero__lede">My family’s café sat on a quiet residential lane, served one or two people a day and lost ₹10,000 a month. Six months later it was serving twenty a day, mostly regulars, and making ₹20,000 a month. The street stayed the same. The promise changed, and Swad started keeping it.</p>
+      </div>
+      <figure class="q-hero__img" style="aspect-ratio: 1 / 1;"><img src={photo('hero')} alt="The Swad counter under two pendant lamps, its menus on the tiled wall behind" width="1254" height="1254" /></figure>
+    </header>
+    <dl class="q-facts">
+      <div><dt>Role</dt><dd>Product manager: strategy, P&amp;L, roadmap and launch</dd></div>
+      <div><dt>Timeline</dt><dd>January 2026 to now. Relaunched May 2026</dd></div>
+      <div><dt>Hands-on</dt><dd>Research, menu, five spice blends, kitchen procedures</dd></div>
+      <div><dt>Budget</dt><dd>₹2,00,000, fixed, no investor</dd></div>
+    </dl>
+
+    <!-- 01 -->
+    <section class="q-sec" aria-labelledby="q1">
+      <header class="q-head"><span class="q-mono">01</span><h2 id="q1">In short</h2></header>
+      <ul class="q-tldr">
+        <li><span class="q-mono">The problem</span><p class="q-body">People noticed Swad. They just didn’t trust it. It might be shut, the food might be stale, and it never tasted the same twice.</p></li>
+        <li><span class="q-mono">What I did</span><p class="q-body">Stopped competing with a market of 50 shops on variety. Cut the menu to nine items built around momos, wrote recipes that don’t need a skilled cook, and fixed the basics.</p></li>
+        <li><span class="q-mono">The result</span><p class="q-body">Profit swung by ₹30,000 a month. Swad has been profitable every month since the relaunch and is now on Swiggy and Zomato.</p></li>
+      </ul>
+      <div class="q-gap q-scroll">
+        <table class="q-table">
+          <caption class="q-mono">Before and after</caption>
+          <thead><tr><th scope="col">Measure</th><th scope="col" class="q-r">Dec 2025</th><th scope="col" class="q-r">Jun 2026</th></tr></thead>
+          <tbody>{ledger.map(r => <tr><td>{r.label}</td><td class="q-r q-was">{r.before}</td><td class="q-r q-now">{r.after}</td></tr>)}</tbody>
+        </table>
+        <p class="q-small" style="margin-top: 10px;">* Estimated by counting repeat callers among phone orders. Directional, not exact.</p>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="q-sec" aria-labelledby="q2">
+      <header class="q-head"><span class="q-mono">02</span><h2 id="q2">Finding the leak</h2></header>
+      <div class="q-stats" style="--n: 3; margin-top: 0;">
+        <div class="q-stat"><p class="q-num">60</p><p>observation sessions outside the café</p></div>
+        <div class="q-stat"><p class="q-num">100</p><p>one-on-one conversations</p></div>
+        <div class="q-stat"><p class="q-num">50</p><p>competing food shops visited</p></div>
+      </div>
+      <div class="q-split q-gap">
+        <div class="q-body">
+          <h3 style="margin-bottom: 12px;">Where people dropped off</h3>
+          <p>Swad lost about nine in ten people, twice. First at the street: most who noticed it never came in. Then at the counter, which worried me more. People walked in, read the menu and still left.</p>
+          <p>A new sign couldn’t fix the second one. Something inside told them not to trust the place.</p>
+        </div>
+        <div>
+          <p class="q-mono" style="margin-bottom: 14px;">An average session on the lane</p>
+          <ol class="q-funnel">
+            {funnel.map(f => (
+              <li><span class="q-funnel__bar" style={`--v: ${f.v}%;`}>{f.n}</span><p class="q-small"><b>{f.label}</b>{f.note}</p></li>
+            ))}
+          </ol>
+        </div>
+      </div>
+      <div class="q-gap">
+        <h3 style="margin-bottom: 6px;">What 100 people said</h3>
+        <p class="q-small" style="margin-bottom: 18px;">Four answers came up again and again.</p>
+        <div class="q-stack" role="img" aria-label="40 liked the food, 30 said Swad didn't have what they wanted, 20 said it wasn't fresh, 10 never knew if it was open">
+          {said.map(a => <span style={`--v: ${a.n};`} title={`${a.n} people: ${a.quote}`}>{a.n}</span>)}
+        </div>
+        <ul class="q-stack-key">
+          {said.map(a => <li><b><i></i>{a.n}</b><p>“{a.quote}”</p><p class="q-small" style="margin-top: 2px;">{a.note}</p></li>)}
+        </ul>
+      </div>
+      <p class="q-quote q-gap" style="max-width: 40ch;">Swad couldn’t offer more variety than a whole market. It could be more <em>reliable</em> than it.</p>
+    </section>
+
+    <!-- 03 -->
+    <section class="q-sec" aria-labelledby="q3">
+      <header class="q-head"><span class="q-mono">03</span><h2 id="q3">Choosing one bet</h2></header>
+      <p class="q-body" style="max-width: 60ch; margin-bottom: 28px;">With ₹2 lakh and a two-person core team, there was room for one real bet.</p>
+      <div class="q-scroll">
+        <table class="q-table">
+          <thead><tr><th scope="col">Option</th><th scope="col">Verdict</th><th scope="col">Why</th></tr></thead>
+          <tbody>{options.map(o => (
+            <tr class:list={{ 'is-chosen': o.chosen }}><td>{o.title}</td><td><span class:list={['q-tag', { 'q-tag--yes': o.chosen }]}>{o.verdict}</span></td><td>{o.why}</td></tr>
+          ))}</tbody>
+        </table>
+      </div>
+      <p class="q-small q-gap" style="max-width: 70ch;">The hard trade-off: 30 people said Swad lacked what they wanted, and I cut the menu from more than 30 items to nine. When I went back and asked, they mostly wanted choice, not one missing dish. Five styles of momo, mild to hot, gave them that without one new ingredient in the store room.</p>
+    </section>
+
+    <!-- 04 -->
+    <section class="q-sec" aria-labelledby="q4">
+      <header class="q-head"><span class="q-mono">04</span><h2 id="q4">What we built</h2></header>
+      <div class="q-split">
+        <figure class="q-fig">
+          <div class="q-fig__img" style="aspect-ratio: 748 / 760;"><img src={photo('plates')} alt="Five plates of momos, from mild to hot" width="748" height="760" loading="lazy" /></div>
+          <figcaption><span class="q-mono">Fig. 1</span>Five momo styles plus four drinks. Nine items in all.</figcaption>
+        </figure>
+        <div>
+          <h3 style="margin-bottom: 8px;">A menu with one question: how hot?</h3>
+          <p class="q-body" style="margin-bottom: 20px;">Each style has its own spice blend that I developed, around 80 test batches for two of them alone. Regulars always have a next step: try the one hotter.</p>
+          <ul class="q-bars" aria-label="The five styles by heat, from 1 to 5">
+            {styles.map(s => (
+              <li class:list={{ 'is-key': s.heat === 5 }}><span class="q-small"><b style="font-size: 17px; color: var(--ink);">{s.name}</b><br />{s.taste}</span><span class="q-bars__track"><span class="q-bars__bar" style={`--v: ${s.heat * 20}%; opacity: ${0.45 + s.heat * 0.11}; background: var(--accent);`}></span></span><b>{s.heat}/5</b></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div class="q-flow q-gap" role="list" aria-label="The order of work, cheapest first">
+        <div class="q-node" role="listitem"><span class="q-mono">1 · Very low effort</span>Fixed hours on the door and Google Maps</div>
+        <span class="q-arrow" aria-hidden="true"></span>
+        <div class="q-node" role="listitem"><span class="q-mono">2 · Low</span>Daily prep, oldest stock first</div>
+        <span class="q-arrow" aria-hidden="true"></span>
+        <div class="q-node q-node--key" role="listitem"><span class="q-mono">3 · Medium</span>Premixes and written recipes any cook can follow</div>
+        <span class="q-arrow" aria-hidden="true"></span>
+        <div class="q-node" role="listitem"><span class="q-mono">4 · Medium</span>The nine-item menu</div>
+        <span class="q-arrow" aria-hidden="true"></span>
+        <div class="q-node" role="listitem"><span class="q-mono">5 · High</span>Interior and signage, last</div>
+      </div>
+      <p class="q-small" style="margin-top: 12px;">The test for the kitchen: if today’s cook leaves tomorrow, does the food change? It has changed hands three times since the relaunch. The taste hasn’t.</p>
+      <div class="q-pair q-gap">
+        <figure class="q-fig">
+          <div class="q-fig__img" style="aspect-ratio: 748 / 560;"><img src={photo('store-before')} alt="The storefront before the relaunch, a Momos banner behind a mesh cage" width="748" height="560" loading="lazy" /></div>
+          <figcaption><span class="q-mono">Before</span>A banner, a cage and a shutter.</figcaption>
+        </figure>
+        <figure class="q-fig">
+          <div class="q-fig__img" style="aspect-ratio: 748 / 560;"><img src={photo('store-after')} alt="The storefront after the relaunch, with a dark Swad counter and the menu on the wall" width="748" height="560" loading="lazy" /></div>
+          <figcaption><span class="q-mono">After</span>An open counter, designed with Rushikesh Pawar.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="q-sec" aria-labelledby="q5">
+      <header class="q-head"><span class="q-mono">05</span><h2 id="q5">How it did</h2></header>
+      <div class="q-scroll">
+        <table class="q-table">
+          <caption class="q-mono">Against the targets I set, measured in June 2026</caption>
+          <thead><tr><th scope="col">Metric</th><th scope="col" class="q-r">Target</th><th scope="col" class="q-r">Result</th><th scope="col">Verdict</th></tr></thead>
+          <tbody>{results.map(r => (
+            <tr><td>{r.metric}</td><td class="q-r q-was">{r.target}</td><td class="q-r q-now">{r.result}</td><td><span class:list={['q-tag', { 'q-tag--yes': r.tone === 'yes', 'q-tag--miss': r.tone === 'miss' }]}>{r.verdict}</span></td></tr>
+          ))}</tbody>
+        </table>
+      </div>
+      <div class="q-split q-split--even q-gap">
+        <div class="q-body">
+          <h3 style="margin-bottom: 12px;">The miss, and why I left it</h3>
+          <p>Conversion rose at least sixfold but fell short of 80%. With trust fixed, price became the thing stopping people: some walk-ins still compare ₹89 with the market’s ₹80 and leave.</p>
+          <p>I didn’t chase them. Ten times the customers at twice the order size is what turned the loss into profit, and discounts would have broken the food-cost limit.</p>
+        </div>
+        <div>
+          <p class="q-mono" style="margin-bottom: 18px;">Where a full plate of momos starts</p>
+          <ul class="q-bars" role="img" aria-label="Swad before: 50 rupees. The market: 80 rupees. Swad now: 89 rupees.">
+            <li><span class="q-small">Swad, before</span><span class="q-bars__track"><span class="q-bars__bar" style="--v: 56%;"></span></span><b>₹50</b></li>
+            <li><span class="q-small">The market</span><span class="q-bars__track"><span class="q-bars__bar" style="--v: 90%;"></span></span><b>₹80</b></li>
+            <li class="is-key"><span class="q-small">Swad, now</span><span class="q-bars__track"><span class="q-bars__bar" style="--v: 100%;"></span></span><b>₹89</b></li>
+          </ul>
+          <p class="q-small" style="margin-top: 16px;">The ₹2 lakh pays for itself in about ten months at ₹20,000 a month.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section class="q-sec" aria-labelledby="q6">
+      <header class="q-head"><span class="q-mono">06</span><h2 id="q6">What I took away</h2></header>
+      <ul class="q-learn">
+        <li><h3>The product is everything the customer meets.</h3><p class="q-body">The storefront, the menu and the recipe binder were one problem seen from three distances.</p></li>
+        <li><h3>Saying no is a strategy.</h3><p class="q-body">No to variety, no to discounts, no to delivery until the food was ready. Each no made consistency easier.</p></li>
+        <li><h3>Next time, measure from day one.</h3><p class="q-body">Logging every order against a phone number would have turned my repeat estimate into a fact.</p></li>
+      </ul>
+    </section>
+
+    <aside class="q-end">
+      <p>Want the research, the spice blends and the numbers in depth?</p>
+      <a class="q-end__go" href="/work/swad">Read the detailed case study <span aria-hidden="true">→</span></a>
+    </aside>
+  </main>
+  <NextProject href="/work/diviniti/quick" label="DIVINITI · QUICK READ" title="A year that took my design from pixels to platforms" />
+  <Footer />
+</Base>

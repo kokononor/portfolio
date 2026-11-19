@@ -1,0 +1,211 @@
+---
+// Falcon, the quick read: the case study in about three minutes. Every fact here comes from falcon.astro, the
+// detailed read; nothing is added. Public: middleware.js lets this page through, while the detailed read stays locked.
+import Base from '../../../layouts/Base.astro';
+import Nav from '../../../components/Nav.astro';
+import Footer from '../../../components/Footer.astro';
+import NextProject from '../../../components/NextProject.astro';
+import { Image } from 'astro:assets';
+import '../../../styles/quick.css';
+
+import dashboard from '../../../assets/falcon/dashboard.png';
+import research from '../../../assets/falcon/research.png';
+import decision1 from '../../../assets/falcon/decision-1.png';
+import decision2 from '../../../assets/falcon/decision-2.png';
+import decision3 from '../../../assets/falcon/decision-3.png';
+
+const read = { quick: '/work/falcon/quick', detailed: '/work/falcon', current: 'quick' as const, quickMin: 3, detailedMin: 8 };
+const sources = ['Tickets', 'Logs', 'Topology', 'Config changes', 'AI answers'];
+const decisions = [
+  { n: '01', title: 'Show what the system knows', img: decision1, alt: 'Falcon showing loading, loaded and stale states for each section',
+    was: 'Engineers waited for every source to load, or checked raw logs, because they couldn’t tell complete data from partial or old data.',
+    did: 'Results now appear as each source returns, and every section says whether it is loading, loaded or stale.' },
+  { n: '02', title: 'Let the system connect the evidence', img: decision2, alt: 'An investigation workspace pulling evidence from several systems together',
+    was: 'One incident meant hopping between tickets, logs, topology, config changes and AI output, and stitching the story together by hand.',
+    did: 'Search a ticket, device or IP address and one workspace opens with evidence from every system already gathered around it.' },
+  { n: '03', title: 'Point to where to start', img: decision3, alt: 'The Recommended Investigation card with the reasons behind it',
+    was: 'On busy days hundreds of tickets looked equally urgent, so the hard part became choosing the first one.',
+    did: 'Falcon scores every open ticket on six visible signals and puts one Recommended Investigation on top, with its reasons.' },
+];
+---
+<Base title="Falcon, the quick read · Suyash" description="The three-minute version of the Falcon case study: how Vodafone Idea's outage engineers went from a minute to under ten seconds to see the evidence for an incident.">
+  <Nav solid read={read} />
+  <main class="quick">
+
+    <header class="q-hero">
+      <div>
+        <p class="q-mono">Quick read · Falcon · Vodafone Idea · 2026</p>
+        <h1>Making millions of network events explain a <em>single outage.</em></h1>
+        <p class="q-hero__lede">Falcon is the tool Vodafone Idea’s engineers open when the network goes down. It had all the data. What it couldn’t do was help them trust it and connect it fast enough to act. I redesigned it around the way engineers actually investigate.</p>
+        <p style="margin-top: 20px;"><a class="q-link" href="/papers/falcon-research-paper.pdf" download="Falcon-Research-Paper.pdf">Download the research paper (PDF, 8 pages) ↓</a></p>
+      </div>
+      <figure class="q-hero__img"><Image src={dashboard} alt="The redesigned Falcon dashboard: Root Cause Table, active tickets and a recommended investigation" widths={[640, 1100]} sizes="(max-width: 900px) 100vw, 520px" loading="eager" /></figure>
+    </header>
+    <dl class="q-facts">
+      <div><dt>Role</dt><dd>Product Design Intern</dd></div>
+      <div><dt>When</dt><dd>June to July 2026, Hyderabad</dd></div>
+      <div><dt>My part</dt><dd>Research, information architecture, interface design</dd></div>
+      <div><dt>Status</dt><dd>Shipped, and measured in production</dd></div>
+    </dl>
+
+    <!-- 01 -->
+    <section class="q-sec" aria-labelledby="q1">
+      <header class="q-head"><span class="q-mono">01</span><h2 id="q1">In short</h2></header>
+      <ul class="q-tldr">
+        <li><span class="q-mono">The problem</span><p class="q-body">During live outages, engineers couldn’t tell what data had loaded, what was missing, or how evidence across five systems fitted together. So they kept raw logs open on the side and treated Falcon as a rough first look.</p></li>
+        <li><span class="q-mono">What I did</span><p class="q-body">Rebuilt the product around the thing being investigated (a ticket, device or IP) instead of where the data comes from. Then three decisions: make data state visible, gather evidence in one place, and recommend where to start.</p></li>
+        <li><span class="q-mono">The result</span><p class="q-body">Falcon now returns the connected evidence for an outage in under ten seconds instead of about a minute. Time from first alert to action fell by a quarter.</p></li>
+      </ul>
+      <div class="q-stats" style="--n: 3;">
+        <div class="q-stat"><p class="q-num"><small>&lt;</small>10s</p><p>to pull together an outage’s evidence, down from about 60 seconds</p></div>
+        <div class="q-stat"><p class="q-num">25%</p><p>less time from first alert to action</p></div>
+        <div class="q-stat"><p class="q-num">5</p><p>separate systems now read as one investigation</p></div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="q-sec" aria-labelledby="q2">
+      <header class="q-head"><span class="q-mono">02</span><h2 id="q2">What was going wrong</h2></header>
+      <div class="q-split">
+        <div class="q-body">
+          <p>Falcon was organised by data source: one view for tickets, another for logs, another for topology. That matched the systems behind it, not the people using it. Engineers don’t start with a source. They start with a question.</p>
+          <p>So the engineer became the glue, and every incident started with minutes of checking whether the screen could be believed.</p>
+          <p class="q-quote" style="margin-top: 28px;">The product had stopped being a source of truth, so users built their own.</p>
+        </div>
+        <div>
+          <div class="q-diagram">
+            <span class="q-mono">Before · organised by source</span>
+            <div class="q-flow">
+              <div class="q-pile">{sources.map(s => <div class="q-node q-node--soft">{s}</div>)}</div>
+              <span class="q-arrow" aria-hidden="true"></span>
+              <div class="q-node" style="align-self: center;"><span class="q-mono">The engineer</span>Opens each one, cross-checks raw logs, connects it all by hand</div>
+              <span class="q-arrow" aria-hidden="true"></span>
+              <div class="q-node q-node--soft" style="align-self: center;"><span class="q-mono">Then</span>A diagnosis can begin</div>
+            </div>
+          </div>
+          <div class="q-diagram q-diagram--good">
+            <span class="q-mono">After · organised by investigation</span>
+            <div class="q-flow">
+              <div class="q-node" style="align-self: center;"><span class="q-mono">The engineer</span>Searches one ticket, device or IP</div>
+              <span class="q-arrow" aria-hidden="true"></span>
+              <div class="q-node q-node--key" style="align-self: center;"><span class="q-mono">Falcon</span>Gathers evidence from all five systems, each with its own loading state</div>
+              <span class="q-arrow" aria-hidden="true"></span>
+              <div class="q-node" style="align-self: center;"><span class="q-mono">Then</span>One workspace, ready to diagnose</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="q-sec" aria-labelledby="q3">
+      <header class="q-head"><span class="q-mono">03</span><h2 id="q3">How I found it</h2></header>
+      <div class="q-split q-split--even">
+        <figure class="q-fig">
+          <div class="q-fig__img"><Image src={research} alt="Research: contextual shadowing, user interviews and operational analysis" widths={[560, 1075]} sizes="(max-width: 900px) 100vw, 540px" /></div>
+          <figcaption><span class="q-mono">Fig. 1</span>Three ways in: watching live incidents, talking to users, and reading the usage data.</figcaption>
+        </figure>
+        <div>
+          <table class="q-table">
+            <thead><tr><th scope="col">Method</th><th scope="col">What it showed</th></tr></thead>
+            <tbody>
+              <tr><td>Shadowing live incidents</td><td>Engineers waited for data and double-checked results against raw logs as a matter of habit.</td></tr>
+              <tr><td>Interviews across roles</td><td>Trust meant different things to different roles, but everyone relied on the same information.</td></tr>
+              <tr><td>Usage data</td><td>Nearly ten minutes went into gathering context by hand before diagnosis could start.</td></tr>
+            </tbody>
+          </table>
+          <div class="q-flow q-gap" role="img" aria-label="18 issues found, traced to 3 root causes, which became 4 design principles">
+            <div class="q-node"><p class="q-num" style="font-size: 40px;">18</p>issues found</div>
+            <span class="q-arrow" aria-hidden="true"></span>
+            <div class="q-node"><p class="q-num" style="font-size: 40px;">3</p>root causes</div>
+            <span class="q-arrow" aria-hidden="true"></span>
+            <div class="q-node q-node--key"><p class="q-num" style="font-size: 40px; color: inherit;">4</p>design principles</div>
+          </div>
+        </div>
+      </div>
+      <div class="q-gap">
+        <table class="q-table">
+          <caption class="q-mono">The root causes, and the rules they turned into</caption>
+          <thead><tr><th scope="col">Root cause</th><th scope="col">Design principle</th></tr></thead>
+          <tbody>
+            <tr><td>No trust in system state</td><td>Show information as soon as it exists. Never let incomplete look complete.</td></tr>
+            <tr><td>Correlation left to the engineer</td><td>Organise around investigations, not data sources.</td></tr>
+            <tr><td>AI answers with no evidence</td><td>Trust requires evidence: every answer links back to what it is based on.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="q-sec" aria-labelledby="q4">
+      <header class="q-head"><span class="q-mono">04</span><h2 id="q4">Three decisions</h2></header>
+      <div class="q-cards">
+        {decisions.map(d => (
+          <article class="q-card">
+            <div class="q-card__img"><Image src={d.img} alt={d.alt} widths={[420, 840]} sizes="(max-width: 900px) 100vw, 360px" /></div>
+            <div class="q-card__body">
+              <p class="q-mono">Decision {d.n}</p>
+              <h3>{d.title}</h3>
+              <dl><div><dt>Before</dt><dd>{d.was}</dd></div><div><dt>Now</dt><dd>{d.did}</dd></div></dl>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="q-split q-split--even q-gap">
+        <div>
+          <p class="q-mono" style="margin-bottom: 12px;">Decision 01 · every section says where it stands</p>
+          <div class="q-chips"><span class="q-chip q-chip--loading"><i></i>Loading</span><span class="q-chip q-chip--done"><i></i>Loaded</span><span class="q-chip q-chip--stale"><i></i>Stale</span></div>
+          <p class="q-small" style="margin-top: 12px;">Being honest about what isn’t known yet let engineers start straight away instead of waiting for certainty.</p>
+        </div>
+        <div>
+          <p class="q-mono" style="margin-bottom: 12px;">Decision 03 · the six signals behind a recommendation</p>
+          <div class="q-chips">{['Priority level', 'SLA proximity', 'Shared upstream infrastructure', 'Multi-circle impact', 'Configuration changes', 'Customer impact'].map(s => <span class="q-chip"><i></i>{s}</span>)}</div>
+          <p class="q-small" style="margin-top: 12px;">Because the reasons are shown, engineers can check a recommendation rather than take it on faith.</p>
+        </div>
+      </div>
+      <p class="q-small q-gap">One call I made early: an idea for separate views per role was dropped. Incidents pass between analysts, engineers and managers, and split views lost context at every hand-off. Everyone now shares one screen with layers of detail.</p>
+    </section>
+
+    <!-- 05 -->
+    <section class="q-sec" aria-labelledby="q5">
+      <header class="q-head"><span class="q-mono">05</span><h2 id="q5">What changed</h2></header>
+      <div class="q-split q-split--even">
+        <div>
+          <p class="q-mono" style="margin-bottom: 18px;">Seconds to see an outage’s connected evidence</p>
+          <ul class="q-bars" role="img" aria-label="Before: about 60 seconds. Now: under 10 seconds.">
+            <li><span class="q-small">Before</span><span class="q-bars__track"><span class="q-bars__bar" style="--v: 100%;"></span></span><b>~60s</b></li>
+            <li class="is-key"><span class="q-small">After</span><span class="q-bars__track"><span class="q-bars__bar" style="--v: 16.7%;"></span></span><b>&lt;10s</b></li>
+          </ul>
+        </div>
+        <div>
+          <p class="q-mono" style="margin-bottom: 18px;">Time from first alert to action</p>
+          <ul class="q-bars" role="img" aria-label="After the redesign, time from alert to action is 75 percent of what it was.">
+            <li><span class="q-small">Before</span><span class="q-bars__track"><span class="q-bars__bar" style="--v: 100%;"></span></span><b>100%</b></li>
+            <li class="is-key"><span class="q-small">After</span><span class="q-bars__track"><span class="q-bars__bar" style="--v: 75%;"></span></span><b>75%</b></li>
+          </ul>
+        </div>
+      </div>
+      <p class="q-body q-gap" style="max-width: 62ch;">Beyond the clocks: less manual correlation, clearer priorities on busy days, and more faith in recommendations because the reasoning is on screen.</p>
+    </section>
+
+    <!-- 06 -->
+    <section class="q-sec" aria-labelledby="q6">
+      <header class="q-head"><span class="q-mono">06</span><h2 id="q6">What I took away</h2></header>
+      <ul class="q-learn">
+        <li><h3>Trust is the real feature.</h3><p class="q-body">The data was already there. The work was making it clear whether it was complete, connected and reliable enough to act on.</p></li>
+        <li><h3>Speed isn’t confidence.</h3><p class="q-body">A faster screen full of equally urgent tickets still stalls people. Showing what to do first mattered as much as loading faster.</p></li>
+        <li><h3>Keep people in charge.</h3><p class="q-body">Every recommendation shows its reasons, so the engineer still makes the call.</p></li>
+      </ul>
+    </section>
+
+    <aside class="q-end">
+      <p>Want the research, the principles and the screens in depth?</p>
+      <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px;">
+        <a class="q-end__go" href="/work/falcon">Read the detailed case study <span aria-hidden="true">→</span></a>
+        <span class="q-small" style="color: color-mix(in srgb, var(--paper) 65%, transparent);">Password protected, under NDA. The <a href="/papers/falcon-research-paper.pdf" download="Falcon-Research-Paper.pdf" style="text-decoration: underline;">research paper</a> is open to all.</span>
+      </div>
+    </aside>
+  </main>
+  <NextProject href="/work/swad/quick" label="SWAD · QUICK READ" title="How a momo café that couldn’t make rent found its regulars" />
+  <Footer />
+</Base>

@@ -26,7 +26,7 @@ import decision3 from '../../assets/falcon/decision-3.png';
 const half = '(max-width: 900px) 100vw, 852px';
 ---
 <Base title="Falcon — Making millions of network events explain a single outage · Suyash" description="Redesigning Falcon, Vodafone Idea's network operations intelligence platform, so engineers can trust, connect and act on information during live outages.">
-  <Nav solid />
+  <Nav solid read={{ quick: '/work/falcon/quick', detailed: '/work/falcon', current: 'detailed', quickMin: 3, detailedMin: 8 }} />
   <main class="canvas falcon-page" style="height: calc(16390 * var(--u));">
 
     <!-- ===== Hero (MacBook Pro 16' - 11): red band, cream title card, the engineers at their monitor ===== -->
@@ -54,8 +54,8 @@ const half = '(max-width: 900px) 100vw, 852px';
         <div class="hero__foot">
         <p class="hero__meta c-label"><span>Falcon · Vodafone Idea</span><span>Product Design Intern · Jun–Jul 2026</span></p>
         <p class="hero__summary c-lead">Engineers investigating live outages couldn't tell what data was loaded, what was missing, or how evidence across five systems connected together.</p>
-        <!-- the research paper lives under /work/falcon/, so the same lock (middleware.js) guards it -->
-        <a class="hero__paper c-label" href="/work/falcon/research-paper.pdf" target="_blank" rel="noopener">Read the research paper (PDF, 8 pages)</a>
+        <!-- the research paper is public (/papers/), like the quick read; only this detailed read is locked -->
+        <a class="hero__paper c-label" href="/papers/falcon-research-paper.pdf" target="_blank" rel="noopener">Read the research paper (PDF, 8 pages)</a>
         </div>
       </div>
 
