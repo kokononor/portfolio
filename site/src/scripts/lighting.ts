@@ -37,11 +37,16 @@ const day = sun.alt > 0;
 const high = Math.min(Math.max(sun.alt, 0) / 50, 1);                    // 0 on the horizon, 1 from 50° up
 const REST = day ? { x: 0.5 - sun.east * 0.4, y: 0.3 - high * 0.22 } : { x: 0.86, y: 0.08 };
 const LEN = day ? 1.7 - high * 0.7 : 1;                                 // shadow length: long at dawn and dusk
-// phones: tilting the handset moves the light, like turning a sheet of paper under a lamp
-const tilt = { x: 0, y: 0, on: false };
 const light = { x: reduce ? REST.x : 0.55, y: reduce ? REST.y : 0.45, power: reduce ? 1 : 0 };
 const pointer = { x: REST.x, y: REST.y, seen: false };
-addEventListener('pointermove', e => { pointer.x = e.clientX / innerWidth; pointer.y = e.clientY / innerHeight; pointer.seen = true; }, { passive: true });
+// the window's size and scroll, kept from their events: reading innerWidth or scrollY inside the frame loop, after
+// other scripts have changed styles in the same frame, makes the browser lay the whole page out again on the spot
+// (the audit found it was the single biggest cost on the home page). With smooth scrolling on, its own position is used.
+const view = { w: innerWidth, h: innerHeight, x: scrollX, y: scrollY };
+addEventListener('resize', () => { view.w = innerWidth; view.h = innerHeight; });
+addEventListener('scroll', () => { view.x = scrollX; view.y = scrollY; }, { passive: true });
+const pageY = () => { const l = (window as any).__lenis; return l && typeof l.animatedScroll === 'number' ? l.animatedScroll : view.y; };
+addEventListener('pointermove', e => { pointer.x = e.clientX / view.w; pointer.y = e.clientY / view.h; pointer.seen = true; }, { passive: true });
 
 // ---------------- WebGL paper layer ----------------
 const canvas = document.createElement('canvas');
@@ -139,9 +144,9 @@ if (gl) {
       gl.uniform3f(uPaper, paper[0], paper[1], paper[2]);
       gl.uniform1f(uPower, light.power);
       gl.uniform1f(uTime, t);
-      gl.uniform1f(uScroll, scrollY);
+      gl.uniform1f(uScroll, pageY());
       gl.uniform1f(uNews, newsprint);
-      gl.uniform1f(uDpr, canvas.width / innerWidth);
+      gl.uniform1f(uDpr, canvas.width / view.w);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
     document.documentElement.classList.add('has-light');
@@ -176,12 +181,12 @@ function measure() {
 
 const PROPS = ['--sx', '--sy', '--p', '--llx', '--lly'];
 function applyToElements() {
-  const lx = light.x * innerWidth, ly = light.y * innerHeight;
-  const diag = Math.hypot(innerWidth, innerHeight);
-  const top = scrollY, bottom = scrollY + innerHeight;
+  const lx = light.x * view.w, ly = light.y * view.h;
+  const diag = Math.hypot(view.w, view.h);
+  const top = pageY(), bottom = top + view.h, left = view.x;
   for (const l of lit) {
     if (l.y > bottom + 200 || l.y + l.h < top - 200) continue;          // off screen: leave it
-    const cx = l.x - scrollX + l.w / 2, cy = l.y - top + l.h / 2;
+    const cx = l.x - left + l.w / 2, cy = l.y - top + l.h / 2;
     const dx = cx - lx, dy = cy - ly, dist = Math.hypot(dx, dy) || 1;
     // shadow: away from the light, scaled so a block exactly down-left of it casts the design's (-20, 20)
     const sx = (dx / dist) * Math.SQRT2 * LEN, sy = (dy / dist) * Math.SQRT2 * LEN;
@@ -190,7 +195,7 @@ function applyToElements() {
     // light's position), and written only when a step changes: most frames then write nothing at all
     const next = [
       (Math.round(sx * 20) / 20).toFixed(2), (Math.round(sy * 20) / 20).toFixed(2), (Math.round(p * 100) / 100).toFixed(2),
-      `${Math.round((lx - (l.x - scrollX)) / 2) * 2}px`, `${Math.round((ly - (l.y - top)) / 2) * 2}px`,   // the light, in this element's coordinates
+      `${Math.round((lx - (l.x - left)) / 2) * 2}px`, `${Math.round((ly - (l.y - top)) / 2) * 2}px`,   // the light, in this element's coordinates
     ];
     for (let i = 0; i < 5; i++) if (next[i] !== l.last[i]) { l.el.style.setProperty(PROPS[i], next[i]); l.last[i] = next[i]; }
   }
@@ -216,14 +221,14 @@ function frame(now: number) {
   }
   // when the light is only breathing (a cycle of half a minute), every other frame is enough: half the GPU work
   odd = !odd;
-  if (odd && t > 2.4 && now > busyUntil && !tilt.on && !((window as any).__beat > 0)) { requestAnimationFrame(frame); return; }
+  if (odd && t > 2.4 && now > busyUntil && !((window as any).__beat > 0)) { requestAnimationFrame(frame); return; }
   if (!reduce) {
     // entrance: drift up to the corner and brighten over ~2s
     const e = Math.min(t / 2.2, 1), ease = 1 - Math.pow(1 - e, 3);
     const breathe = { x: Math.sin(t * 0.21) * 0.012, y: Math.cos(t * 0.17) * 0.01 };
     const lean = pointer.seen ? { x: (pointer.x - REST.x) * 0.06, y: (pointer.y - REST.y) * 0.06 } : { x: 0, y: 0 };
-    const tx = REST.x + breathe.x + lean.x + tilt.x, ty = REST.y + breathe.y + lean.y + tilt.y;
-    const k = e < 1 ? ease : tilt.on ? 0.12 : 0.04;                                      // after the entrance, follow gently
+    const tx = REST.x + breathe.x + lean.x, ty = REST.y + breathe.y + lean.y;
+    const k = e < 1 ? ease : 0.04;                                      // after the entrance, follow gently
     light.x += (tx - light.x) * (e < 1 ? 0.06 : k);
     light.y += (ty - light.y) * (e < 1 ? 0.06 : k);
     light.power = ease * (0.97 + 0.03 * Math.sin(t * 0.5))               // a very slow breath in the brightness
@@ -241,30 +246,6 @@ document.addEventListener('visibilitychange', () => {
 addEventListener('resize', () => { measure(); busy(); });   // a resize clears the canvas: draw it again
 // the page's height changes when fonts, images or sections settle: measure then, rather than every second
 new ResizeObserver(() => { measure(); stale = true; wake(); }).observe(document.body);
-
-// ---------------- tilt (phones and tablets) ----------------
-// gamma: left / right roll; beta: front / back pitch, about 45° when a phone is held to read
-if (!reduce && !lite && matchMedia('(pointer: coarse)').matches && 'DeviceOrientationEvent' in window) {
-  const clamp = (v: number) => Math.max(-1, Math.min(1, v));
-  const listen = () => addEventListener('deviceorientation', e => {
-    if (e.gamma == null || e.beta == null) return;
-    tilt.on = true;
-    tilt.x = clamp(e.gamma / 35) * 0.45;
-    tilt.y = clamp((e.beta - 45) / 35) * 0.3;
-  });
-  const ask = (DeviceOrientationEvent as any).requestPermission as (() => Promise<string>) | undefined;
-  if (!ask) listen();                                                    // Android: no permission needed
-  else {
-    // iOS only gives motion after a tap, so a small chip offers it once
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'tilt-chip';
-    chip.textContent = 'Tilt to move the light';
-    chip.addEventListener('click', () => { ask().then(r => { if (r === 'granted') listen(); }).catch(() => {}); chip.remove(); });
-    document.body.append(chip);
-    setTimeout(() => chip.remove(), 12000);
-  }
-}
 
 collect();
 document.fonts?.ready.then(measure);

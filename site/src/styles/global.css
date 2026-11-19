@@ -144,11 +144,6 @@ html.lenis, html.lenis body { height: auto; }
 .lit-surface::after { background: radial-gradient(circle at var(--llx, 100%) var(--lly, 0%), rgba(255, 255, 255, var(--p, 0)), rgba(255, 255, 255, 0) 85%); }
 .lit-dark::after { background: radial-gradient(circle at var(--llx, 100%) var(--lly, 0%), rgba(170, 36, 14, calc(var(--p, 0) * 0.95)), rgba(170, 36, 14, 0) 80%); }
 
-/* the offer to tilt the light (iOS asks permission for motion, and only after a tap) */
-.tilt-chip { position: fixed; left: 50%; bottom: 20px; translate: -50% 0; z-index: 50; padding: 10px 16px; border: 0; border-radius: 99px;
-  background: var(--night); color: var(--paper); font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
-  box-shadow: 0 8px 20px rgba(15, 14, 12, .25); animation: tilt-chip-in .6s 1.5s both; }
-@keyframes tilt-chip-in { from { opacity: 0; translate: -50% 12px; } }
 
 /* ---------- lite (scripts/perf.ts) ----------
    Safari re-blurs frosted glass for every frame the page scrolls under it, and draws a masked video in software, frame

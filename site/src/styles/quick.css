@@ -82,13 +82,13 @@
 .q-stack span:first-child { border-radius: 4px 0 0 4px; }
 .q-stack span:last-child { border-radius: 0 4px 4px 0; }
 .q-stack span:nth-child(2) { background: color-mix(in srgb, var(--ink) 72%, var(--paper)); }
-.q-stack span:nth-child(3) { background: color-mix(in srgb, var(--ink) 50%, var(--paper)); }
+.q-stack span:nth-child(3) { background: color-mix(in srgb, var(--ink) 60%, var(--paper)); }
 .q-stack span:nth-child(4) { background: color-mix(in srgb, var(--ink) 30%, var(--paper)); color: var(--ink); }
 .q-stack-key { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin: 18px 0 0; padding: 0; list-style: none; }
 .q-stack-key b { display: block; font-family: var(--serif); font-weight: 300; font-size: 28px; line-height: 1.1; }
 .q-stack-key i { display: inline-block; width: 10px; height: 10px; margin-right: 8px; border-radius: 2px; background: var(--ink); }
 .q-stack-key li:nth-child(2) i { background: color-mix(in srgb, var(--ink) 72%, var(--paper)); }
-.q-stack-key li:nth-child(3) i { background: color-mix(in srgb, var(--ink) 50%, var(--paper)); }
+.q-stack-key li:nth-child(3) i { background: color-mix(in srgb, var(--ink) 60%, var(--paper)); }
 .q-stack-key li:nth-child(4) i { background: color-mix(in srgb, var(--ink) 30%, var(--paper)); }
 .q-stack-key p { margin-top: 6px; font-size: 15px; line-height: 1.4; }
 
@@ -98,7 +98,7 @@
 .q-node { padding: 16px 18px; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--paper); font-size: 15px; line-height: 1.4; }
 .q-node .q-mono { display: block; margin-bottom: 6px; }
 .q-node--key { border-color: var(--accent); background: var(--accent); color: var(--paper); }
-.q-node--key .q-mono { color: color-mix(in srgb, var(--paper) 75%, transparent); }
+.q-node--key .q-mono { color: var(--paper); }
 .q-node--soft { border-style: dashed; border-color: color-mix(in srgb, var(--ink) 40%, transparent); background: transparent; }
 .q-arrow { flex: 0 0 44px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 20px; }
 .q-arrow::before { content: "→"; }
